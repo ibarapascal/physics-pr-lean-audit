@@ -1,0 +1,87 @@
+{
+  "module": "PyBaMM5888",
+  "pybamm_version": "26.10.1.0",
+  "lean_formula_precision": "mpmath-50-digits",
+  "native_function": "electrolyte_diffusivity_Ai2020",
+  "source_contains_fix": true,
+  "n_points": 2000,
+  "domain": {
+    "c_e_mol_m3": [
+      0.0,
+      4000.0
+    ],
+    "T_K": [
+      253.0,
+      333.0
+    ]
+  },
+  "theorem_checks": {
+    "native_vs_lean_diffAi2020_max_rel": 9.218625054360718e-15,
+    "native_vs_lean_worst_point": {
+      "c_e": 3929.332444253428,
+      "T": 254.3158139758108,
+      "native": 1.5146501798771358e-19,
+      "lean": 1.5146501798771498e-19
+    },
+    "diffAi2020_eq_diffXu2019_native_max_rel": 4.5012612251587116e-14,
+    "xu2019_native_vs_lean_max_rel": 4.738169710693369e-14,
+    "diffAi2020_eq_SI_literature_max_rel": 0.0,
+    "diffAi2020Old_eq_1e4_mul_max_rel": 9.276845958083782e-15,
+    "box_subset_domain_min_denominator_K": 5.322273887534703,
+    "box_subset_domain_holds": true,
+    "deriv_T_pos_count": 2000,
+    "deriv_c_neg_count": 2000,
+    "hasDerivAt_T_formula_vs_native_fd_max_rel": 0.0002421365896024403,
+    "hasDerivAt_c_formula_vs_native_fd_max_rel": 6.42746499927562e-07,
+    "native_D_range_m2_s": [
+      3.5566237687425974e-20,
+      1.075667679924641e-09
+    ],
+    "strictMonoOn_T_box_pairs_ok": "500/500",
+    "strictAntiOn_c_box_pairs_ok": "500/500"
+  },
+  "counterexamples": {
+    "not_monotone_T_across_pole": {
+      "points": {
+        "c=0.0,T=228.0": {
+          "native": 3.715352290971728e+45,
+          "lean": 3.7153522909717256e+45,
+          "denominator": -1.0
+        },
+        "c=0.0,T=230.0": {
+          "native": 3.715352290971728e-63,
+          "lean": 3.7153522909717253e-63,
+          "denominator": 1.0
+        }
+      },
+      "native_D(0,230) < native_D(0,228)": true
+    },
+    "not_antitone_c_across_pole": {
+      "points": {
+        "c=3000.0,T=250.0": {
+          "native": 8.128305161640995e-19,
+          "lean": 8.128305161640993e-19,
+          "denominator": 6.0
+        },
+        "c=5000.0,T=250.0": {
+          "native": 9332.543007969925,
+          "lean": 9332.54300796991,
+          "denominator": -4.0
+        }
+      },
+      "native_D(3000,250) < native_D(5000,250)": true
+    }
+  },
+  "pole_c0_T229": {
+    "direct_float_call": "ZeroDivisionError: float division by zero",
+    "parameter_values_evaluate": "ZeroDivisionError: ",
+    "lean_value_with_x_div_0_eq_0": 3.7153522909717255e-09
+  },
+  "pr_test_value_1000_298.15": {
+    "native": 3.222722528605264e-10,
+    "expected": 3.2227e-10,
+    "rel": 6.990550710983408e-06
+  },
+  "all_certificate_checks_pass": true,
+  "counterexamples_reproduced": true
+}

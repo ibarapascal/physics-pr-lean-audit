@@ -1,0 +1,220 @@
+diff --git a/modules/contact/doc/content/source/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.md b/modules/contact/doc/content/source/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.md
+index 9bfcb2e3737a..a71a07bbf40b 100644
+--- a/modules/contact/doc/content/source/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.md
++++ b/modules/contact/doc/content/source/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.md
+@@ -4,6 +4,8 @@
+ 
+ When the mortar mechanical contact constraints are used in dynamic simulations, the normal contact constraints need to be stabilized by ensuring that normal gap derivatives are included in the definition. This is a way of guaranteeing the 'persistency' condition, i.e. not only do we enforce the constraints instantaneously, but also that it will remain in contact. This approximate contact constraint stabilization is performed in [ComputeDynamicWeightedGapLMMechanicalContact](/ComputeDynamicWeightedGapLMMechanicalContact.md), from which this object inherits. Therefore `ComputeDynamicFrictionalForceLMMechanicalContact` is used as the base frictional mortar contact class to implement friction models that in a dynamic setting.
+ 
++When [!param](/Constraints/ComputeDynamicFrictionalForceLMMechanicalContact/function_friction) is provided, the friction coefficient is evaluated at each node with the contact pressure and nodal slip rate of the previous time step. The nodal slip rate is the weighted tangential velocity divided by the integral of the same test function, which is the nodal coefficient of the mortar projection of the tangential velocity [!citep](wohlmuth2011variationally).
++
+ The `capture_tolerance` is an optional contact parameter used in dynamic contact constraints to determine when to impose the persistency condition for normal contact. For relevant, general equations, see [!citep](tal2018dynamic).
+ 
+ !syntax parameters /Constraints/ComputeDynamicFrictionalForceLMMechanicalContact
+diff --git a/modules/contact/include/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.h b/modules/contact/include/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.h
+index 8b7d0fe2f372..5688123ff08a 100644
+--- a/modules/contact/include/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.h
++++ b/modules/contact/include/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.h
+@@ -78,13 +78,17 @@ class ComputeDynamicFrictionalForceLMMechanicalContact
+                               const Real & tangential_vel,
+                               const Real & tangential_vel_dir);
+ 
++  /**
++   * Nodal slip rates of the previous step at a locally owned dof, or zero if the dof has no
++   * history yet (first step, or the dof just entered the mortar interface)
++   */
++  std::array<Real, 2> oldNodalSlipRate(const DofObject * const dof) const;
++
+   /// A map from node to two weighted tangential velocities
+   std::unordered_map<const DofObject *, std::array<ADReal, 2>> _dof_to_weighted_tangential_velocity;
+ 
+-  /// A map from node to two tangential velocities. Required to have direct connection to physics.
+-  std::unordered_map<const DofObject *, std::array<Real, 2>> _dof_to_real_tangential_velocity;
+-
+-  /// A map from node to two old tangential velocities. Required to have direct connection to physics.
++  /// A map from node to the two nodal slip rates of the previous step, used to evaluate the
++  /// friction function
+   std::unordered_map<const DofObject *, std::array<Real, 2>> _dof_to_old_real_tangential_velocity;
+ 
+   /// An array of two pointers to avoid copies
+@@ -93,9 +97,6 @@ class ComputeDynamicFrictionalForceLMMechanicalContact
+   /// The value of the tangential velocity vectors at the current node
+   ADRealVectorValue _qp_tangential_velocity_nodal;
+ 
+-  /// The value of the tangential velocity vectors at the current node
+-  ADRealVectorValue _qp_real_tangential_velocity_nodal;
+-
+   /// Numerical factor used in the tangential constraints for convergence purposes
+   const Real _c_t;
+ 
+diff --git a/modules/contact/src/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.C b/modules/contact/src/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.C
+index eb64594cc7ee..62e6bc3b3bdd 100644
+--- a/modules/contact/src/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.C
++++ b/modules/contact/src/constraints/ComputeDynamicFrictionalForceLMMechanicalContact.C
+@@ -46,7 +46,8 @@ ComputeDynamicFrictionalForceLMMechanicalContact::validParams()
+       "epsilon",
+       1.0e-7,
+       "Minimum value of contact pressure that will trigger frictional enforcement");
+-  params.addParam<Real>("mu", "The friction coefficient for the Coulomb friction law");
++  params.addRangeCheckedParam<Real>(
++      "mu", "mu > 0", "The friction coefficient for the Coulomb friction law");
+   MooseEnum friction_projection_degree("ONE TWO", "TWO");
+   friction_projection_degree.addDocumentation(
+       "ONE", "Use the degree-one Alart-Curnier friction residual.");
+@@ -121,7 +122,6 @@ ComputeDynamicFrictionalForceLMMechanicalContact::computeQpProperties()
+   // It appears that the relative velocity between weighted gap and this class have a sign
+   // difference
+   _qp_tangential_velocity_nodal = -_relative_velocity * (_JxW_msm[_qp] * _coord[_qp]);
+-  _qp_real_tangential_velocity_nodal = -_relative_velocity;
+ }
+ 
+ void
+@@ -141,19 +141,11 @@ ComputeDynamicFrictionalForceLMMechanicalContact::computeQpIProperties()
+   _dof_to_weighted_tangential_velocity[dof][0] +=
+       _test[_i][_qp] * _qp_tangential_velocity_nodal * nodal_tangents[0][_i];
+ 
+-  _dof_to_real_tangential_velocity[dof][0] +=
+-      _test[_i][_qp] * MetaPhysicL::raw_value(_qp_real_tangential_velocity_nodal) *
+-      nodal_tangents[0][_i];
+-
+   // Get the _dof_to_weighted_tangential_velocity map for a second direction
+   if (_3d)
+   {
+     _dof_to_weighted_tangential_velocity[dof][1] +=
+         _test[_i][_qp] * _qp_tangential_velocity_nodal * nodal_tangents[1][_i];
+-
+-    _dof_to_real_tangential_velocity[dof][1] +=
+-        _test[_i][_qp] * MetaPhysicL::raw_value(_qp_real_tangential_velocity_nodal) *
+-        nodal_tangents[1][_i];
+   }
+ }
+ 
+@@ -163,7 +155,6 @@ ComputeDynamicFrictionalForceLMMechanicalContact::residualSetup()
+   // Clear both maps
+   ComputeDynamicWeightedGapLMMechanicalContact::residualSetup();
+   _dof_to_weighted_tangential_velocity.clear();
+-  _dof_to_real_tangential_velocity.clear();
+ }
+ 
+ void
+@@ -180,8 +171,20 @@ ComputeDynamicFrictionalForceLMMechanicalContact::timestepSetup()
+ 
+   _dof_to_old_real_tangential_velocity.clear();
+ 
+-  for (auto & map_pr : _dof_to_real_tangential_velocity)
+-    _dof_to_old_real_tangential_velocity.emplace(map_pr);
++  // The nodal slip rate is the weighted tangential velocity divided by the integral of the same
++  // test function, which is the nodal coefficient of the mortar projection of the relative
++  // tangential velocity (Wohlmuth 2011, eq. 3.10a)
++  for (const auto & [dof, weighted_velocities] : _dof_to_weighted_tangential_velocity)
++  {
++    // Only the owning process holds the fully summed values
++    if (dof->processor_id() != this->processor_id())
++      continue;
++
++    const Real normalization = libmesh_map_find(_dof_to_weighted_gap, dof).second;
++    _dof_to_old_real_tangential_velocity[dof] = {
++        {MetaPhysicL::raw_value(weighted_velocities[0]) / normalization,
++         _3d ? MetaPhysicL::raw_value(weighted_velocities[1]) / normalization : 0.0}};
++  }
+ }
+ 
+ void
+@@ -192,10 +195,6 @@ ComputeDynamicFrictionalForceLMMechanicalContact::post()
+   Moose::Mortar::Contact::communicateVelocities(
+       _dof_to_weighted_tangential_velocity, _mesh, _nodal, _communicator, false);
+ 
+-  if (_has_friction_function)
+-    Moose::Mortar::Contact::communicateVelocities(
+-        _dof_to_real_tangential_velocity, _mesh, _nodal, _communicator, false);
+-
+   // Enforce frictional complementarity constraints
+   for (const auto & pr : _dof_to_weighted_tangential_velocity)
+   {
+@@ -231,10 +230,6 @@ ComputeDynamicFrictionalForceLMMechanicalContact::incorrectEdgeDroppingPost(
+   Moose::Mortar::Contact::communicateVelocities(
+       _dof_to_weighted_tangential_velocity, _mesh, _nodal, _communicator, false);
+ 
+-  if (_has_friction_function)
+-    Moose::Mortar::Contact::communicateVelocities(
+-        _dof_to_real_tangential_velocity, _mesh, _nodal, _communicator, false);
+-
+   // Enforce frictional complementarity constraints
+   for (const auto & pr : _dof_to_weighted_tangential_velocity)
+   {
+@@ -290,9 +285,8 @@ ComputeDynamicFrictionalForceLMMechanicalContact::enforceConstraintOnDof3d(
+   const Real contact_pressure_old = _sys.solutionOld()(normal_dof_index);
+ 
+   // Compute the friction coefficient (constant or function)
+-  ADReal mu_ad = computeFrictionValue(contact_pressure_old,
+-                                      _dof_to_old_real_tangential_velocity[dof][0],
+-                                      _dof_to_old_real_tangential_velocity[dof][1]);
++  const auto old_slip_rate = oldNodalSlipRate(dof);
++  ADReal mu_ad = computeFrictionValue(contact_pressure_old, old_slip_rate[0], old_slip_rate[1]);
+ 
+   const std::array<ADReal, 2> tangential_velocity{{*tangential_vel[0], *tangential_vel[1]}};
+ 
+@@ -342,8 +336,7 @@ ComputeDynamicFrictionalForceLMMechanicalContact::enforceConstraintOnDof(
+   const Real c_t = _normalize_c ? _c_t / *_normalization_ptr : _c_t;
+ 
+   // Compute the friction coefficient (constant or function)
+-  ADReal mu_ad =
+-      computeFrictionValue(contact_pressure_old, _dof_to_old_real_tangential_velocity[dof][0], 0.0);
++  ADReal mu_ad = computeFrictionValue(contact_pressure_old, oldNodalSlipRate(dof)[0], 0.0);
+ 
+   const std::array<ADReal, 1> tangential_pressure{{friction_lm_value}};
+   const std::array<ADReal, 1> tangential_velocity{{tangential_vel}};
+@@ -386,3 +379,17 @@ ComputeDynamicFrictionalForceLMMechanicalContact::computeFrictionValue(
+ 
+   return mu_ad;
+ }
++
++std::array<Real, 2>
++ComputeDynamicFrictionalForceLMMechanicalContact::oldNodalSlipRate(
++    const DofObject * const dof) const
++{
++  mooseAssert(dof->processor_id() == this->processor_id(),
++              "Slip rate history is only stored for locally owned dofs");
++
++  // A dof has no history on the first step or when it just entered the mortar interface; it has
++  // not slipped yet
++  const auto it = _dof_to_old_real_tangential_velocity.find(dof);
++  return it != _dof_to_old_real_tangential_velocity.end() ? it->second
++                                                          : std::array<Real, 2>{{0.0, 0.0}};
++}
+diff --git a/modules/contact/src/constraints/ComputeDynamicWeightedGapLMMechanicalContact.C b/modules/contact/src/constraints/ComputeDynamicWeightedGapLMMechanicalContact.C
+index 8a19b3379384..58726910273b 100644
+--- a/modules/contact/src/constraints/ComputeDynamicWeightedGapLMMechanicalContact.C
++++ b/modules/contact/src/constraints/ComputeDynamicWeightedGapLMMechanicalContact.C
+@@ -217,8 +217,8 @@ ComputeDynamicWeightedGapLMMechanicalContact::computeQpIProperties()
+ 
+   _dof_to_nodal_wear_depth[dof] += _test[_i][_qp] * _wear_depth[_qp] * _JxW_msm[_qp] * _coord[_qp];
+ 
+-  if (_normalize_c)
+-    _dof_to_weighted_gap[dof].second += _test[_i][_qp] * _qp_factor;
++  // Always accumulated: also used to compute nodal slip rates for friction
++  _dof_to_weighted_gap[dof].second += _test[_i][_qp] * _qp_factor;
+ }
+ 
+ void
+@@ -266,7 +266,7 @@ void
+ ComputeDynamicWeightedGapLMMechanicalContact::post()
+ {
+   Moose::Mortar::Contact::communicateGaps(
+-      _dof_to_weighted_gap, _mesh, _nodal, _normalize_c, _communicator, false);
++      _dof_to_weighted_gap, _mesh, _nodal, /*normalize_c*/ true, _communicator, false);
+ 
+   if (_has_wear)
+     communicateWear();
+@@ -310,7 +310,7 @@ ComputeDynamicWeightedGapLMMechanicalContact::incorrectEdgeDroppingPost(
+     const std::unordered_set<const Node *> & inactive_lm_nodes)
+ {
+   Moose::Mortar::Contact::communicateGaps(
+-      _dof_to_weighted_gap, _mesh, _nodal, _normalize_c, _communicator, false);
++      _dof_to_weighted_gap, _mesh, _nodal, /*normalize_c*/ true, _communicator, false);
+ 
+   if (_has_wear)
+     communicateWear();
+diff --git a/modules/contact/test/tests/mortar_dynamics/gold/frictional-mortar-3d-dynamics-light-function_out.e b/modules/contact/test/tests/mortar_dynamics/gold/frictional-mortar-3d-dynamics-light-function_out.e
+index 8c6d602ba682..5425e7a162e2 100644
+Binary files a/modules/contact/test/tests/mortar_dynamics/gold/frictional-mortar-3d-dynamics-light-function_out.e and b/modules/contact/test/tests/mortar_dynamics/gold/frictional-mortar-3d-dynamics-light-function_out.e differ

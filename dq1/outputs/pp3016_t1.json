@@ -1,0 +1,958 @@
+{
+ "pr": "e2nIEE/pandapower#3016",
+ "track": 1,
+ "n": 10000,
+ "seed": 20261098,
+ "n_branches": 4,
+ "branches": {
+  "A_Dyn": {
+   "n": 2504,
+   "n_must": 4,
+   "rejects": 0,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 35056,
+   "reject_checks": {},
+   "fail_examples": [],
+   "seconds": 303.936
+  },
+  "A_YNd": {
+   "n": 2504,
+   "n_must": 4,
+   "rejects": 28,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 45072,
+   "reject_checks": {
+    "B.monotone_RN[max]": 28,
+    "B.monotone_RN[min]": 28
+   },
+   "fail_examples": [],
+   "seconds": 339.42
+  },
+  "C_zigzag": {
+   "n": 2500,
+   "n_must": 0,
+   "rejects": 2,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 45000,
+   "reject_checks": {
+    "C.ZNyn_vs_ZNd_hv_bitwise[max,f]": 1,
+    "C.ZNyn_vs_ZNd_hv_bitwise[min,f]": 2
+   },
+   "fail_examples": [],
+   "seconds": 363.033
+  },
+  "ADD_pf3ph_Dyn": {
+   "n": 2500,
+   "n_must": 0,
+   "rejects": 2500,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 2500,
+   "reject_checks": {
+    "ADD.pf3ph_V0_Dyn+ZN_vs_external_ZN": 2500
+   },
+   "fail_examples": [],
+   "seconds": 468.433
+  }
+ },
+ "total_points": 10008,
+ "total_rejects": 2530,
+ "total_fails": 0,
+ "total_nonreproducible": 0,
+ "first_rejects": [
+  {
+   "branch": "A_YNd",
+   "idx": 164,
+   "must": false,
+   "params": {
+    "hv": 114.95601409247085,
+    "mv": 17.734219439572172,
+    "RN": 1.2464356933803433,
+    "XN": 92.9428146418053,
+    "inv": false,
+    "sn": 91.10260374909065,
+    "vk": 5.13990341820045,
+    "vkr": 1.4697831375402,
+    "si0": 0.8858211857866546
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      25.19593172434087,
+      25.19597364821195,
+      25.196008475851112
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      25.188356489148852,
+      25.188394850008493,
+      25.18842673988935
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 178,
+   "must": false,
+   "params": {
+    "hv": 128.3664398036353,
+    "mv": 14.030394350179488,
+    "RN": 8.214451358719788,
+    "XN": 97.28593336559233,
+    "inv": false,
+    "sn": 37.44566836527714,
+    "vk": 8.086507763534941,
+    "vkr": 0.48757829367329086,
+    "si0": 0.5343445370861177
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.570442548396603,
+      22.570589057880213,
+      22.57050681425527
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.56300375181139,
+      22.56313729954004,
+      22.563062660215305
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 245,
+   "must": false,
+   "params": {
+    "hv": 120.00381675242478,
+    "mv": 21.49842725146976,
+    "RN": 0.9257953831832699,
+    "XN": 33.82814599734356,
+    "inv": true,
+    "sn": 9.379115128968088,
+    "vk": 4.619323102852723,
+    "vkr": 0.34497230175613974,
+    "si0": 0.9176602070951582
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      24.199838094180095,
+      24.19986969662414,
+      24.199883276997195
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      24.18775866227269,
+      24.187788596928606,
+      24.187801748440048
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 343,
+   "must": false,
+   "params": {
+    "hv": 120.81488581516605,
+    "mv": 32.56596570003051,
+    "RN": 0.789627479048316,
+    "XN": 46.949773769115474,
+    "inv": true,
+    "sn": 81.91858371356116,
+    "vk": 12.705875711472409,
+    "vkr": 1.497750404230181,
+    "si0": 0.6206637734457863
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      24.04863072746992,
+      24.048695269191153,
+      24.0487438555301
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      24.034195080950525,
+      24.034252907160113,
+      24.034296341805497
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 348,
+   "must": false,
+   "params": {
+    "hv": 125.39751902331538,
+    "mv": 30.41636736644452,
+    "RN": 2.53319750473624,
+    "XN": 59.559810982228676,
+    "inv": false,
+    "sn": 98.79676742721337,
+    "vk": 5.148163600022434,
+    "vkr": 1.400706330511456,
+    "si0": 0.8567065092763774
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      23.160740247404814,
+      23.16088904468239,
+      23.160924831760177
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      23.14823535880031,
+      23.148372463457022,
+      23.14840626863442
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 377,
+   "must": false,
+   "params": {
+    "hv": 123.19445361521964,
+    "mv": 32.87124195372728,
+    "RN": 0.30582777058429933,
+    "XN": 97.44776385168045,
+    "inv": false,
+    "sn": 31.201559391461544,
+    "vk": 13.426201964245857,
+    "vkr": 1.2091563503716773,
+    "si0": 0.6035936564697442
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      23.50517154993287,
+      23.505177634923037,
+      23.505183480372274
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      23.49821166920501,
+      23.49821707932368,
+      23.49822227511088
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 573,
+   "must": false,
+   "params": {
+    "hv": 129.6187506029103,
+    "mv": 23.921189250863115,
+    "RN": 17.51064985327899,
+    "XN": 90.09839762864011,
+    "inv": true,
+    "sn": 55.672365181796145,
+    "vk": 9.98312658329553,
+    "vkr": 0.3043542308268426,
+    "si0": 0.908786510496452
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.36140638944629,
+      22.361447550577708,
+      22.360168735302178
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.35314160212436,
+      22.353179990276665,
+      22.352020455386004
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 605,
+   "must": false,
+   "params": {
+    "hv": 113.40557500330836,
+    "mv": 13.221358149501397,
+    "RN": 8.079816383936954,
+    "XN": 81.06115570705722,
+    "inv": true,
+    "sn": 17.545180305759366,
+    "vk": 13.649217971854227,
+    "vkr": 0.45054593013583033,
+    "si0": 0.5667825230104667
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      25.525092958377023,
+      25.525203118663015,
+      25.52513754731513
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      25.518134840481405,
+      25.518233081627788,
+      25.518175990365812
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 778,
+   "must": false,
+   "params": {
+    "hv": 119.92345192310248,
+    "mv": 21.33096592208977,
+    "RN": 1.5455306370533162,
+    "XN": 67.79205623993619,
+    "inv": false,
+    "sn": 93.49965663069675,
+    "vk": 6.110408471013361,
+    "vkr": 1.146567551290597,
+    "si0": 0.5108683415227562
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      24.18932828563533,
+      24.189417423641885,
+      24.189479129787443
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      24.178760870860245,
+      24.178842481503192,
+      24.17889905426696
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 823,
+   "must": false,
+   "params": {
+    "hv": 128.92891840875524,
+    "mv": 18.120694255051564,
+    "RN": 3.091421212573331,
+    "XN": 68.33341798605753,
+    "inv": false,
+    "sn": 54.08458505258551,
+    "vk": 11.399844086457993,
+    "vkr": 0.9428635536045691,
+    "si0": 0.5636365573044256
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.502798206763362,
+      22.5029165227925,
+      22.502951956816062
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.492341089444505,
+      22.492447778204667,
+      22.49247960274738
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 862,
+   "must": false,
+   "params": {
+    "hv": 130.28164964650273,
+    "mv": 31.78390374979283,
+    "RN": 0.7073642666761693,
+    "XN": 34.80622958187508,
+    "inv": true,
+    "sn": 64.1582058064463,
+    "vk": 7.910478868263097,
+    "vkr": 0.3700831308412448,
+    "si0": 0.5416186522847665
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.37278372813256,
+      22.372911557550204,
+      22.373009792446105
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.353505720255328,
+      22.353622825631255,
+      22.35371290350123
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 869,
+   "must": false,
+   "params": {
+    "hv": 131.70942238717436,
+    "mv": 27.720542016423657,
+    "RN": 0.8225570640953972,
+    "XN": 39.30051314506324,
+    "inv": true,
+    "sn": 27.784534263599255,
+    "vk": 6.353683279021492,
+    "vkr": 0.9936556857324235,
+    "si0": 0.7208787491621186
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.091513235722097,
+      22.09152701363804,
+      22.091520200789798
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.076203332182015,
+      22.0762166643506,
+      22.07621109026417
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 965,
+   "must": false,
+   "params": {
+    "hv": 129.3191749157721,
+    "mv": 22.60471097855507,
+    "RN": 6.20444054178837,
+    "XN": 87.17592041709,
+    "inv": false,
+    "sn": 93.99362627094561,
+    "vk": 8.05716666355232,
+    "vkr": 0.6016204815708189,
+    "si0": 0.8928809153312811
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.420641461877683,
+      22.42082708913821,
+      22.420793741461647
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.41179279418043,
+      22.411962178726007,
+      22.411932071774864
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 976,
+   "must": false,
+   "params": {
+    "hv": 118.00611348021036,
+    "mv": 29.25388804213083,
+    "RN": 10.526839314602743,
+    "XN": 81.1479264075478,
+    "inv": false,
+    "sn": 26.799381097289253,
+    "vk": 11.811882470091586,
+    "vkr": 0.7109135145940052,
+    "si0": 0.902913317952243
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      24.544244782641496,
+      24.54434139893195,
+      24.544006526354096
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      24.53652355778032,
+      24.536610207607303,
+      24.53630944193637
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 1136,
+   "must": false,
+   "params": {
+    "hv": 119.84307017388225,
+    "mv": 23.4721078159317,
+    "RN": 7.244267313399777,
+    "XN": 83.49150223647285,
+    "inv": false,
+    "sn": 48.52157271727062,
+    "vk": 4.406563772989629,
+    "vkr": 1.0870081824243787,
+    "si0": 0.863852988867615
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      24.18297195239547,
+      24.183097895347625,
+      24.182906697930957
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      24.174454827820643,
+      24.174571529575243,
+      24.174398447072893
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 1181,
+   "must": false,
+   "params": {
+    "hv": 116.10568144873008,
+    "mv": 27.61892643149267,
+    "RN": 1.6794692239954223,
+    "XN": 88.35468124325678,
+    "inv": false,
+    "sn": 91.05750148045277,
+    "vk": 12.337279114218404,
+    "vkr": 0.9673734415714225,
+    "si0": 0.8920694126432959
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      24.949071603469807,
+      24.949132122373108,
+      24.949179178930024
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      24.94117481410561,
+      24.9412296471753,
+      24.94127227956207
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 1312,
+   "must": false,
+   "params": {
+    "hv": 115.652226461171,
+    "mv": 12.91087495292158,
+    "RN": 10.686208889849391,
+    "XN": 79.65499791994762,
+    "inv": false,
+    "sn": 23.68424048696707,
+    "vk": 8.601870820621109,
+    "vkr": 0.6640461810909154,
+    "si0": 0.756181015456759
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      25.045000954815208,
+      25.04508054723881,
+      25.04464825953803
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      25.03729816754003,
+      25.037370530797396,
+      25.036978051784427
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 1385,
+   "must": false,
+   "params": {
+    "hv": 115.00313644879282,
+    "mv": 15.647553877840593,
+    "RN": 10.360487851096444,
+    "XN": 70.42199934523826,
+    "inv": false,
+    "sn": 53.98413774369222,
+    "vk": 10.123980239509487,
+    "vkr": 0.6312624755881819,
+    "si0": 0.8585791497304412
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      25.20353319512091,
+      25.203664816930516,
+      25.202937827068514
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      25.194183703669896,
+      25.19430342115144,
+      25.19364427836615
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 1387,
+   "must": false,
+   "params": {
+    "hv": 126.2987991077327,
+    "mv": 10.922305841728441,
+    "RN": 4.929608781140127,
+    "XN": 97.64780251902351,
+    "inv": true,
+    "sn": 10.406854881068227,
+    "vk": 10.743463088091104,
+    "vkr": 0.8927333007038939,
+    "si0": 0.6875584738557072
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.914935247050018,
+      22.914957470675777,
+      22.914949109590783
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.909307022203237,
+      22.909326547577642,
+      22.90931876416902
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "A_YNd",
+   "idx": 1515,
+   "must": false,
+   "params": {
+    "hv": 127.87640376722743,
+    "mv": 24.563018763430243,
+    "RN": 1.0528480197879997,
+    "XN": 29.37760183567977,
+    "inv": true,
+    "sn": 74.73929607031468,
+    "vk": 5.826545055032883,
+    "vkr": 1.387686881695575,
+    "si0": 0.8653302774207348
+   },
+   "n_bad_checks": 2,
+   "bad_checks": [
+    {
+     "name": "B.monotone_RN[max]",
+     "ok": false,
+     "obs": [
+      22.83655485316687,
+      22.83663325514203,
+      22.83658946393886
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    },
+    {
+     "name": "B.monotone_RN[min]",
+     "ok": false,
+     "obs": [
+      22.813541605762058,
+      22.81361645287055,
+      22.81357901049344
+     ],
+     "exp": null,
+     "resid": null,
+     "tol": null
+    }
+   ],
+   "fails": []
+  }
+ ],
+ "records_sample": [],
+ "n_records": 0,
+ "versions": {
+  "pandapower": "3.4.0",
+  "numpy": "2.3.5",
+  "merge_commit": "0c6a1f0a65273af91dd1d5b854498cd89d457939",
+  "install": "env/pp3016：uv pip install pandapower@git+...@0c6a1f0a（env/setup_pca_py.sh）"
+ },
+ "info": {},
+ "elapsed_seconds": 1947.73,
+ "python": "3.12.13"
+}

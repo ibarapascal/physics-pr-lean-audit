@@ -1,0 +1,6 @@
+# Output of dq1/pp3016/zz_bitwise_probe.py (re-run of the track 1 C_zigzag branch with the full-run seed and indices)
+# columns: point index, check, absolute residual (Ohm), relative residual
+212 C.ZNyn_vs_ZNd_hv_bitwise[max,f] abs 4.440892098500626e-16 rel 2.3681659768155646e-19
+212 C.ZNyn_vs_ZNd_hv_bitwise[min,f] abs 2.220446049250313e-16 rel 1.1840829214016496e-19
+832 C.ZNyn_vs_ZNd_hv_bitwise[min,f] abs 2.220446049250313e-16 rel 9.360801217416858e-20
+DONE

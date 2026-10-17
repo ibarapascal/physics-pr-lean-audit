@@ -1,0 +1,203 @@
+{
+  "library": "lbl-srg/modelica-buildings",
+  "candidate": "#2725 → PR #2748",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/lbl-srg/modelica-buildings/issues/2725",
+  "request_note": "issue 正文原样（标题+正文）；PR #2748 正文仅 'This closes #2725.'",
+  "pre_change_sha": "309c814f501b1e7328ce086d29be1f72e5019ed1",
+  "pre_change_note": "PR #2748 squash 合并提交 06ab7072 的唯一父提交",
+  "historical_wrong_sha": "06ab70728286c40a1f95a1bf1f1a978dad7b931b",
+  "historical_wrong_note": "QWat_flow = eta*QFue_flow + UAOve.Q_flow，而 UAOve 仍连到 vol.heatPort → 热损扣两次（issue #4775, 2026-10-09 报告，维护者确认）",
+  "final_correct_sha": null,
+  "final_correct_note": "截至 2026-10-16 无合并的正确版本：#4775 开放，维护者分支 issue4775_boilerHeatLoss（30b155fe90）本身另有错误 (see historical_wrong_note of task buildings_4775)。The correct reference used by the control comparison is the fix proposed in issue #4775 (remove + UAOve.Q_flow, i.e. the equation returns to its pre-change form), which equals the pre-change library (variant ctrl_correct = pre); it has not been merged by the maintainers, so this is a weak reference",
+  "invariant": "锅炉组件稳态能量账（新旧语义共有部分）：记 QFue=燃料放热(≥0)、Qport=heatPort.Q_flow(环境→锅炉为正)、Hw=m_flow*(h_out-h_in)(工质得热)，则排烟带走的热 E = QFue + Qport - Hw 必须满足 0 ≤ E ≤ QFue；特别地 y=0（QFue=0）时 E=0，即 Hw = Qport：燃烧器关闭时工质失去的热恰等于环境收到的热，能量既不凭空产生也不被销毁。适用于 energyDynamics=SteadyState（或常输入下 t→∞）。",
+  "convention_dispute": false,
+  "convention_note": "热损是否计入效率是约定（新旧语义可不同），但『排烟热 ∈ [0, QFue]、y=0 时工质失热=环境得热』在两种约定下都必须成立，不依赖约定",
+  "regression_examples": [
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerPolynomial",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo",
+      "note": "heatPort 接 288.15 K"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerPolynomialClosedLoop",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerTable",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerTable.mo",
+      "note": "含稳态锅炉 boi2，heatPort 接 288.15 K"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Validation.BoilerTableEfficiencyCurves",
+      "path": "Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo",
+      "note": "y=0.05/0.5/1"
+    },
+    {
+      "model": "Buildings.Examples.HydronicHeating.TwoRoomsWithStorage",
+      "path": "Buildings/Examples/HydronicHeating/TwoRoomsWithStorage.mo",
+      "note": "boi.heatPort 接 TAmb"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System3",
+      "path": "Buildings/Examples/Tutorial/Boiler/System3.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System4",
+      "path": "Buildings/Examples/Tutorial/Boiler/System4.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System5",
+      "path": "Buildings/Examples/Tutorial/Boiler/System5.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System6",
+      "path": "Buildings/Examples/Tutorial/Boiler/System6.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System7",
+      "path": "Buildings/Examples/Tutorial/Boiler/System7.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System1",
+      "path": "Buildings/Examples/Tutorial/CDL/System1.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System2",
+      "path": "Buildings/Examples/Tutorial/CDL/System2.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System3",
+      "path": "Buildings/Examples/Tutorial/CDL/System3.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System4",
+      "path": "Buildings/Examples/Tutorial/CDL/System4.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System5",
+      "path": "Buildings/Examples/Tutorial/CDL/System5.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System6",
+      "path": "Buildings/Examples/Tutorial/CDL/System6.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    }
+  ],
+  "regression_pr_added_tests": [],
+  "regression_note": "PR #2748 未新增测试模型，只更新了 TwoRoomsWithStorage、Boilers.Examples.* 的参考结果（Resources/ReferenceResults/Dymola/*.txt，取改动前版本作参照）。注意：所有示例的燃烧器在大部分时间开启，y=0 工况仅偶发 (assumed, not counted)",
+  "sampling_domain": {
+    "note": "出处均为 309c814f50 的库内文件；只取库示例/数据中出现的范围，未按历史错误挑点",
+    "variables": {
+      "y": {
+        "range": [
+          0.0,
+          1.0
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo:36 y(min=0, max=1)",
+          "Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo:56,59,62 y=0.05/0.5/1"
+        ]
+      },
+      "eta": {
+        "range": [
+          0.8678,
+          0.9935
+        ],
+        "plus_point": 0.9,
+        "source": [
+          "Buildings/Fluid/Boilers/Data/Lochinvar/*/*.mo effCur 表值（全部 15 个记录，最小 0.86783 最大 0.99353）",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:30 a={0.9}"
+        ]
+      },
+      "T_water_in_K": {
+        "range": [
+          293.15,
+          344.28
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash2501.mo:5 effCur 温度轴 294.17–344.28 K",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:24 T=303.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo:56 TSetBoi=343.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:39 T_start=293.15"
+        ]
+      },
+      "T_amb_K": {
+        "range": [
+          263.15,
+          293.15
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:41 TAmb1=288.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo:124 TBou=293.15",
+          "Buildings/Examples/HydronicHeating/TwoRoomsWithStorage.mo:157 TAmb=288.15",
+          "Buildings/Examples/Tutorial/Boiler/System3.mo:50 TOut=263.15（室外温度，下界取自此处，属我方选择）"
+        ]
+      },
+      "Q_flow_nominal_W": {
+        "range": [
+          3000.0,
+          1689847.79
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:6 Q_flow_nominal=3000",
+          "Buildings/Fluid/Boilers/Data/Lochinvar/* 记录最大 1689847.79 W"
+        ]
+      },
+      "UA": {
+        "rule": "默认 UA=0.05*Q_flow_nominal/30",
+        "source": [
+          "Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo:13"
+        ]
+      },
+      "m_flow": {
+        "range_rel": [
+          0.0,
+          1.0
+        ],
+        "rule": "m_flow ∈ (0, m_flow_nominal]，m_flow_nominal=Q_flow_nominal/dT_nominal/4200, dT_nominal=20 K（或数据记录自带 m_flow_nominal）",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:7-10"
+        ]
+      },
+      "energyDynamics": {
+        "value": "SteadyState",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerTable.mo:19 boi2 稳态"
+        ]
+      },
+      "heatPort": {
+        "value": "接固定温度 T_amb",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:61 connect(TAmb1.port, boi1.heatPort)"
+        ]
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Buildings/Fluid/Boilers",
+    "Buildings/Fluid/Interfaces",
+    "Buildings/Fluid/MixingVolumes",
+    "Buildings/Fluid/Data",
+    "Buildings/Fluid/BaseClasses",
+    "Buildings/Fluid/Types.mo",
+    "Buildings/HeatTransfer/Sources",
+    "Buildings/Examples/Tutorial/Boiler",
+    "Buildings/Examples/Tutorial/CDL",
+    "Buildings/Examples/HydronicHeating"
+  ],
+  "snapshot_excluded": "Buildings/Resources（参考结果与脚本）、Buildings/package.mo 与 UsersGuide/ReleaseNotes、其余包",
+  "training_cutoff_side": "截止前（2021）",
+  "snapshot_bytes": 1003763,
+  "regression_count": 16
+}

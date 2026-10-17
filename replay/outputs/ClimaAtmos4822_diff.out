@@ -1,0 +1,32 @@
+ClimaAtmos #4822 diff; merge ba2bf1225fc48058d709853c065b1db21a412204; N = 2000, seed = 4822
+== Part 1: function-level diff (CA vs Lean formula in BigFloat), N = 2000 ==
+  points with θz < θz_min (floor branch): 758 / 2000
+ [Float64]
+  isentropic_slope_ratio   rel diff                          max = 1.066e-16
+  isentropic_cell_cap      rel diff                          max = 5.850e-16
+  isentropic_gradient_invariant rel diff (I_ref>0)           max = 1.081e-13
+  isentropic_gradient_invariant |ΔI|/(inv_q+2|rinv_θq|+r²inv_θ) max = 2.549e-16
+ [Float32]
+  isentropic_slope_ratio   rel diff                          max = 5.862e-08
+  isentropic_cell_cap      rel diff                          max = 3.239e-07
+  isentropic_gradient_invariant rel diff (I_ref>0)           max = 3.857e-05
+  isentropic_gradient_invariant |ΔI|/(inv_q+2|rinv_θq|+r²inv_θ) max = 1.108e-07
+== Part 2: theorem (a) ==
+  (a-i) gauge |ΔI|/scale, BigFloat Lean (expect ~1e-70)      max = 5.654e-77
+  (a-i) gauge |ΔI|/scale, Float64 CA                         max = 9.039e-16
+  (a-ii) below floor: I vs inv_θF′²(1−θz/θz_min)², BigFloat  max = 2.212e-72
+  (a-ii) below floor: I vs inv_θF′²(1−θz/θz_min)², Float64 CA max = 8.303e-11
+  (a-ii) max I/(F′²|∇θ|²) over floor points (= (1−θz/θz_min)², ≠ 0)  = 3.594e+01
+== Part 3: theorem (b), ∇_h q = 0, any ∇θ, any θz ==
+  (b) c_Δx=c_Δz: (H+V) vs c_g(Δz q_z)², BigFloat Lean        max = 5.551e-17
+  (b) c_Δx=c_Δz: (H+V) vs c_g(Δz q_z)², Float64 CA           max = 8.270e-16
+  (b) c_Δx=2: defect vs c_g q_z²Δz² f X²(c_Δx²−c_Δz²), BigFloat max = 2.305e-10
+  (b) c_Δx=2: defect vs formula, Float64 CA (cancellation-prone) max = 3.036e-10
+== Part 4: theorem (c), q′ = F′θ′, turbulence block off, θz ≥ θz_min ==
+  (c) |q′q′/(F′²θ′θ′) − f| / f, BigFloat Lean                max = 2.712e-77
+  (c) |q′q′/(F′²θ′θ′) − f| / f, Float64 CA                   max = 6.332e-12
+  (c) ||ρ| − √f|, BigFloat Lean                              max = 2.591e-77
+  (c) ||ρ| − √f|, Float64 CA.sgs_correlation_Tq              max = 2.298e-14
+  (c) f = q′q′/(F′²θ′θ′): min 5.014e-06  median 5.604e-01  max 1.000e+00 ; fraction f < 0.99 = 0.833
+  (c) max |ρ| (consistent SGS PDF would give 1) = 1.000000
+DONE

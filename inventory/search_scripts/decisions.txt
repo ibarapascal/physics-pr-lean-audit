@@ -1,0 +1,209 @@
+CoolProp/CoolProp|2679|no|无|HAPropsSI 输入组合分派逻辑（允许 T_dp+RH 等组合），改的是输入合法性判断，不是湿空气方程
+CoolProp/CoolProp|2697|no|无|Twb/T_db 反解的求根括区间与 BoundedSecant，数值求解器鲁棒性
+CoolProp/CoolProp|2745|yes|热力学一致|SRK/PR 立方 EOS 的 Omega 系数由取整值(0.42747/0.08664 等)改为精确值，直接改动热力学性质函数的常数
+CoolProp/CoolProp|2750|no|无|PT_flash 在临界点直接返回 rho_c 的特例分支（边界案例，flash 算法分支，未改方程）
+CoolProp/CoolProp|2851|yes|热力学一致|混合物 first_saturation_deriv 中 dT/dP_sat 不再套用纯质 Clausius-Clapeyron 式，改为混合物组分偏导表达式
+CoolProp/CoolProp|2857|no|无|HSU_D_flash 收敛后用 T_converged 重新求值 alphar，状态一致性/求解器收尾（边界案例）
+CoolProp/CoolProp|2858|yes|热力学一致|PC-SAFT gibbsmolar_residual 去掉 -ln Z 项，使 g_res=h_res-T*s_res 成立
+CoolProp/CoolProp|2859|no|无|湿球温度求解上界改为不超过 Tsat，求根括区间
+CoolProp/CoolProp|2865|no|无|REFPROP DmolarSmolar 输入改走 DSFL1 以尊重强加相态，后端调用分派（边界案例）
+CoolProp/CoolProp|2866|no|无|REFPROP DmassQ/DmolarQ 输入接到 DQFL2，接口接线
+CoolProp/CoolProp|2907|yes|热力学一致|HumidAirProp 中水的等温压缩系数 k_T 在饱和线附近改用多项式拟合（并伴随 T_db 反解修补），改动性质函数
+CoolProp/CoolProp|2924|no|无|立方 EOS 纯质 D+T 输入借 superancillary 划相区间，相态判定逻辑（边界案例）
+CoolProp/CoolProp|2962|yes|其他|IF97 R2/R3 边界(B23)分类器中常数 n5 笔误（0.1391883776670e2→0.13918839778870e2），物理常数修正
+CoolProp/CoolProp|2986|no|无|湿球输入落在水三相点缺口时拒绝并报错，输入校验
+CoolProp/CoolProp|3000|no|无|HSU_D_flash 亚三相点压缩液体借熔化线求解的新求解路径，算法鲁棒性（边界案例）
+CoolProp/CoolProp|3006|no|无|REFPROP 后端 calc_melting_line 对边界哨兵值的处理，接口层
+CoolProp/CoolProp|3009|yes|单位不变|HAProps_Aux 冰分支 vbar_ws 的 dg_dp_Ice 去掉多余的 1/1e6 因子（单位换算 m3/mol）
+CoolProp/CoolProp|3011|no|无|REFPROP QT flash 保留 SATTP 的饱和压力而非 THERMdll 重算，后端调用细节（边界案例）
+CoolProp/CoolProp|3020|no|无|HSU_P 单相 Brent 求解器的 _p 污染与超临界冷区可靠性修补，求解器
+CoolProp/CoolProp|3022|no|无|二相区 fugacity/chemical_potential 改为报错并让稳定性判别用 SatL/SatV，不改公式（边界案例）
+CoolProp/CoolProp|3026|no|无|多组分 TP flash 新增 Michelsen 稳定性判别与相分裂算法（相平衡求解算法，不改状态方程）
+CoolProp/CoolProp|3031|no|无|熔化线 PT 守卫尊重 DONT_CHECK_PROPERTY_LIMITS 配置，输入范围检查
+CoolProp/CoolProp|3033|no|无|HS flash 的熔化线热值种子，新增求解初值机制
+CoolProp/CoolProp|3036|no|无|为 D2O 新增熔化线 ancillary 数据（新增数据，未修改既有方程）
+CoolProp/CoolProp|3041|yes|热力学一致|GERG2008/指数型 departure function 构造后补调 phi.finish() 并加惰性自动 finish，缺失时残余亥姆霍兹项未初始化（边界案例）
+CoolProp/CoolProp|3081|no|无|REFPROP PQ 饱和回退中 SATP 的相标志/压力/密度取值修正，后端调用
+CoolProp/CoolProp|3140|no|无|盲混合物单相 flash 用 Gibbs 比较选稳定相并修相包络闭合判定，相态判定算法
+CoolProp/CoolProp|3154|yes|守恒|legacy PT-flash 用杠杆规则 beta=(z-x)/(y-x) 计算汽相分率（此前钉在 0.5），改动物料平衡关系（边界案例）
+CoolProp/CoolProp|3170|no|无|Michelsen PT 相分裂求解器收敛修补，求解器
+CoolProp/CoolProp|3174|no|无|近露点两相态被误判为单相液的识别修补，Rachford-Rice 二分与 flash 流程
+CoolProp/CoolProp|3176|no|无|flash 一致性鲁棒性：TOMS748 回退与 REFPROP 最大密度网格，求解器回退
+CoolProp/CoolProp|3180|no|无|D+{H,S,U} 超临界快速通道，求解路径
+CoolProp/CoolProp|3183|no|无|超临界压力下 PS/HSU flash 的错根修正（强制稳健密度求解），求解器根选择
+CoolProp/CoolProp|3187|no|无|两相密度求解溢出保护与密度回滚，求解器
+CoolProp/CoolProp|3196|no|无|混合物 PQ/QT flash 带相包络时的崩溃与不收敛修补，Newton 求解器步长控制
+CoolProp/CoolProp|3197|no|无|HAPropsSI 反解超范围输入改为报错，输入校验
+CoolProp/CoolProp|3246|no|无|构建相包络后混合物 PT flash 尊重强加相，流程判断
+CoolProp/CoolProp|3255|no|无|补充混合物理想气体亥姆霍兹三阶导数(nDelta=3)，此前直接抛错，属新增能力而非改既有输出（边界案例）
+CoolProp/CoolProp|3262|no|无|Q=0/1 时 fugacity_coefficient 返回饱和态值，此前抛错，属新增能力（边界案例）
+CoolProp/CoolProp|3263|no|无|新增汽相分率 Q/Qmass 的两相解析导数，新增功能
+CoolProp/CoolProp|3272|no|无|宽沸程混合物近纯相分裂恢复，flash 求解器回退
+CoolProp/CoolProp|3278|no|无|新增 Beckmüller-2021 氢二元混合模型数据，新增数据
+CoolProp/CoolProp|3284|no|无|混合物 PT flash 过冷液中间分支伪根判别，根选择
+CoolProp/CoolProp|3288|yes|热力学一致|PR/SRK 立方 EOS 熵：理想气体 alpha0 导数恢复 Tc/Tr 与 rhor/rhoc 链式缩放，修正熵值
+CoolProp/CoolProp|3294|no|无|不可压缩流体 T==Tbase 处极点数值处理与删除未拟合占位系数，数值/数据清理
+CoolProp/CoolProp|3297|no|无|新增不可压缩流体 Chebyshev 热力学后端及运行时注册，新功能
+CoolProp/CoolProp|3322|no|无|GERG 后端温度范围取值与删除 hs_anchor 机制，范围限制/求解辅助
+CoolProp/CoolProp|3339|yes|其他|rhosr-CS 粘度关联式 logistic 交叉函数把硬编码 x=2 改为流体文件给定的 x_crossover，修正粘度本构关联
+CoolProp/CoolProp|3353|yes|热力学一致|立方 EOS 的 Péneloux 体积平移：修复纯质路径并推广到混合物（改动 EOS 项 c_translation）
+CoolProp/CoolProp|3357|yes|热力学一致|修 XN_INDEPENDENT 下 dln_fugacity_dxj 导数表达式（MixtureDerivatives），并配合相分裂收敛
+CoolProp/CoolProp|3376|no|无|newton_raphson_twophase 改写为 lnK 形式并分流 PQ/QT，求解器重构
+CoolProp/CoolProp|3386|yes|单位不变|不可压缩流体：修 PCL 粘度 100 倍错误、补 MITSW 冰点曲线、恢复冰浆输运数据（数据系数修正；边界案例）
+CoolProp/CoolProp|3415|yes|其他|重水粘度/热导率由 2007 硬编码关联换为 IAPWS R17-20/R18-21 新关联式，改动输运本构关系
+CoolProp/CoolProp|3416|yes|热力学一致|修 HEOS -SRK 路径忽略 Mathias-Copeman alpha 函数且 R_u 默认 0（压力为 0）的错误，并检查 alpha0 共用约化温度
+CoolProp/CoolProp|3426|no|无|新增液态水 Gibbs 显式样条后端，新功能
+CoolProp/CoolProp|3447|no|无|二相态粘度/热导率改为抛错，输入有效性
+CoolProp/CoolProp|3459|no|无|PC-SAFT kij 读取改用 double 而非 atof，数据解析
+CoolProp/CoolProp|3493|no|无|DQ/HQ/QS flash 不再残留二相强加标记，状态标志
+CoolProp/CoolProp|3148|no|无|混合物 HSU_P/DHSU_T/HSU_D flash 新增，求解器新功能
+CoolProp/CoolProp|3167|no|无|立方/Michelsen flash 路径鲁棒性（避免非正密度）
+CoolProp/CoolProp|2725|yes|其他|[数据级] 更新 R-1234yf 既有 EOS 并新增混合物模型（修改既有流体 JSON，非纯新增）
+CoolProp/CoolProp|2729|no|无|新增氯气纯流体 EOS 与 superancillary（纯新增数据）
+CoolProp/CoolProp|2768|yes|其他|[数据级] 批量更新 10 个多参数 EOS，其中 1 个为修改既有流体文件、9 个为新增（边界案例）
+CoolProp/CoolProp|2780|yes|其他|[数据级] 将 R-1243zf 更新为第三代 EOS 并统一 130 个流体 JSON 的 source_eos_hash，修改既有流体方程
+CoolProp/CoolProp|2781|no|无|新增 R-1336mzz(Z) 纯流体与 NIST IR 8570 混合对，纯新增数据
+CoolProp/CoolProp|3118|no|无|新增 Tkaczuk 氦氖氩二元混合模型，纯新增数据
+CoolProp/CoolProp|3153|no|无|为 OrthoHydrogen/氘同位素补充熔化线，新增数据
+CoolProp/CoolProp|3164|yes|热力学一致|[数据级] 修正氖熔化线（Clausius-Clapeyron 约束拟合），改动既有熔化线数据
+CoolProp/CoolProp|3248|no|无|新增 R-1132a 纯流体，纯新增数据
+CoolProp/CoolProp|3334|yes|其他|[数据级] 以 DSL 数据形式替换乙烯/丙二醇/THF/氪的粘度关联式（修改既有流体 JSON）
+CoolProp/CoolProp|3352|yes|其他|[数据级] 11 个粘度关联式改为表达式数据，其中三个修正了原方程（修改既有流体 JSON）
+CoolProp/CoolProp|3402|yes|其他|[数据级] 乙烯/丙烯/环己烷热导率关联式写入既有流体文件，改变输运性质输出
+CoolProp/CoolProp|3403|yes|其他|[数据级] R245fa/Novec649/R1233zd(E) 热导率关联式写入既有流体文件
+CoolProp/CoolProp|3404|yes|其他|[数据级] 氨/正十一烷/THF 热导率关联式写入既有流体文件
+CoolProp/CoolProp|3406|yes|其他|[数据级] 氙与氮的热导率、氮的粘度关联式写入既有流体文件
+CoolProp/CoolProp|2744|no|无|为 SRK/PR 立方 EOS 新增 Chebyshev superancillary，新增加速结构
+CoolProp/CoolProp|2835|no|无|HQ/SQ/DQ flash 的分支选择与猜测 T 机制，求解流程
+CoolProp/CoolProp|2840|no|无|新增质量基汽相分率 Qmass 输入与转换，新功能（边界案例）
+CoolProp/CoolProp|2849|no|无|cppcheck 指出的赋值运算符/初始化等编码缺陷，非物理方程
+CoolProp/CoolProp|2852|no|无|饱和 ancillary 在 T 高于约化温度时返回 NaN，防护
+CoolProp/CoolProp|2990|no|无|REFPROP 新增饱和态属性与两相导数接口，新功能
+CoolProp/CoolProp|2995|no|无|D+{H,S,U} flash 的 superancillary 快路径，求解加速
+CoolProp/CoolProp|2999|no|无|H,S flash 的 superancillary 快路径，求解加速
+CoolProp/CoolProp|3333|no|无|传输性质表达式 DSL 的状态变量机制，基础设施
+CoolProp/CoolProp|3410|no|无|rhosr-CS 蒸气系数按引用绑定（避免拷贝），代码风格修正
+CoolProp/CoolProp|3185|no|无|新增输运关联式运行时表达式 DSL，基础设施
+CoolProp/CoolProp|2800|no|无|流体库线程安全惰性初始化，并发
+CoolProp/CoolProp|2831|no|无|湿空气 Water/Air 后端 thread_local，并发
+CoolProp/CoolProp|2716|no|无|湿空气 virial/alpha0 系数缓存，性能
+CoolProp/CoolProp|2681|no|无|superancillary 改存 shared_ptr，性能
+CoolProp/CoolProp|3419|no|无|汽相分率输入校验统一到一个助手函数，输入校验
+CoolProp/CoolProp|3412|no|无|set_reference_stateS 对不支持后端报错，接口行为
+CoolProp/CoolProp|3141|no|无|缓存 ECS 参考流体，性能
+CliMA/Oceananigans.jl|5437|yes|守恒|新增曲线网格上通量形式动量平流的曲率度量项（U_dot_∇u_metric 等），目的是修复能量守恒
+CliMA/Oceananigans.jl|5733|yes|守恒|隐式垂向平流改为密度加权（质量通量形式），改动隐式平流的对角项
+CliMA/Oceananigans.jl|5742|no|无|IsopycnalSkewSymmetricDiffusivity 在显式时间离散下的 closure fields 构造类型修正，代码层面
+CliMA/Oceananigans.jl|5903|no|无|隐式垂向平流补全 ZFaceField 处理与重构隐式求解器，求解器实现（边界案例）
+CliMA/Oceananigans.jl|5972|no|无|z-star 缩放更新拆为两次 kernel，实现重组
+CliMA/Oceananigans.jl|6008|no|无|AVID+RK3 的阶段 Δt 与 RK3 系数求和修正，时间步进实现
+CliMA/Oceananigans.jl|6009|no|无|分裂 RK 在阶段时间评估强迫与边界条件（时钟推进），时间步进
+CliMA/Oceananigans.jl|6013|yes|守恒|PartialCellBottom 网格面间距 Δz 在部分单元上方取错节点（k 与 k-1 偏移），改动离散几何度量（边界案例）
+CliMA/Oceananigans.jl|6024|yes|其他|CATKE 底部混合长度系数 Cᵇ 的定义修正（与相似律 von Kármán 常数关系），改动湍流闭合参数
+CliMA/Oceananigans.jl|6037|no|无|界保持限制器正则项符号 -ε₂ 修正，数值限制器（非物理项；边界案例）
+CliMA/Oceananigans.jl|6038|no|无|CATKE 顶部 TKE 通量对 4 个以上 closure 的元组展开，调度补全
+CliMA/Oceananigans.jl|6051|yes|其他|恢复 3D 闭合在垂向隐式时 w 方程的垂向粘性项（2ν），改动粘性项
+CliMA/Oceananigans.jl|6060|yes|守恒|垂向隐式求解中使 w 在底部与浸没面满足 w=0（不穿透），改动隐式系数 mask 与边界通量（边界案例）
+CliMA/Oceananigans.jl|6062|yes|守恒|FFT 隐式自由表面求解在右端项加入 η 强迫 Fη，补上自由表面方程缺失的强迫项
+CliMA/Oceananigans.jl|6083|yes|其他|自适应隐式示踪剂平流的隐式部分计入漂移速度（生物地化漂移、闭合辅助速度），改动平流速度构成（边界案例）
+CliMA/Oceananigans.jl|6142|no|无|水平重网格化权重改用被重网格化方向的长度，后处理工具
+CliMA/Oceananigans.jl|6213|yes|守恒|居中动量通量改为插值输运量（U*u 通量的离散形式），改动离散平流项（边界案例）
+CliMA/Oceananigans.jl|5370|no|无|ContinuousForcing 字段索引不一致修正，模型构造
+CliMA/Oceananigans.jl|5491|no|无|Float32 下 WENO 光滑指示子常数平移，数值稳定性
+CliMA/Oceananigans.jl|6015|no|无|ZWENO α 权重重标度防 Float32 溢出，数值稳定性
+CliMA/Oceananigans.jl|5991|no|无|隐式列求解中屏蔽浸没单元非有限值，NaN 隔离
+CliMA/Oceananigans.jl|5982|no|无|分裂显式正压子步中推进时钟，时间簿记
+CliMA/Oceananigans.jl|5954|no|无|SplitRK 每步更新 last_Δt，时钟簿记
+CliMA/Oceananigans.jl|5970|no|无|新增潮汐天文、平衡潮强迫与边界条件，新功能
+CliMA/Oceananigans.jl|5723|no|无|可变垂向网格 node 返回物理 z 而非参考坐标 r，查询接口
+CliMA/Oceananigans.jl|5408|no|无|三极网格 RightFaceFolded 折叠行位置调整，网格拓扑/halo
+CliMA/Oceananigans.jl|6157|no|无|分裂显式子步中连接 halo 的开边界填充，边界实现
+CliMA/Oceananigans.jl|5314|no|无|PerturbationAdvection 开边界新增密度与重力波速参数，新功能
+CliMA/Oceananigans.jl|5352|no|无|速度 halo 填充移入 rk3/ab2 步，流程重构
+CliMA/Oceananigans.jl|6005|no|无|拉格朗日粒子在浸没边界反弹的实现修正，粒子追踪
+CliMA/Oceananigans.jl|5950|no|无|修正粒子步进顺序，时间步进流程
+CliMA/Oceananigans.jl|6217|no|无|三极网格归约尊重 condition 参数，归约工具
+CliMA/Oceananigans.jl|6012|no|无|CG 求解器每次迭代仅应用一次线性算子，性能
+CliMA/Oceananigans.jl|5822|no|无|Float32 细网格上插值读错单元，插值索引
+CliMA/Oceananigans.jl|5887|no|无|有界网格上经度折叠窗口居中，插值
+SciML/ModelingToolkit.jl|4364|no|无|禁止带 rescale_rates_on_update 的 MassActionJump 进入 System（要求速率表达式预先缩放），输入校验（边界案例）
+SciML/ModelingToolkitStandardLibrary.jl|433|no|无|Element1D/ConvectiveElement1D 初始化参数改名为 *_guess 以解决初始化过定，初始化接口而非本构关系
+SciML/ModelingToolkitStandardLibrary.jl|413|no|无|删除 @deprecate Pipe Tube（Julia 1.12 弃用警告），接口
+idaholab/moose|33307|yes|其他|子通道(SCM)摩擦等闭合中改用 log10 并更新瞬态流态 Re 判据（含 Updated→Upgraded Cheng-Todreas 摩擦关联），改动闭合关联式
+idaholab/moose|33775|yes|守恒|修复轴对称(RZ)对偶 mortar 积分权重缺少坐标变换因子（JxW 乘 coord），改动离散积分的几何权
+idaholab/moose|34009|yes|其他|CZM 主侧变形梯度改用邻侧位移梯度（adCoupledNeighborGradient），修正内聚区运动学量
+idaholab/moose|34016|yes|其他|mortar function_friction 传入切向滑移速度而非旧数组，修正摩擦律输入
+idaholab/moose|34020|yes|其他|动态 mortar function_friction 传入节点滑移率（并要求 mu>0），修正摩擦律输入
+idaholab/moose|33781|no|无|混合 mortar 残差组装由 addJacobian 改 addResidualsAndJacobian，组装调用（边界案例）
+idaholab/moose|33703|no|无|Peaceman 井眼新增随温度变化的流体单位重选项 unit_weight_fp，新增可选功能（边界案例）
+idaholab/moose|33743|no|无|LinearFV 共轭传热加入表面辐射对象选项，新功能
+idaholab/moose|32406|no|无|新增 LinearFV 辐射边界条件，新功能
+idaholab/moose|33995|no|无|AD 多孔流 Darcy 在位移网格上 Jacobian 使用 AD 版 JxW，导数正确性
+idaholab/moose|33731|no|无|动态 mortar 接触/罚摩擦在 --restep 时状态恢复，时间步重试
+idaholab/moose|33758|no|无|ActuallyExplicitEuler 在 --recover 后重算缓存质量矩阵，重启
+idaholab/moose|33449|no|无|新增多孔流含水层 Robin 边界条件，新功能
+idaholab/moose|33572|no|无|mortar 边缘丢弃的节点式 Lagrange 乘子缩放（条件数改善），数值
+pybamm-team/PyBaMM|5451|no|无|修复滞回/MSMR OCP 在粒径分布下的 DomainError，变量别名与形状处理（边界案例）
+pybamm-team/PyBaMM|5486|yes|单位不变|EIS 阻抗尺度 z_scale 改用变换后模型的 V_scale/I_scale 计算，修正阻抗量纲缩放
+pybamm-team/PyBaMM|5755|no|无|有限体积节点到边移位在非均匀网格上改用真实节点间距做外推，离散插值权重（边界案例）
+pybamm-team/PyBaMM|5774|no|无|非结构 TPFA 权重不再对 cosθ 设下限，数值权重
+pybamm-team/PyBaMM|5775|yes|单位不变|BasicDFN2D 全电池锂量积分补上 L_y 因子以 mol 计，并修 a_j 标签（诊断量单位；边界案例）
+pybamm-team/PyBaMM|5776|yes|其他|BasicDFN2D 比表面积 a=3·eps_s/R 改用局部活性物质体积分数而非平均值
+pybamm-team/PyBaMM|5805|yes|其他|多相活性物质总比表面积改为各相比表面积之和，改动关系式
+pybamm-team/PyBaMM|5813|no|无|x_average 对随 x 变化乘积的符号拆分判据，符号运算
+pybamm-team/PyBaMM|5826|yes|守恒|集流体电位对 tab 边界条件改用单电极对电流 j·L_y·L_z 而非总电流 A_cc
+pybamm-team/PyBaMM|5835|no|无|非结构有限体积支持各向异性 K 的 div(K grad u)，新功能
+pybamm-team/PyBaMM|5839|no|无|FiniteVolume2D 少于 3 节点时的边界外推，离散实现
+pybamm-team/PyBaMM|5842|no|无|最大/最小颗粒浓度诊断变量纳入表面值，诊断量
+pybamm-team/PyBaMM|5858|no|无|有效电阻后处理 t>0 返回 NaN 的修复，后处理
+pybamm-team/PyBaMM|5865|no|无|BasicDFN2D 电压改为沿正极面边界积分平均，输出诊断定义（边界案例）
+pybamm-team/PyBaMM|5869|yes|符号约定|ECM 扩散过电位符号改为损耗符号，并在产热 Q_irr 中计入，符号约定修正
+pybamm-team/PyBaMM|5872|yes|符号约定|Marcus 动力学指数项符号与 λ、η 量纲统一（F/RT 缩放），修正符号与单位
+pybamm-team/PyBaMM|5888|yes|单位不变|Ai2020 电解质扩散系数由 cm2/s 换算为 m2/s
+pybamm-team/PyBaMM|5889|yes|其他|Chayambuka2022 NVPF 扩散系数的最大浓度改为固相最大浓度而非电解液初始浓度
+pybamm-team/PyBaMM|5893|yes|其他|四次多项式颗粒浓度分布系数 B 缺少颗粒半径 R，补上
+pybamm-team/PyBaMM|5701|no|无|电极 SOH 模型透传 model options，接口
+pybamm-team/PyBaMM|5600|no|无|RegulariseSqrtAndPower 不再改写与状态无关的底数，符号正则化
+pybamm-team/PyBaMM|5418|no|无|SOC 不变而输入改变时重建初始条件，仿真流程
+pybamm-team/PyBaMM|5507|no|无|BPX 1.1 滞回参数映射（初始滞回态），参数导入映射（边界案例）
+CliMA/ClimaAtmos.jl|4637|yes|守恒|SGS 通量使 ρ 与 ρq_tot 同步得到相同倾向以保证示踪物质量连续，并修上边界处理
+CliMA/ClimaAtmos.jl|4648|yes|守恒|EDMF 沉降通量的能量记账：沉降水种携带 e_int+Φ+Kin，使网格平均沉降能量通量等于上升流与环境之和
+CliMA/ClimaAtmos.jl|4647|yes|其他|EDMF 的 SGS 反演重构使其垂向尺度感知并稳定，改动子网格闭合（边界案例）
+CliMA/ClimaAtmos.jl|4822|yes|其他|SGS 方差的水平梯度改为沿等熵面计算（子网格方差闭合公式变更）
+CliMA/ClimaAtmos.jl|4837|yes|其他|几何 SGS 方差项加入 Richardson 数稳定性权重（子网格闭合变更）
+CliMA/ClimaAtmos.jl|4869|yes|其他|云量改为由网格平均凝结物给出单域云盖（云量闭合变更）
+CliMA/ClimaAtmos.jl|4887|yes|其他|几何 SGS 方差改为 θ_li 面上条件位移形式（子网格方差闭合变更）
+CliMA/ClimaAtmos.jl|4898|yes|其他|SGS 方差中沿面深度与湍流位移改为取最大值而非求和（子网格方差闭合变更）
+CliMA/ClimaAtmos.jl|4850|yes|其他|SGS 求积凝结物重构引入均匀分数 ξ_liq/ξ_ice（微物理子网格重构变更；边界案例）
+CliMA/ClimaAtmos.jl|4653|no|无|Exner 形式 PGF 的 Jacobian 线性化与夹卷松弛，仅预条件器/Jacobian，不改倾向方程
+Cantera/cantera|2107|yes|热力学一致|修热力学一致性：Margules 等 VPSS 相的 cv=cp-T·V·β²/κ、等温压缩系数、热膨胀系数及 HKFT 摩尔体积
+Cantera/cantera|2101|yes|热力学一致|PlasmaPhase 重写双温（气体/电子）热力学性质，改动 PlasmaPhase 的热力学函数（边界案例，含新增功能）
+Cantera/cantera|2116|no|无|多相平衡求解器修补（缺失摩尔处理、VCS 步长），求解算法
+Cantera/cantera|2122|no|无|MultiPhaseEquil 恒 TP 失败模式修补，求解算法
+Cantera/cantera|2124|no|无|VCS 恒 TP 求解器收敛性，求解算法
+Cantera/cantera|2126|no|无|MultiPhaseEquil 恒 HP/SP 与温度界限相互作用，求解算法
+Cantera/cantera|2164|no|无|ChemEquil 元素势不定时的处理，求解算法
+e2nIEE/pandapower|3016|yes|其他|零序短路计算新增中性点接地阻抗电阻 rn_ohm，Z_N=rn+jxn，3·Z_N 串入零序阻抗（含齐格扎格接地变压器），改动零序网络模型
+e2nIEE/pandapower|3060|no|无|gen 的电压上下限默认值改取母线限值，OPF 约束数据默认值（边界案例）
+e2nIEE/pandapower|3041|no|无|dev→v4 分支合并 PR，AI 署名来自被合并的个别提交，PR 本身为分支同步（归因存疑）
+e2nIEE/pandapower|3054|no|无|dev 合并到 v4 的同步 PR，AI 署名来自被合并的个别提交（归因存疑）
+e2nIEE/pandapower|3076|no|无|develop 合并到 release/v4.0.0 的同步 PR，AI 署名来自被合并的个别提交（归因存疑）
+e2nIEE/pandapower|3107|no|无|develop 合并到 release/v4.0.0 的同步 PR，AI 署名来自被合并的个别提交（归因存疑）
+pvlib/pvlib-python|2820|no|无|sun_rise_set_transit_spa 日期归一化(时区)修正，不改太阳位置方程
+pvlib/pvlib-python|2826|no|无|perez 对 dhi=0 的除零保护，数值保护
+modelica/ModelicaStandardLibrary|4818|no|无|rpm 速度换算改用 from_rpm，与原式 1425*2π/60 数值等价（边界案例，单位换算写法重构）
+CoolProp/CoolProp|3029|yes|单位不变|[数据级] 不可压缩流体 MPG2 粘度系数标度修正（此前小 10 倍）
+CoolProp/CoolProp|2771|yes|热力学一致|[数据级] 氯气 EOS 与 REFPROP 参考实现对齐（参考态 h/s 数值常数改动；边界案例）
+CoolProp/CoolProp|2784|yes|热力学一致|[数据级] R-1336mzz(Z) 改理想气体 a1/a2 后刷新 hs_anchor 的 h/s（量级由 3.2e4 变为 8.6e4，边界案例）
+CoolProp/CoolProp|3326|yes|其他|[数据级] 修正立方 EOS 流体库中与发表值不符的临界摩尔密度与摩尔质量（rhomolarc、molemass）
+CoolProp/CoolProp|3335|yes|其他|[数据级] 恢复被 #2768 误删的 R1233zd(E) 粘度模型并重新拟合常数
+CoolProp/CoolProp|3399|yes|其他|[数据级] 12 种流体的热导率关联式（Assael/Huber/Perkins）写入既有流体文件
+CoolProp/CoolProp|3428|no|无|删除无法独立核验的 ECS 粘度条目，数据删除而非改方程（边界案例）
+CoolProp/CoolProp|3337|no|无|按修正后的临界密度重拟合 superancillary，导出拟合数据
+CoolProp/CoolProp|2782|no|无|为 R-1336mzz(Z) 补 SUPERANCILLARY 块，加速数据
+CoolProp/CoolProp|3166|no|无|新增空气熔化线数据，新增数据
+CoolProp/CoolProp|3295|no|无|不可压缩流体拟合管线简化与参考数据审计，数据管线
+CoolProp/CoolProp|3296|no|无|不可压缩流体 Chebyshev 热值拟合器与生成数据，数据管线
+CoolProp/CoolProp|3390|no|无|重新生成不可压缩流体 json 语料并固定舍入契约，数据管线
+CoolProp/CoolProp|3309|no|无|新增 ATcT 标准生成焓 HFORMATION，新功能
+CliMA/Oceananigans.jl|6061|yes|其他|分布式网格重建时 Δx、Az 等度量的位置顺序错位（Δxᶠᶜᵃ/Δxᶜᶜᵃ 等次序调换），离散几何度量被错误赋值（边界案例）

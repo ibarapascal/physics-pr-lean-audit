@@ -1,0 +1,125 @@
+modelica/ModelicaStandardLibrary|author:sweep-ai 0 0 
+modelica/ModelicaStandardLibrary|author:app/sweep-ai-deprecated 0 0 
+lbl-srg/modelica-buildings|author:sweep-ai 0 0 
+lbl-srg/modelica-buildings|author:app/sweep-ai-deprecated 0 0 
+ibpsa/modelica-ibpsa|author:sweep-ai 0 0 
+ibpsa/modelica-ibpsa|author:app/sweep-ai-deprecated 0 0 
+RWTH-EBC/AixLib|author:sweep-ai 0 0 
+RWTH-EBC/AixLib|author:app/sweep-ai-deprecated 0 0 
+UdK-VPT/BuildingSystems|author:sweep-ai 0 0 
+UdK-VPT/BuildingSystems|author:app/sweep-ai-deprecated 0 0 
+casella/ThermoPower|author:sweep-ai 0 0 
+casella/ThermoPower|author:app/sweep-ai-deprecated 0 0 
+xrg-simulation/ClaRa-official|author:sweep-ai 0 0 
+xrg-simulation/ClaRa-official|author:app/sweep-ai-deprecated 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:sweep-ai 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:app/sweep-ai-deprecated 0 0 
+SciML/ModelingToolkit.jl|author:sweep-ai 0 0 
+SciML/ModelingToolkit.jl|author:app/sweep-ai-deprecated 0 0 
+ClapeyronThermo/Clapeyron.jl|author:sweep-ai 0 0 
+ClapeyronThermo/Clapeyron.jl|author:app/sweep-ai-deprecated 0 0 
+CliMA/Thermodynamics.jl|author:sweep-ai 0 0 
+CliMA/Thermodynamics.jl|author:app/sweep-ai-deprecated 0 0 
+CliMA/Oceananigans.jl|author:sweep-ai 0 0 
+CliMA/Oceananigans.jl|author:app/sweep-ai-deprecated 0 0 
+CliMA/ClimaAtmos.jl|author:sweep-ai 0 0 
+CliMA/ClimaAtmos.jl|author:app/sweep-ai-deprecated 0 0 
+lanl-ansi/PowerModels.jl|author:sweep-ai 0 0 
+lanl-ansi/PowerModels.jl|author:app/sweep-ai-deprecated 0 0 
+pybamm-team/PyBaMM|author:sweep-ai 0 0 
+pybamm-team/PyBaMM|author:app/sweep-ai-deprecated 0 0 
+e2nIEE/pandapower|author:sweep-ai 0 0 
+e2nIEE/pandapower|author:app/sweep-ai-deprecated 0 0 
+PyPSA/PyPSA|author:sweep-ai 0 0 
+PyPSA/PyPSA|author:app/sweep-ai-deprecated 0 0 
+IDAES/idaes-pse|author:sweep-ai 0 0 
+IDAES/idaes-pse|author:app/sweep-ai-deprecated 0 0 
+Cantera/cantera|author:sweep-ai 0 0 
+Cantera/cantera|author:app/sweep-ai-deprecated 0 0 
+CoolProp/CoolProp|author:sweep-ai 0 0 
+CoolProp/CoolProp|author:app/sweep-ai-deprecated 0 0 
+CalebBell/thermo|author:sweep-ai 0 0 
+CalebBell/thermo|author:app/sweep-ai-deprecated 0 0 
+CalebBell/fluids|author:sweep-ai 0 0 
+CalebBell/fluids|author:app/sweep-ai-deprecated 0 0 
+CalebBell/ht|author:sweep-ai 0 0 
+CalebBell/ht|author:app/sweep-ai-deprecated 0 0 
+CalebBell/chemicals|author:sweep-ai 0 0 
+CalebBell/chemicals|author:app/sweep-ai-deprecated 0 0 
+pvlib/pvlib-python|author:sweep-ai 0 0 
+pvlib/pvlib-python|author:app/sweep-ai-deprecated 0 0 
+wind-python/windpowerlib|author:sweep-ai 0 0 
+wind-python/windpowerlib|author:app/sweep-ai-deprecated 0 0 
+OpenMDAO/OpenMDAO|author:sweep-ai 0 0 
+OpenMDAO/OpenMDAO|author:app/sweep-ai-deprecated 0 0 
+usnistgov/fipy|author:sweep-ai 0 0 
+usnistgov/fipy|author:app/sweep-ai-deprecated 0 0 
+sfepy/sfepy|author:sweep-ai 0 0 
+sfepy/sfepy|author:app/sweep-ai-deprecated 0 0 
+devitocodes/devito|author:sweep-ai 0 0 
+devitocodes/devito|author:app/sweep-ai-deprecated 0 0 
+FEniCS/dolfinx|author:sweep-ai 0 0 
+FEniCS/dolfinx|author:app/sweep-ai-deprecated 0 0 
+firedrakeproject/firedrake|author:sweep-ai 0 0 
+firedrakeproject/firedrake|author:app/sweep-ai-deprecated 0 0 
+NatLabRockies/EnergyPlus|author:sweep-ai 0 0 
+NatLabRockies/EnergyPlus|author:app/sweep-ai-deprecated 0 0 
+SanPen/GridCal|author:sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:app/sweep-ai-deprecated None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+idaholab/moose|author:sweep-ai 0 0 
+idaholab/moose|author:app/sweep-ai-deprecated 0 0 
+OpenFOAM/OpenFOAM-dev|author:sweep-ai 0 0 
+OpenFOAM/OpenFOAM-dev|author:app/sweep-ai-deprecated 0 0 
+NatLabRockies/BLAST-Lite|author:sweep-ai 0 0 
+NatLabRockies/BLAST-Lite|author:app/sweep-ai-deprecated 0 0 
+NatLabRockies/ssc|author:sweep-ai 0 0 
+NatLabRockies/ssc|author:app/sweep-ai-deprecated 0 0 
+thermotools/thermopack|author:sweep-ai 0 0 
+thermotools/thermopack|author:app/sweep-ai-deprecated 0 0 
+NatLabRockies/BLAST-Lite|author:app/devin-ai-integration 0 0 
+NatLabRockies/BLAST-Lite|author:app/copilot-swe-agent 0 0 
+NatLabRockies/BLAST-Lite|author:app/chatgpt-codex-connector 0 0 
+NatLabRockies/BLAST-Lite|author:app/google-labs-jules 0 0 
+NatLabRockies/BLAST-Lite|author:openhands-agent 0 0 
+NatLabRockies/BLAST-Lite|author:app/claude 0 0 
+NatLabRockies/BLAST-Lite|text:"Generated with Claude Code" 0 0 
+NatLabRockies/BLAST-Lite|text:"Co-Authored-By: Claude" 0 0 
+NatLabRockies/BLAST-Lite|text:"claude.ai/code" 0 0 
+NatLabRockies/BLAST-Lite|text:"Devin run" 0 0 
+NatLabRockies/BLAST-Lite|text:"chatgpt.com/codex" 0 0 
+NatLabRockies/BLAST-Lite|text:"Codex" 0 0 
+NatLabRockies/BLAST-Lite|commit:"Co-Authored-By: Claude" 0 0 
+NatLabRockies/BLAST-Lite|commit:"copilot-swe-agent" 0 0 
+NatLabRockies/BLAST-Lite|commit:"devin-ai-integration" 0 0 
+NatLabRockies/ssc|author:app/devin-ai-integration 0 0 
+NatLabRockies/ssc|author:app/copilot-swe-agent 0 0 
+NatLabRockies/ssc|author:app/chatgpt-codex-connector 0 0 
+NatLabRockies/ssc|author:app/google-labs-jules 0 0 
+NatLabRockies/ssc|author:openhands-agent 0 0 
+NatLabRockies/ssc|author:app/claude 0 0 
+NatLabRockies/ssc|text:"Generated with Claude Code" 0 0 
+NatLabRockies/ssc|text:"Co-Authored-By: Claude" 0 0 
+NatLabRockies/ssc|text:"claude.ai/code" 0 0 
+NatLabRockies/ssc|text:"Devin run" 0 0 
+NatLabRockies/ssc|text:"chatgpt.com/codex" 0 0 
+NatLabRockies/ssc|text:"Codex" 0 0 
+NatLabRockies/ssc|commit:"Co-Authored-By: Claude" 0 0 
+NatLabRockies/ssc|commit:"copilot-swe-agent" 0 0 
+NatLabRockies/ssc|commit:"devin-ai-integration" 0 0 
+thermotools/thermopack|author:app/devin-ai-integration 0 0 
+thermotools/thermopack|author:app/copilot-swe-agent 0 0 
+thermotools/thermopack|author:app/chatgpt-codex-connector 0 0 
+thermotools/thermopack|author:app/google-labs-jules 0 0 
+thermotools/thermopack|author:openhands-agent 0 0 
+thermotools/thermopack|author:app/claude 0 0 
+thermotools/thermopack|text:"Generated with Claude Code" 0 0 
+thermotools/thermopack|text:"Co-Authored-By: Claude" 0 0 
+thermotools/thermopack|text:"claude.ai/code" 0 0 
+thermotools/thermopack|text:"Devin run" 0 0 
+thermotools/thermopack|text:"chatgpt.com/codex" 0 0 
+thermotools/thermopack|text:"Codex" 0 0 
+thermotools/thermopack|commit:"Co-Authored-By: Claude" 0 0 
+thermotools/thermopack|commit:"copilot-swe-agent" 0 0 
+thermotools/thermopack|commit:"devin-ai-integration" 0 0 

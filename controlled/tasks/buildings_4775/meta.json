@@ -1,0 +1,218 @@
+{
+  "library": "lbl-srg/modelica-buildings",
+  "candidate": "#4775 维护者分支 issue4775_boilerHeatLoss",
+  "reconstructed_request": true,
+  "request_source_url": "https://github.com/lbl-srg/modelica-buildings/issues/4775",
+  "request_note": "重建的请求：issue #4775 正文是外部报告，含期望行为（燃烧器关闭时 QToWat=-QLosAmb）即不变量本身，不能原样给。按维护者在分支里要实现的语义重写：来源＝提交信息 08116db8 'Corrected heat loss calculation'、30b155fe 'Added prescribed temperature for boiler heat loss'；分支 PartialBoiler.mo 的注释（eta 为有用热/燃料、燃料须额外覆盖经保温层到环境的热损）与新增变量 QFue/QUse/QAmb/QExh；修订说明（heatPort 必须连接，否则翻译报错）；维护者 2026-10-11 评论的 Todo（清理代码与文档、检查蒸汽锅炉）。刻意省略分支里 QAmb/QExh 的 '(negative)' 符号注释，因为它等于直接写出不变量。strictly, inclusion condition 1 (an original request text exists) is only met at the boundary; the task is therefore reported as a supplementary task",
+  "pre_change_sha": "b83b2278b31f61dac4ae8e55b7e9b48cd2b3e049",
+  "pre_change_note": "分支与 master 的 merge-base（GitHub compare），含 #2748 引入的热损重复扣除",
+  "historical_wrong_sha": "30b155fe90782e5087861a7efd2a8739713f6a07",
+  "historical_wrong_note": "分支末端（08116db8 起）：QWat_flow=QUse_flow-QAmb_flow, QExh_flow=-QFue_flow+QWat_flow，UAOve 仍连 vol.heatPort → y=0 时 QExh_flow=+L>0（烟气在无燃烧时供热）；未合并、未发布；由方程推出 (derived from the equations)",
+  "final_correct_sha": null,
+  "final_correct_note": "无。No final correct version exists for this task; the only available reference is the fix proposed in issue #4775 (different from the new semantics), so the control comparison uses only the wrong-version control (judge/controls/buildings_4775_wrong.diff)",
+  "invariant": "锅炉组件稳态能量账（新旧语义共有部分）：记 QFue=燃料放热(≥0)、Qport=heatPort.Q_flow(环境→锅炉为正)、Hw=m_flow*(h_out-h_in)(工质得热)，则排烟带走的热 E = QFue + Qport - Hw 必须满足 0 ≤ E ≤ QFue；特别地 y=0（QFue=0）时 E=0，即 Hw = Qport：燃烧器关闭时工质失去的热恰等于环境收到的热，能量既不凭空产生也不被销毁。适用于 energyDynamics=SteadyState（或常输入下 t→∞）。",
+  "convention_dispute": false,
+  "convention_note": "效率口径（有用热 vs 传给水的热）是约定；不变量只取两种口径都必须满足的排烟热 ∈ [0,QFue] 与 y=0 时无能量产生/销毁",
+  "regression_examples": [
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerPolynomial",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo",
+      "note": "heatPort 接 288.15 K"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerPolynomialClosedLoop",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerTable",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerTable.mo",
+      "note": "含稳态锅炉 boi2，heatPort 接 288.15 K"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Validation.BoilerTableEfficiencyCurves",
+      "path": "Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo",
+      "note": "y=0.05/0.5/1"
+    },
+    {
+      "model": "Buildings.Examples.HydronicHeating.TwoRoomsWithStorage",
+      "path": "Buildings/Examples/HydronicHeating/TwoRoomsWithStorage.mo",
+      "note": "boi.heatPort 接 TAmb"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System3",
+      "path": "Buildings/Examples/Tutorial/Boiler/System3.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System4",
+      "path": "Buildings/Examples/Tutorial/Boiler/System4.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System5",
+      "path": "Buildings/Examples/Tutorial/Boiler/System5.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System6",
+      "path": "Buildings/Examples/Tutorial/Boiler/System6.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System7",
+      "path": "Buildings/Examples/Tutorial/Boiler/System7.mo",
+      "note": "boiler heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System1",
+      "path": "Buildings/Examples/Tutorial/CDL/System1.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System2",
+      "path": "Buildings/Examples/Tutorial/CDL/System2.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System3",
+      "path": "Buildings/Examples/Tutorial/CDL/System3.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System4",
+      "path": "Buildings/Examples/Tutorial/CDL/System4.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System5",
+      "path": "Buildings/Examples/Tutorial/CDL/System5.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System6",
+      "path": "Buildings/Examples/Tutorial/CDL/System6.mo",
+      "note": "经 BaseClasses.PartialOpenLoop 使用锅炉，heatPort 未连接"
+    },
+    {
+      "model": "Buildings.DHC.Plants.Steam.BaseClasses.Examples.BoilerPolynomial",
+      "path": "Buildings/DHC/Plants/Steam/BaseClasses/Examples/BoilerPolynomial.mo",
+      "note": "蒸汽锅炉为独立实现（不继承 PartialBoiler），请求要求检查"
+    },
+    {
+      "model": "Buildings.DHC.Plants.Steam.Examples.SingleBoiler",
+      "path": "Buildings/DHC/Plants/Steam/Examples/SingleBoiler.mo"
+    },
+    {
+      "model": "Buildings.DHC.Examples.Steam.SingleBoiler",
+      "path": "Buildings/DHC/Examples/Steam/SingleBoiler.mo",
+      "note": "不在快照内"
+    }
+  ],
+  "regression_pr_added_tests": [],
+  "regression_note": "分支未新增测试模型，只修改了 Tutorial.Boiler.System3–7、CDL.BaseClasses.PartialOpenLoop、Boilers.Examples.BoilerPolynomial(ClosedLoop) 以连接 heatPort；(i) 应以改动前示例为准，agent 若按请求连接 heatPort，示例本身会变，需按『改动意在改变的变量只要求能跑』处理",
+  "sampling_domain": {
+    "note": "出处均为 b83b2278b3 的库内文件；只取库示例/数据中出现的范围，未按历史错误挑点",
+    "variables": {
+      "y": {
+        "range": [
+          0.0,
+          1.0
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo:36 y(min=0, max=1)",
+          "Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo:53,56,59 y=0.05/0.5/1"
+        ]
+      },
+      "eta": {
+        "range": [
+          0.8678,
+          0.9935
+        ],
+        "plus_point": 0.9,
+        "source": [
+          "Buildings/Fluid/Boilers/Data/Lochinvar/*/*.mo effCur 表值（全部 15 个记录，最小 0.86783 最大 0.99353）",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:30 a={0.9}"
+        ]
+      },
+      "T_water_in_K": {
+        "range": [
+          293.15,
+          344.28
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash2501.mo:5 effCur 温度轴 294.17–344.28 K",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:24 T=303.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo:58 TSetBoi=343.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:39 T_start=293.15"
+        ]
+      },
+      "T_amb_K": {
+        "range": [
+          263.15,
+          293.15
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:41 TAmb1=288.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo:126 TBou=293.15",
+          "Buildings/Examples/HydronicHeating/TwoRoomsWithStorage.mo:159 TAmb=288.15",
+          "Buildings/Examples/Tutorial/Boiler/System3.mo:49 TOut=263.15（室外温度，下界取自此处，属我方选择）"
+        ]
+      },
+      "Q_flow_nominal_W": {
+        "range": [
+          3000.0,
+          1689847.79
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:6 Q_flow_nominal=3000",
+          "Buildings/Fluid/Boilers/Data/Lochinvar/* 记录最大 1689847.79 W"
+        ]
+      },
+      "UA": {
+        "rule": "默认 UA=0.05*Q_flow_nominal/30",
+        "source": [
+          "Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo:13"
+        ]
+      },
+      "m_flow": {
+        "range_rel": [
+          0.0,
+          1.0
+        ],
+        "rule": "m_flow ∈ (0, m_flow_nominal]，m_flow_nominal=Q_flow_nominal/dT_nominal/4200, dT_nominal=20 K（或数据记录自带 m_flow_nominal）",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:7-10"
+        ]
+      },
+      "energyDynamics": {
+        "value": "SteadyState",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerTable.mo:19 boi2 稳态"
+        ]
+      },
+      "heatPort": {
+        "value": "接固定温度 T_amb",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:60 connect(TAmb1.port, boi1.heatPort)"
+        ]
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Buildings/Fluid/Boilers",
+    "Buildings/Fluid/Interfaces",
+    "Buildings/Fluid/MixingVolumes",
+    "Buildings/Fluid/Data",
+    "Buildings/Fluid/BaseClasses",
+    "Buildings/Fluid/Types.mo",
+    "Buildings/HeatTransfer/Sources",
+    "Buildings/Examples/Tutorial/Boiler",
+    "Buildings/Examples/Tutorial/CDL",
+    "Buildings/Examples/HydronicHeating",
+    "Buildings/DHC/Plants/Steam"
+  ],
+  "snapshot_excluded": "Buildings/Resources、UsersGuide/ReleaseNotes、DHC/Examples",
+  "training_cutoff_side": "截止后（2026-10）",
+  "snapshot_bytes": 1150915,
+  "regression_count": 19
+}

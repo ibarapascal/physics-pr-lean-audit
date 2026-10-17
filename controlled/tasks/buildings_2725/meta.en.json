@@ -1,0 +1,203 @@
+{
+  "library": "lbl-srg/modelica-buildings",
+  "candidate": "#2725 → PR #2748",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/lbl-srg/modelica-buildings/issues/2725",
+  "request_note": "Issue text verbatim (title+body); the body of PR #2748 is only 'This closes #2725.'",
+  "pre_change_sha": "309c814f501b1e7328ce086d29be1f72e5019ed1",
+  "pre_change_note": "The sole parent commit of PR #2748's squash merge commit 06ab7072",
+  "historical_wrong_sha": "06ab70728286c40a1f95a1bf1f1a978dad7b931b",
+  "historical_wrong_note": "QWat_flow = eta*QFue_flow + UAOve.Q_flow, while UAOve remains connected to vol.heatPort → heat loss is deducted twice (issue #4775, reported on 2026-10-09, confirmed by the maintainer)",
+  "final_correct_sha": null,
+  "final_correct_note": "As of 2026-10-16, no correct version has been merged: #4775 is open, and the maintainer's branch issue4775_boilerHeatLoss (30b155fe90) itself has another error (see historical_wrong_note of task buildings_4775). The correct reference used by the control comparison is the fix proposed in issue #4775 (remove + UAOve.Q_flow, i.e. the equation returns to its pre-change form), which equals the pre-change library (variant ctrl_correct = pre); it has not been merged by the maintainers, so this is a weak reference",
+  "invariant": "Steady-state energy balance of the boiler component (the part shared by the old and new semantics): let QFue=heat released by the fuel (≥0), Qport=heatPort.Q_flow (positive for environment→boiler), and Hw=m_flow*(h_out-h_in) (heat gained by the working fluid); then the heat carried away by the flue gas E = QFue + Qport - Hw must satisfy 0 ≤ E ≤ QFue; in particular, when y=0 (QFue=0), E=0, i.e. Hw = Qport: when the burner is off, the heat lost by the working fluid exactly equals the heat received by the environment, and energy is neither created from nothing nor destroyed. Applies to energyDynamics=SteadyState (or t→∞ under constant inputs).",
+  "convention_dispute": false,
+  "convention_note": "Whether heat loss is included in efficiency is a convention (the old and new semantics may differ), but 'flue-gas heat ∈ [0, QFue], and when y=0, heat lost by the working fluid=heat gained by the environment' must hold under both conventions and does not depend on the convention",
+  "regression_examples": [
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerPolynomial",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo",
+      "note": "heatPort connected to 288.15 K"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerPolynomialClosedLoop",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Examples.BoilerTable",
+      "path": "Buildings/Fluid/Boilers/Examples/BoilerTable.mo",
+      "note": "Includes steady-state boiler boi2, with heatPort connected to 288.15 K"
+    },
+    {
+      "model": "Buildings.Fluid.Boilers.Validation.BoilerTableEfficiencyCurves",
+      "path": "Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo",
+      "note": "y=0.05/0.5/1"
+    },
+    {
+      "model": "Buildings.Examples.HydronicHeating.TwoRoomsWithStorage",
+      "path": "Buildings/Examples/HydronicHeating/TwoRoomsWithStorage.mo",
+      "note": "boi.heatPort connected to TAmb"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System3",
+      "path": "Buildings/Examples/Tutorial/Boiler/System3.mo",
+      "note": "boiler heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System4",
+      "path": "Buildings/Examples/Tutorial/Boiler/System4.mo",
+      "note": "boiler heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System5",
+      "path": "Buildings/Examples/Tutorial/Boiler/System5.mo",
+      "note": "boiler heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System6",
+      "path": "Buildings/Examples/Tutorial/Boiler/System6.mo",
+      "note": "boiler heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.Boiler.System7",
+      "path": "Buildings/Examples/Tutorial/Boiler/System7.mo",
+      "note": "boiler heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System1",
+      "path": "Buildings/Examples/Tutorial/CDL/System1.mo",
+      "note": "Uses a boiler through BaseClasses.PartialOpenLoop, with heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System2",
+      "path": "Buildings/Examples/Tutorial/CDL/System2.mo",
+      "note": "Uses a boiler through BaseClasses.PartialOpenLoop, with heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System3",
+      "path": "Buildings/Examples/Tutorial/CDL/System3.mo",
+      "note": "Uses a boiler through BaseClasses.PartialOpenLoop, with heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System4",
+      "path": "Buildings/Examples/Tutorial/CDL/System4.mo",
+      "note": "Uses a boiler through BaseClasses.PartialOpenLoop, with heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System5",
+      "path": "Buildings/Examples/Tutorial/CDL/System5.mo",
+      "note": "Uses a boiler through BaseClasses.PartialOpenLoop, with heatPort unconnected"
+    },
+    {
+      "model": "Buildings.Examples.Tutorial.CDL.System6",
+      "path": "Buildings/Examples/Tutorial/CDL/System6.mo",
+      "note": "Uses a boiler through BaseClasses.PartialOpenLoop, with heatPort unconnected"
+    }
+  ],
+  "regression_pr_added_tests": [],
+  "regression_note": "PR #2748 added no test models and only updated the reference results for TwoRoomsWithStorage and Boilers.Examples.* (Resources/ReferenceResults/Dymola/*.txt, using the pre-change version as the reference). Note: the burners in all examples are on most of the time, and the y=0 operating condition occurs only occasionally (assumed, not counted)",
+  "sampling_domain": {
+    "note": "All sources are files within the library at 309c814f50; only ranges appearing in the library examples/data are used, and points were not selected based on the historical error",
+    "variables": {
+      "y": {
+        "range": [
+          0.0,
+          1.0
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo:36 y(min=0, max=1)",
+          "Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo:56,59,62 y=0.05/0.5/1"
+        ]
+      },
+      "eta": {
+        "range": [
+          0.8678,
+          0.9935
+        ],
+        "plus_point": 0.9,
+        "source": [
+          "Buildings/Fluid/Boilers/Data/Lochinvar/*/*.mo effCur table values (all 15 records, minimum 0.86783 maximum 0.99353)",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:30 a={0.9}"
+        ]
+      },
+      "T_water_in_K": {
+        "range": [
+          293.15,
+          344.28
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash2501.mo:5 effCur temperature axis 294.17–344.28 K",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:24 T=303.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo:56 TSetBoi=343.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:39 T_start=293.15"
+        ]
+      },
+      "T_amb_K": {
+        "range": [
+          263.15,
+          293.15
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:41 TAmb1=288.15",
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo:124 TBou=293.15",
+          "Buildings/Examples/HydronicHeating/TwoRoomsWithStorage.mo:157 TAmb=288.15",
+          "Buildings/Examples/Tutorial/Boiler/System3.mo:50 TOut=263.15 (outdoor temperature; the lower bound is taken from here, a choice on our part)"
+        ]
+      },
+      "Q_flow_nominal_W": {
+        "range": [
+          3000.0,
+          1689847.79
+        ],
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:6 Q_flow_nominal=3000",
+          "Buildings/Fluid/Boilers/Data/Lochinvar/* maximum across records 1689847.79 W"
+        ]
+      },
+      "UA": {
+        "rule": "Default UA=0.05*Q_flow_nominal/30",
+        "source": [
+          "Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo:13"
+        ]
+      },
+      "m_flow": {
+        "range_rel": [
+          0.0,
+          1.0
+        ],
+        "rule": "m_flow ∈ (0, m_flow_nominal], m_flow_nominal=Q_flow_nominal/dT_nominal/4200, dT_nominal=20 K (or m_flow_nominal provided by the data record)",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:7-10"
+        ]
+      },
+      "energyDynamics": {
+        "value": "SteadyState",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerTable.mo:19 boi2 steady state"
+        ]
+      },
+      "heatPort": {
+        "value": "Connected to a fixed temperature T_amb",
+        "source": [
+          "Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo:61 connect(TAmb1.port, boi1.heatPort)"
+        ]
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Buildings/Fluid/Boilers",
+    "Buildings/Fluid/Interfaces",
+    "Buildings/Fluid/MixingVolumes",
+    "Buildings/Fluid/Data",
+    "Buildings/Fluid/BaseClasses",
+    "Buildings/Fluid/Types.mo",
+    "Buildings/HeatTransfer/Sources",
+    "Buildings/Examples/Tutorial/Boiler",
+    "Buildings/Examples/Tutorial/CDL",
+    "Buildings/Examples/HydronicHeating"
+  ],
+  "snapshot_excluded": "Buildings/Resources (reference results and scripts), Buildings/package.mo and UsersGuide/ReleaseNotes, remaining packages",
+  "training_cutoff_side": "Before the cutoff (2021)",
+  "snapshot_bytes": 1003763,
+  "regression_count": 16
+}

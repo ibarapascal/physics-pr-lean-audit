@@ -1,0 +1,710 @@
+diff --git a/NEWS.md b/NEWS.md
+index 62f0e6e74ad..878b276b296 100644
+--- a/NEWS.md
++++ b/NEWS.md
+@@ -4,6 +4,11 @@ ClimaAtmos.jl Release Notes
+ main
+ ----
+ 
++- [#4637](https://github.com/CliMA/ClimaAtmos.jl/pull/4637) ![][badge-🔥behavioralΔ]
++  - Fix the spurious mass flux through the model top over sloped terrain-following coordinates: `set_velocity_at_top!` now cancels the contravariant projection of the horizontal wind (`u₃ = -uₕ³/g³³`, mirroring the surface treatment), and the continuity equation uses the same zero-boundary-flux divergence (`ᶜadvdivᵥ`) as the tracers, which also makes the `ρ`-row Jacobian exact.
++  - Transport auto-discovered EDMFX SGS tracers (`q_lcl`, `q_icl`, `q_rai`, `q_sno`, `n_*`) like `mse` and `q_tot`: grid-mean vertical advection plus difference-form SGS corrections `ρᵏaᵏ(u³ᵏ-u³)(χᵏ-χ)`, which vanish for uniform fields, instead of absolute subdomain fluxes. These corrections now use the same `edmfx_sgsflux_upwinding` reconstruction as the `mse`/`q_tot` fluxes (central by default, previously first-order upwind for the tracer fluxes), and their implicit Jacobian uses the matching central, updraft-only linearization (environment contributions, which are `O(aʲ²)`, are dropped).
++  - Add the moist-air-mass counterpart of the EDMFX SGS mass flux of `q_tot` to the continuity equation, mirroring the diffusive-flux treatment. A new tracer-mass consistency test asserts the `χ ≡ 1` identity for these transport pathways.
++
+ 0.41.1
+ -------
+ 
+diff --git a/reproducibility_tests/ref_counter.jl b/reproducibility_tests/ref_counter.jl
+index df11faea5cb..4118d642596 100644
+--- a/reproducibility_tests/ref_counter.jl
++++ b/reproducibility_tests/ref_counter.jl
+@@ -1,4 +1,4 @@
+-371
++372
+ 
+ # **README**
+ #
+@@ -32,7 +32,11 @@
+ # 3) (optional) leave a link to the buildkite run that prompted this ref counter bump.
+ 
+ #=
+-370
++372
++- Fix top boundary condition so total contravariant flux vanishes at the lid;
++  add SGS mass flux of q_tot to continuity equation; transport SGS tracers in difference form.
++
++371
+ - Update Insolation.jl to v1.2.0
+ 
+ 370
+diff --git a/src/cache/precomputed_quantities.jl b/src/cache/precomputed_quantities.jl
+index 997d34715b0..1feb09b7d86 100644
+--- a/src/cache/precomputed_quantities.jl
++++ b/src/cache/precomputed_quantities.jl
+@@ -395,17 +395,30 @@ function surface_velocity(ᶠu₃, ᶠuₕ³)
+     return @. lazy(-sfc_uₕ³ / sfc_g³³) # u³ = uₕ³ + w³ = uₕ³ + w₃ * g³³
+ end
+ 
+-"""
+-    set_velocity_at_top!(Y, turbconv_model)
++function top_velocity(ᶠu₃, ᶠuₕ³)
++    top_level = Spaces.nlevels(axes(ᶠu₃)) - half
++    top_u₃ = Fields.level(ᶠu₃.components.data.:1, top_level)
++    top_uₕ³ = Fields.level(ᶠuₕ³.components.data.:1, top_level)
++    top_g³³ = g³³_field(axes(top_u₃))
++    return @. lazy(-top_uₕ³ / top_g³³) # u³ = uₕ³ + w³ = uₕ³ + w₃ * g³³
++end
+ 
+-Modifies `Y.f.u₃` so that `u₃` is 0 at the model top.
+ """
+-function set_velocity_at_top!(Y, turbconv_model)
++    set_velocity_at_top!(Y, ᶠuₕ³, turbconv_model)
++
++Modifies `Y.f.u₃` so that `ᶠu³` is 0 at the model top. As at the surface,
++since `u³ = uₕ³ + u₃ * g³³`, setting `u³` to 0 gives `u₃ = -uₕ³ / g³³`. This
++makes the total contravariant flux through the top boundary vanish even where
++terrain-following coordinate surfaces are still sloped at the model top
++(`g³ʰ ≠ 0`, so `uₕ³ ≠ 0`). If the `turbconv_model` is EDMFX, the `Y.f.sgsʲs`
++are also modified so that each `u₃ʲ` is equal to `u₃` at the model top.
++"""
++function set_velocity_at_top!(Y, ᶠuₕ³, turbconv_model)
+     top_u₃ = Fields.level(
+         Y.f.u₃.components.data.:1,
+         Spaces.nlevels(axes(Y.c)) + half,
+     )
+-    @. top_u₃ = 0
++    top_u₃ .= top_velocity(Y.f.u₃, ᶠuₕ³)
+     if turbconv_model isa PrognosticEDMFX
+         for j in 1:n_mass_flux_subdomains(turbconv_model)
+             top_u₃ʲ = Fields.level(
+@@ -498,7 +511,7 @@ NVTX.@annotate function set_implicit_precomputed_quantities!(Y, p, t)
+     # TODO: We might want to move this to constrain_state!
+     if !(p.atmos.prescribed_flow isa PrescribedFlow)
+         set_velocity_at_surface!(Y, ᶠuₕ³, turbconv_model)
+-        set_velocity_at_top!(Y, turbconv_model)
++        set_velocity_at_top!(Y, ᶠuₕ³, turbconv_model)
+     end
+ 
+     set_velocity_quantities!(ᶜu, ᶠu³, ᶜK, Y.f.u₃, Y.c.uₕ, ᶠuₕ³)
+diff --git a/src/cache/temporary_quantities.jl b/src/cache/temporary_quantities.jl
+index 3e973936011..f61d27c57c9 100644
+--- a/src/cache/temporary_quantities.jl
++++ b/src/cache/temporary_quantities.jl
+@@ -121,7 +121,6 @@ function temporary_quantities(Y, atmos)
+                 ClimaCore.Geometry.WVector{FT},
+             },
+         ),
+-        ᶜtracer_advection_matrix = similar(Y.c, BidiagonalMatrixRow{typeof(C3(FT(0))')}),
+         ᶠbidiagonal_matrix_ct3_2 = similar(Y.f, BidiagonalMatrixRow{CT3{FT}}),
+         ᶠbidiagonal_matrix_ct3xct12 = similar(
+             Y.f,
+@@ -141,7 +140,6 @@ function temporary_quantities(Y, atmos)
+             Y.c,
+             BidiagonalMatrixRow{typeof(C3(FT(0))')},
+         ),
+-        ᶜtridiagonal_matrix = similar(Y.c, TridiagonalMatrixRow{FT}),
+         ᶜdiffusion_h_matrix = similar(Y.c, TridiagonalMatrixRow{FT}),
+         ᶜdiffusion_u_matrix = similar(Y.c, TridiagonalMatrixRow{FT}),
+         ᶜtridiagonal_matrix_scalar = similar(Y.c, TridiagonalMatrixRow{FT}),
+diff --git a/src/prognostic_equations/advection.jl b/src/prognostic_equations/advection.jl
+index 7a9201b7800..b10b99a5504 100644
+--- a/src/prognostic_equations/advection.jl
++++ b/src/prognostic_equations/advection.jl
+@@ -247,18 +247,15 @@ NVTX.@annotate function explicit_vertical_advection_tendency!(Yₜ, Y, p, t)
+ 
+     ᶜρ = Y.c.ρ
+ 
+-    # Full vertical advection of passive tracers (like liq, rai, etc) ...
+-    # If sgs_mass_flux is true, the advection term is computed from the sum of SGS fluxes
+-    if !(
+-        p.atmos.turbconv_model isa PrognosticEDMFX &&
+-        p.atmos.edmfx_model.sgs_mass_flux isa Val{true}
+-    )
+-        foreach_gs_tracer(Yₜ, Y) do ᶜρχₜ, ᶜρχ, ρχ_name
+-            if !(ρχ_name in (@name(ρe_tot), @name(ρq_tot)))
+-                ᶜχ = @. lazy(specific(ᶜρχ, Y.c.ρ))
+-                vtt = vertical_transport(ᶜρ, ᶠu³, ᶜχ, dt, tracer_upwinding)
+-                @. ᶜρχₜ += vtt
+-            end
++    # Full vertical advection of passive tracers (such as liq, rai, etc) with the
++    # grid-mean flow. When EDMFX sgs_mass_flux is active, difference-form SGS
++    # corrections ρᵏaᵏ(u³ᵏ - u³)(χᵏ - χ) are added on top of this in
++    # edmfx_sgs_mass_flux_tendency!.
++    foreach_gs_tracer(Yₜ, Y) do ᶜρχₜ, ᶜρχ, ρχ_name
++        if !(ρχ_name in (@name(ρe_tot), @name(ρq_tot)))
++            ᶜχ = @. lazy(specific(ᶜρχ, Y.c.ρ))
++            vtt = vertical_transport(ᶜρ, ᶠu³, ᶜχ, dt, tracer_upwinding)
++            @. ᶜρχₜ += vtt
+         end
+     end
+     if !(p.atmos.microphysics_model isa DryModel)
+diff --git a/src/prognostic_equations/edmfx_sgs_flux.jl b/src/prognostic_equations/edmfx_sgs_flux.jl
+index 7f4eeba0204..712c3f4253b 100644
+--- a/src/prognostic_equations/edmfx_sgs_flux.jl
++++ b/src/prognostic_equations/edmfx_sgs_flux.jl
+@@ -16,6 +16,10 @@ deviation of a conserved variable `ϕ` (such as total enthalpy or specific humid
+ from its grid-mean value. These terms represent the redistribution of energy and tracers
+ by the resolved SGS circulations relative to the grid mean flow.
+ 
++The SGS flux of `q_tot` redistributes water mass, so `Yₜ.c.ρ` receives the
++same tendency as `Yₜ.c.ρq_tot` (mirroring the diffusive-flux treatment of
++moist air mass).
++
+ The specific implementation depends on the `turbconv_model` (e.g., `PrognosticEDMFX`).
+ A generic fallback doing nothing is also provided.
+ The function modifies `Yₜ.c` (grid-mean tendencies) in place.
+@@ -40,7 +44,7 @@ function edmfx_sgs_mass_flux_tendency!(
+ )
+ 
+     n = n_mass_flux_subdomains(turbconv_model)
+-    (; edmfx_sgsflux_upwinding, edmfx_tracer_upwinding) = p.atmos.numerics
++    (; edmfx_sgsflux_upwinding) = p.atmos.numerics
+     (; ᶜp, ᶠu³) = p.precomputed
+     (; ᶠu³ʲs, ᶜKʲs, ᶜρʲs) = p.precomputed
+     (; ᶠu³⁰, ᶜK⁰, ᶜT⁰, ᶜq_tot_nonneg⁰, ᶜq_liq⁰, ᶜq_ice⁰) = p.precomputed
+@@ -110,6 +114,7 @@ function edmfx_sgs_mass_flux_tendency!(
+                     edmfx_sgsflux_upwinding,
+                 )
+                 @. Yₜ.c.ρq_tot += vtt
++                @. Yₜ.c.ρ += vtt  # Effect of SGS water flux on (moist) air mass
+             end
+             # Add the environment fluxes
+             ᶜq_tot⁰ = ᶜspecific_env_value(@name(q_tot), Y, p)
+@@ -124,40 +129,52 @@ function edmfx_sgs_mass_flux_tendency!(
+                 edmfx_sgsflux_upwinding,
+             )
+             @. Yₜ.c.ρq_tot += vtt
++            @. Yₜ.c.ρ += vtt  # Effect of SGS water flux on (moist) air mass
+         end
+ 
+         # Auto-discovered SGS tracer fluxes (microphysics species and any
+-        # user-defined passive tracers)
++        # user-defined passive tracers). Like the mse and q_tot fluxes above,
++        # these are difference-form fluxes ρᵏaᵏ(u³ᵏ - u³)(χᵏ - χ), which
++        # vanish identically for uniform χ, reconstructed with the same
++        # upwinding as the mse and q_tot fluxes so that the water-species
++        # fluxes stay consistent with the q_tot flux (the implied vapor flux
++        # is their difference). The grid-mean advection -∇·(ρ u³ χ) of each
++        # tracer is applied in explicit_vertical_advection_tendency!.
+         # Draft fluxes
+         for χ_name in sgs_tracer_names(Y)
+             ρχ_name = get_ρχ_name(χ_name)
++            ᶜρχ = MatrixFields.get_field(Y.c, ρχ_name)
+             for j in 1:n
+                 ᶜχʲ = MatrixFields.get_field(Y.c.sgsʲs.:($j), χ_name)
++                @. ᶠu³_diff = ᶠu³ʲs.:($$j) - ᶠu³
+                 @. ᶜa_scalar =
+-                    ᶜχʲ *
++                    (ᶜχʲ - specific(ᶜρχ, Y.c.ρ)) *
+                     draft_area(Y.c.sgsʲs.:($$j).ρa, ᶜρʲs.:($$j))
+                 vtt = vertical_transport(
+                     ᶜρʲs.:($j),
+-                    ᶠu³ʲs.:($j),
++                    ᶠu³_diff,
+                     ᶜa_scalar,
+                     dt,
+-                    edmfx_tracer_upwinding,
++                    edmfx_sgsflux_upwinding,
+                 )
+                 ᶜρχₜ = MatrixFields.get_field(Yₜ.c, ρχ_name)
+                 @. ᶜρχₜ += vtt
+             end
+         end
+         # Environment fluxes
++        @. ᶠu³_diff = ᶠu³⁰ - ᶠu³
+         for χ_name in sgs_tracer_names(Y)
+             ρχ_name = get_ρχ_name(χ_name)
++            ᶜρχ = MatrixFields.get_field(Y.c, ρχ_name)
+             ᶜχ⁰ = ᶜspecific_env_value(χ_name, Y, p)
+-            @. ᶜa_scalar = ᶜχ⁰ * draft_area(ᶜρa⁰, ᶜρ⁰)
++            @. ᶜa_scalar =
++                (ᶜχ⁰ - specific(ᶜρχ, Y.c.ρ)) * draft_area(ᶜρa⁰, ᶜρ⁰)
+             vtt = vertical_transport(
+                 ᶜρ⁰,
+-                ᶠu³⁰,
++                ᶠu³_diff,
+                 ᶜa_scalar,
+                 dt,
+-                edmfx_tracer_upwinding,
++                edmfx_sgsflux_upwinding,
+             )
+             ᶜρχₜ = MatrixFields.get_field(Yₜ.c, ρχ_name)
+             @. ᶜρχₜ += vtt
+diff --git a/src/prognostic_equations/implicit/implicit_tendency.jl b/src/prognostic_equations/implicit/implicit_tendency.jl
+index ef844069abb..2ed0772a966 100644
+--- a/src/prognostic_equations/implicit/implicit_tendency.jl
++++ b/src/prognostic_equations/implicit/implicit_tendency.jl
+@@ -118,7 +118,13 @@ function implicit_vertical_advection_tendency!(Yₜ, Y, p, t)
+     thermo_params = CAP.thermodynamics_params(params)
+     cp_d = CAP.cp_d(params)
+ 
+-    @. Yₜ.c.ρ -= ᶜdivᵥ(ᶠinterp(Y.c.ρ * ᶜJ) / ᶠJ * ᶠu³)
++    # Mass advection with zero flux through the top and bottom
++    # boundaries (ᶜadvdivᵥ). The state filter in
++    # set_implicit_precomputed_quantities! also sets ᶠu³ to 0 at both
++    # boundaries, and the ρ row of the manual Jacobian is built from
++    # ᶜadvdivᵥ_matrix(), so using ᶜadvdivᵥ here keeps the residual, the
++    # boundary conditions, and the Jacobian consistent.
++    @. Yₜ.c.ρ -= ᶜadvdivᵥ(ᶠinterp(Y.c.ρ * ᶜJ) / ᶠJ * ᶠu³)
+ 
+     # Full vertical advection (central + upwind correction) of active tracers
+     # (ρe_tot and ρq_tot). The Wfact linearization uses only the central
+diff --git a/src/prognostic_equations/implicit/manual_sparse_jacobian.jl b/src/prognostic_equations/implicit/manual_sparse_jacobian.jl
+index b363a0504ed..2e681e29ea3 100644
+--- a/src/prognostic_equations/implicit/manual_sparse_jacobian.jl
++++ b/src/prognostic_equations/implicit/manual_sparse_jacobian.jl
+@@ -363,8 +363,6 @@ function update_jacobian!(alg::ManualSparseJacobian, cache, Y, p, dtγ, t)
+         ᶠbidiagonal_matrix_ct3,
+         ᶠbidiagonal_matrix_ct3_2,
+         ᶠsed_tracer_advection,
+-        ᶜtracer_advection_matrix,
+-        ᶜtridiagonal_matrix,
+     ) = p.scratch
+     rs = p.atmos.rayleigh_sponge
+ 
+@@ -751,14 +749,11 @@ function update_jacobian!(alg::ManualSparseJacobian, cache, Y, p, dtγ, t)
+                 bottom = Operators.SetValue(zero(UpwindMatrixRowType{CT3{FT}})),
+             ) # Need to wrap ᶠupwind_matrix in this for well-defined boundaries.
+ 
+-            # upwinding options for other tracers
++            # upwinding options for the updraft-internal advection of other
++            # tracers (the grid-mean SGS tracer fluxes are linearized centrally,
++            # like mse and q_tot).
+             is_tracer_upwinding_third_order =
+                 p.atmos.numerics.edmfx_tracer_upwinding == Val(:third_order)
+-            ᶠtracer_upwind = is_tracer_upwinding_third_order ? ᶠupwind3 : ᶠupwind1
+-            ᶠset_tracer_upwind_bcs = Operators.SetBoundaryOperator(;
+-                top = Operators.SetValue(zero(CT3{FT})),
+-                bottom = Operators.SetValue(zero(CT3{FT})),
+-            ) # Need to wrap ᶠtracer_upwind in this for well-defined boundaries.
+             TracerUpwindMatrixRowType =
+                 is_tracer_upwinding_third_order ? QuaddiagonalMatrixRow :
+                 BidiagonalMatrixRow
+@@ -769,8 +764,6 @@ function update_jacobian!(alg::ManualSparseJacobian, cache, Y, p, dtγ, t)
+                 bottom = Operators.SetValue(zero(TracerUpwindMatrixRowType{CT3{FT}})),
+             ) # Need to wrap ᶠtracer_upwind_matrix in this for well-defined boundaries.
+ 
+-            ᶠu³ʲ_data = ᶠu³ʲs.:(1).components.data.:1
+-
+             ᶜkappa_mʲ = p.scratch.ᶜtemp_scalar
+             @. ᶜkappa_mʲ =
+                 TD.gas_constant_air(
+@@ -1107,101 +1100,55 @@ function update_jacobian!(alg::ManualSparseJacobian, cache, Y, p, dtγ, t)
+                     )
+ 
+                 # grid-mean tracers
++                # The implicit SGS tracer fluxes are difference-form
++                # corrections ρᵏaᵏ(u³ᵏ - u³)(χᵏ - χ) (the grid-mean advection
++                # -∇·(ρ u³ χ) is handled explicitly). As for mse and q_tot,
++                # the derivatives are linearized with the central interpolant
++                # (exact for the default :none upwinding), and the environment
++                # contributions are neglected: (χ⁰ - χ) and (u³⁰ - u³) are each
++                # O(aʲ), so every environment Jacobian entry is O(aʲ²) while
++                # the updraft entries are O(aʲ). The updraft entries reuse
++                # ᶜtridiagonal_matrix_scalar, which is the same for every scalar
++                # transported by the updraft flux.
+                 if p.atmos.microphysics_model isa Union{
+                     NonEquilibriumMicrophysics1M,
+                     NonEquilibriumMicrophysics2M,
+                 }
+ 
+                     microphysics_tracers = (
+-                        (@name(c.ρq_lcl), @name(c.sgsʲs.:(1).q_lcl), @name(q_lcl)),
+-                        (@name(c.ρq_icl), @name(c.sgsʲs.:(1).q_icl), @name(q_icl)),
+-                        (@name(c.ρq_rai), @name(c.sgsʲs.:(1).q_rai), @name(q_rai)),
+-                        (@name(c.ρq_sno), @name(c.sgsʲs.:(1).q_sno), @name(q_sno)),
+-                        (@name(c.ρn_lcl), @name(c.sgsʲs.:(1).n_lcl), @name(n_lcl)),
+-                        (@name(c.ρn_rai), @name(c.sgsʲs.:(1).n_rai), @name(n_rai)),
++                        (@name(c.ρq_lcl), @name(c.sgsʲs.:(1).q_lcl)),
++                        (@name(c.ρq_icl), @name(c.sgsʲs.:(1).q_icl)),
++                        (@name(c.ρq_rai), @name(c.sgsʲs.:(1).q_rai)),
++                        (@name(c.ρq_sno), @name(c.sgsʲs.:(1).q_sno)),
++                        (@name(c.ρn_lcl), @name(c.sgsʲs.:(1).n_lcl)),
++                        (@name(c.ρn_rai), @name(c.sgsʲs.:(1).n_rai)),
+                     )
+ 
+-                    # add updraft contributions
+-                    # pull common subexpressions that don't depend on which
+-                    # tracer out of the tracer loop for performance
+-                    @. ᶜtracer_advection_matrix =
+-                        -(ᶜadvdivᵥ_matrix()) ⋅
+-                        DiagonalMatrixRow(ᶠinterp(ᶜρʲs.:(1) * ᶜJ) / ᶠJ)
+-                    @. ᶜtridiagonal_matrix =
+-                        ᶜtracer_advection_matrix ⋅ ᶠset_tracer_upwind_matrix_bcs(
+-                            ᶠtracer_upwind_matrix(ᶠu³ʲs.:(1)),
+-                        )
+                     MatrixFields.unrolled_foreach(
+                         microphysics_tracers,
+-                    ) do (ρχ_name, χʲ_name, χ_name)
++                    ) do (ρχ_name, χʲ_name)
+                         MatrixFields.has_field(Y, ρχ_name) || return
++                        ᶜρχ = MatrixFields.get_field(Y, ρχ_name)
++                        ᶜχʲ = MatrixFields.get_field(Y, χʲ_name)
+ 
+-                        ∂ᶜρχ_err_∂ᶜχʲ =
+-                            matrix[ρχ_name, χʲ_name]
++                        ∂ᶜρχ_err_∂ᶜχʲ = matrix[ρχ_name, χʲ_name]
+                         @. ∂ᶜρχ_err_∂ᶜχʲ =
+-                            dtγ *
+-                            ᶜtridiagonal_matrix ⋅
+-                            DiagonalMatrixRow(draft_area(Y.c.sgsʲs.:(1).ρa, ᶜρʲs.:(1)))
+-
+-                    end
+-
+-                    # add env flux contributions
+-                    (; ᶜp) = p.precomputed
+-                    (; ᶠu³⁰, ᶜT⁰, ᶜq_tot_nonneg⁰, ᶜq_liq⁰, ᶜq_ice⁰) =
+-                        p.precomputed
+-                    ᶜρ⁰ = @. lazy(
+-                        TD.air_density(
+-                            thermo_params,
+-                            ᶜT⁰,
+-                            ᶜp,
+-                            ᶜq_tot_nonneg⁰,
+-                            ᶜq_liq⁰,
+-                            ᶜq_ice⁰,
+-                        ),
+-                    )
+-                    ᶜρa⁰ = @. lazy(ρa⁰(Y.c.ρ, Y.c.sgsʲs, p.atmos.turbconv_model))
+-                    ᶠu³⁰_data = ᶠu³⁰.components.data.:1
+-
+-                    # pull common subexpressions that don't depend on which
+-                    # tracer out of the tracer loop for performance
+-                    @. ᶜtracer_advection_matrix =
+-                        -(ᶜadvdivᵥ_matrix()) ⋅
+-                        DiagonalMatrixRow(ᶠinterp(ᶜρ⁰ * ᶜJ) / ᶠJ)
+-                    @. ᶜtridiagonal_matrix =
+-                        ᶜtracer_advection_matrix ⋅ ᶠset_tracer_upwind_matrix_bcs(
+-                            ᶠtracer_upwind_matrix(ᶠu³⁰),
+-                        )
+-                    MatrixFields.unrolled_foreach(
+-                        microphysics_tracers,
+-                    ) do (ρχ_name, χʲ_name, χ_name)
+-                        MatrixFields.has_field(Y, ρχ_name) || return
+-                        ᶜχ⁰ = ᶜspecific_env_value(χ_name, Y, p)
+-
+-                        ∂ᶜρχ_err_∂ᶜχʲ =
+-                            matrix[ρχ_name, χʲ_name]
+-                        @. ∂ᶜρχ_err_∂ᶜχʲ +=
+-                            dtγ *
+-                            ᶜtridiagonal_matrix ⋅
+-                            DiagonalMatrixRow(-1 * Y.c.sgsʲs.:(1).ρa / ᶜρ⁰)
++                            -(p.scratch.ᶜtridiagonal_matrix_scalar)
+ 
+-                        ∂ᶜρχ_err_∂ᶜρχ =
+-                            matrix[ρχ_name, ρχ_name]
++                        ∂ᶜρχ_err_∂ᶜρχ = matrix[ρχ_name, ρχ_name]
+                         @. ∂ᶜρχ_err_∂ᶜρχ +=
+-                            dtγ *
+-                            ᶜtridiagonal_matrix ⋅
+-                            DiagonalMatrixRow(1 / ᶜρ⁰)
++                            p.scratch.ᶜtridiagonal_matrix_scalar ⋅
++                            DiagonalMatrixRow(1 / ᶜρ)
+ 
+-                        ∂ᶜρχ_err_∂ᶠu₃ =
+-                            matrix[ρχ_name, @name(f.u₃)]
++                        ∂ᶜρχ_err_∂ᶠu₃ = matrix[ρχ_name, @name(f.u₃)]
+                         @. ∂ᶜρχ_err_∂ᶠu₃ =
+-                            dtγ * ᶜtracer_advection_matrix ⋅
+-                            DiagonalMatrixRow(
+-                                ᶠset_tracer_upwind_bcs(
+-                                    ᶠtracer_upwind(CT3(sign(ᶠu³⁰_data)),
+-                                        ᶜχ⁰ * draft_area(ᶜρa⁰, ᶜρ⁰),
+-                                    ),
+-                                ) * adjoint(C3(sign(ᶠu³⁰_data))) *
+-                                ᶠinterp(Y.c.ρ / ᶜρa⁰) * g³³(ᶠgⁱʲ),
++                            dtγ * ᶜadvdivᵥ_matrix() ⋅ DiagonalMatrixRow(
++                                ᶠinterp(
++                                    (ᶜχʲ - specific(ᶜρχ, Y.c.ρ)) *
++                                    ᶜρʲs.:(1) *
++                                    ᶜJ *
++                                    draft_area(Y.c.sgsʲs.:(1).ρa, ᶜρʲs.:(1)),
++                                ) / ᶠJ * (g³³(ᶠgⁱʲ)),
+                             )
+                     end
+                 end
+diff --git a/src/prognostic_equations/remaining_tendency.jl b/src/prognostic_equations/remaining_tendency.jl
+index 11a9baabb54..43bed5d3dc3 100644
+--- a/src/prognostic_equations/remaining_tendency.jl
++++ b/src/prognostic_equations/remaining_tendency.jl
+@@ -164,6 +164,13 @@ NVTX.@annotate function additional_tendency!(Yₜ, Y, p, t)
+         rst_ρtke = rayleigh_sponge_tendency_tracer(Y.c.ρtke, rayleigh_sponge)
+         @. Yₜ.c.ρtke += rst_ρtke
+     end
++    # TODO: This damps ρq_lcl/ρq_icl/ρq_rai/ρq_sno toward zero with no
++    # counterpart in ρq_tot, ρ, or ρe_tot, so it implicitly converts
++    # condensate to vapor without accounting for the associated latent
++    # heat, which can generate spurious heating/cooling and supersaturation
++    # in the sponge layer. Either remove this once it's confirmed unneeded
++    # (e.g. after the top-boundary flux fixes), or make it mass- and
++    # energy-consistent by applying the same sink to ρq_tot, ρ, and ρe_tot.
+     if microphysics_model isa NonEquilibriumMicrophysics1M
+         grid_mean_micro_species = (
+             @name(c.ρq_lcl),
+diff --git a/src/utils/abbreviations.jl b/src/utils/abbreviations.jl
+index c6037a1261b..6e460fc8b83 100644
+--- a/src/utils/abbreviations.jl
++++ b/src/utils/abbreviations.jl
+@@ -30,7 +30,8 @@ const ᶜinterp = Operators.InterpolateF2C()
+ const ᶜdivᵥ = Operators.DivergenceF2C()
+ const ᶜgradᵥ = Operators.GradientF2C()
+ 
+-# Tracers do not have advective fluxes through the top and bottom cell faces.
++# Mass and tracers do not have advective fluxes through the top and bottom
++# cell faces.
+ const ᶜadvdivᵥ = Operators.DivergenceF2C(
+     bottom = Operators.SetValue(CT3(0)),
+     top = Operators.SetValue(CT3(0)),
+diff --git a/test/prognostic_equations/advection_tests.jl b/test/prognostic_equations/advection_tests.jl
+index 421adb9bdb4..8b8f112e01a 100644
+--- a/test/prognostic_equations/advection_tests.jl
++++ b/test/prognostic_equations/advection_tests.jl
+@@ -1,31 +1,59 @@
+ #=
+-Advection operator unit tests for ClimaAtmos.jl
++Advection operator tests for ClimaAtmos.jl
+ 
+-TODO: Implement tests for:
+-- Horizontal advection operators
+-- Vertical advection with upwinding schemes
+-- Advection of known analytical functions (e.g., Gaussian blob)
+-- Convergence rate verification with mesh refinement
+-- Boundary condition handling
++Impenetrable boundary condition: the state filter must ensure ᶠu³ = 0 at
++both the surface and model top. Over sloped terrain-following coordinates
++this is non-trivial because the horizontal wind projects onto the vertical
++contravariant component (ᶠuₕ³ ≠ 0).
+ 
+-See src/prognostic_equations/advection.jl for the implementation.
++See src/cache/precomputed_quantities.jl for set_velocity_at_surface! and
++set_velocity_at_top!.
+ =#
+ 
+ using Test
+-using ClimaComms
++import ClimaComms
+ ClimaComms.@import_required_backends
+ import ClimaAtmos as CA
++import ClimaCore: Fields, Spaces
+ 
+-@testset "Advection operators" begin
+-    @testset "Placeholder - horizontal advection" begin
+-        @test_skip "Horizontal advection tests not yet implemented"
+-    end
++include("../test_helpers.jl")
+ 
+-    @testset "Placeholder - vertical advection" begin
+-        @test_skip "Vertical advection tests not yet implemented"
+-    end
++@testset "Impenetrable boundary condition over topography" begin
++    # Uniform 10 m/s wind over a Schar mountain with linear mesh warping, so
++    # coordinate surfaces are sloped up to the model top and ᶠuₕ³ ≠ 0 there.
++    config = CA.AtmosConfig(
++        Dict(
++            "config" => "plane",
++            "initial_condition" => "ConstantBuoyancyFrequencyProfile",
++            "topography" => "Schar",
++            "mesh_warp_type" => "Linear",
++            "FLOAT_TYPE" => "Float64",
++            "x_max" => 100e3,
++            "x_elem" => 8,
++            "z_max" => 21e3,
++            "z_elem" => 20,
++            "dz_bottom" => 500.0,
++            "dt" => "1secs",
++            "t_end" => "10secs",
++            "output_default_diagnostics" => false,
++        );
++        job_id = "advection_boundary_test",
++    )
++    (; Y, p, simulation) = generate_test_simulation(config)
++    FT = eltype(Y)
+ 
+-    @testset "Placeholder - advection convergence" begin
+-        @test_skip "Advection convergence tests not yet implemented"
++    # The state filter must cancel the vertical contravariant projection of
++    # the horizontal wind at both boundaries, so that the total contravariant
++    # velocity ᶠu³ vanishes there even over sloped coordinate surfaces.
++    (; ᶠu³) = p.precomputed
++    ᶠuₕ³ = Base.materialize(CA.compute_ᶠuₕ³(Y.c.uₕ, Y.c.ρ))
++    top_level = Spaces.nlevels(axes(Y.c)) + CA.half
++    for level in (CA.half, top_level)
++        u³_boundary = Fields.level(ᶠu³.components.data.:1, level)
++        uₕ³_boundary = Fields.level(ᶠuₕ³.components.data.:1, level)
++        max_uₕ³ = maximum(abs, parent(uₕ³_boundary))
++        # Nonzero uₕ³ at the boundary is what makes this test non-vacuous.
++        @test max_uₕ³ > 0
++        @test maximum(abs, parent(u³_boundary)) <= 100 * eps(FT) * max_uₕ³
+     end
+ end
+diff --git a/test/prognostic_equations/tracer_mass_consistency_tests.jl b/test/prognostic_equations/tracer_mass_consistency_tests.jl
+new file mode 100644
+index 00000000000..d454f46c0df
+--- /dev/null
++++ b/test/prognostic_equations/tracer_mass_consistency_tests.jl
+@@ -0,0 +1,153 @@
++#=
++Regression tests for discrete consistency between tracer transport and the
++continuity equation (the "χ ≡ 1 test").
++
++If a specific tracer concentration χ is uniform (χ ≡ 1, i.e. ρχ = ρ), then
++every transport pathway must produce ∂(ρχ)/∂t = ∂ρ/∂t discretely, and the
++EDMFX difference-form SGS fluxes must vanish identically. These tests check
++this tracer-mass consistency relation.
++=#
++using Test
++import ClimaComms
++ClimaComms.@import_required_backends
++import ClimaAtmos as CA
++import ClimaCore: Fields
++import ClimaTimeSteppers as CTS
++
++include("../test_helpers.jl")
++
++@testset "Grid-mean transport consistency over topography" begin
++    # Uniform 10 m/s wind over a Schar mountain with linear mesh warping, so
++    # coordinate surfaces are sloped up to the model top and ᶠuₕ³ ≠ 0 there.
++    config = CA.AtmosConfig(
++        Dict(
++            "config" => "plane",
++            "initial_condition" => "ConstantBuoyancyFrequencyProfile",
++            "microphysics_model" => "1M",
++            "topography" => "Schar",
++            "mesh_warp_type" => "Linear",
++            "FLOAT_TYPE" => "Float64",
++            "x_max" => 100e3,
++            "x_elem" => 8,
++            "z_max" => 21e3,
++            "z_elem" => 20,
++            "dz_bottom" => 500.0,
++            "dt" => "1secs",
++            "t_end" => "10secs",
++            "implicit_microphysics" => false,
++            "disable_surface_flux_tendency" => true,
++            "output_default_diagnostics" => false,
++        );
++        job_id = "tracer_consistency_topo_test",
++    )
++    (; Y, p, simulation) = generate_test_simulation(config)
++    t = simulation.integrator.t
++    FT = eltype(Y)
++
++    (; ᶠu³) = p.precomputed
++
++    # With every specific concentration χ ≡ 1 (ρχ = ρ), the transport of each
++    # tracer must reproduce the corresponding mass transport term-by-term.
++    # The full implicit tendency preserves ∂(ρq_tot)/∂t = ∂ρ/∂t for q_tot ≡ 1:
++    # the advective fluxes match because both use ᶜadvdivᵥ with ᶠu³ = 0 at the
++    # boundaries, and the water sedimentation flux is added identically to
++    # both ρ and ρq_tot.
++    for ρχ_name in (:ρq_tot, :ρq_lcl, :ρq_icl, :ρq_rai, :ρq_sno)
++        ᶜρχ = getproperty(Y.c, ρχ_name)
++        ᶜρχ .= Y.c.ρ
++    end
++    Yₜ_imp = similar(Y)
++    CA.implicit_tendency!(Yₜ_imp, Y, p, t)
++    ρ_tendency = parent(Yₜ_imp.c.ρ)
++    @test maximum(abs, ρ_tendency) > 0
++    tol = 100 * eps(FT) * maximum(abs, ρ_tendency)
++    @test maximum(abs, parent(Yₜ_imp.c.ρq_tot) .- ρ_tendency) <= tol
++
++    # Passive-tracer advection with the grid-mean flow (explicit pathway) must
++    # reproduce the advective part of the continuity tendency for uniform χ.
++    # (The ρ row of Yₜ_imp cannot serve as the reference here because it also
++    # includes water sedimentation, which is not part of this pathway.)
++    ᶜJ = Fields.local_geometry_field(Y.c).J
++    ᶠJ = Fields.local_geometry_field(Y.f).J
++    ᶜρ_advection = similar(Y.c.ρ)
++    @. ᶜρ_advection = -CA.ᶜadvdivᵥ(CA.ᶠinterp(Y.c.ρ * ᶜJ) / ᶠJ * ᶠu³)
++    ρ_advection = parent(ᶜρ_advection)
++    @test maximum(abs, ρ_advection) > 0
++    adv_tol = 100 * eps(FT) * maximum(abs, ρ_advection)
++    Yₜ_exp = similar(Y)
++    Yₜ_exp .= zero(eltype(Yₜ_exp))
++    CA.explicit_vertical_advection_tendency!(Yₜ_exp, Y, p, t)
++    for ρχ_name in (:ρq_lcl, :ρq_icl, :ρq_rai, :ρq_sno)
++        ρχ_tendency = parent(getproperty(Yₜ_exp.c, ρχ_name))
++        @test maximum(abs, ρχ_tendency .- ρ_advection) <= adv_tol
++    end
++end
++
++@testset "EDMFX SGS mass-flux consistency" begin
++    config = CA.AtmosConfig(
++        Dict(
++            "config" => "column",
++            "initial_condition" => "DYCOMS_RF01",
++            "FLOAT_TYPE" => "Float64",
++            "turbconv" => "prognostic_edmfx",
++            "implicit_diffusion" => true,
++            "approximate_linear_solve_iters" => 2,
++            "edmfx_entr_model" => "Generalized",
++            "edmfx_detr_model" => "Generalized",
++            "edmfx_sgs_mass_flux" => true,
++            "edmfx_sgs_diffusive_flux" => true,
++            "edmfx_nh_pressure" => true,
++            "edmfx_vertical_diffusion" => true,
++            "edmfx_filter" => true,
++            "prognostic_tke" => true,
++            "microphysics_model" => "1M",
++            "z_max" => 1500.0,
++            "z_elem" => 30,
++            "z_stretch" => false,
++            "dt" => "120secs",
++            "t_end" => "30mins",
++            "ode_algo" => "ARS222",
++            "toml" => [joinpath(pkgdir(CA), "toml", "prognostic_edmfx.toml")],
++            "output_default_diagnostics" => false,
++        );
++        job_id = "tracer_consistency_edmfx_test",
++    )
++    (; Y, p, simulation) = generate_test_simulation(config)
++    (; integrator) = simulation
++    FT = eltype(Y)
++
++    # Step to develop nontrivial updraft area and velocity structure.
++    for _ in 1:10
++        CTS.step!(integrator)
++    end
++    Y = integrator.u
++    p = integrator.p
++    t = integrator.t
++
++    # The SGS mass flux of q_tot must be accompanied by an identical
++    # moist air mass tendency, mirroring the diffusive-flux treatment.
++    Yₜ = similar(Y)
++    Yₜ .= zero(eltype(Yₜ))
++    CA.edmfx_sgs_mass_flux_tendency!(Yₜ, Y, p, t, p.atmos.turbconv_model)
++    flux_scale = maximum(abs, parent(Yₜ.c.ρq_tot))
++    @test flux_scale > 0  # non-vacuous: the SGS q_tot flux is active
++    @test parent(Yₜ.c.ρ) == parent(Yₜ.c.ρq_tot)
++
++    # With χ uniform across the grid mean and all subdomains (χ ≡ 1), the
++    # difference-form SGS fluxes must vanish identically. Only Y is modified;
++    # the precomputed subdomain velocities and densities keep their spun-up
++    # values, so the fluxes vanish because (χᵏ - χ) = 0, not because the SGS
++    # circulation is trivial.
++    for χ_name in (:q_tot, :q_lcl, :q_icl, :q_rai, :q_sno)
++        ᶜρχ = getproperty(Y.c, Symbol(:ρ, χ_name))
++        ᶜρχ .= Y.c.ρ
++        ᶜχʲ = getproperty(Y.c.sgsʲs.:(1), χ_name)
++        ᶜχʲ .= FT(1)
++    end
++    Yₜ .= zero(eltype(Yₜ))
++    CA.edmfx_sgs_mass_flux_tendency!(Yₜ, Y, p, t, p.atmos.turbconv_model)
++    tol = FT(1e-10) * flux_scale
++    for ρχ_name in (:ρ, :ρq_tot, :ρq_lcl, :ρq_icl, :ρq_rai, :ρq_sno)
++        @test maximum(abs, parent(getproperty(Yₜ.c, ρχ_name))) <= tol
++    end
++end
+diff --git a/test/runtests.jl b/test/runtests.jl
+index a319258d00b..994fd8ed6dd 100644
+--- a/test/runtests.jl
++++ b/test/runtests.jl
+@@ -60,6 +60,7 @@ if TEST_GROUP in ("dynamics", "all")
+     @safetestset "Advection operators" begin @time include("prognostic_equations/advection_tests.jl") end
+     @safetestset "Hyperdiffusion" begin @time include("prognostic_equations/hyperdiffusion_tests.jl") end
+     @safetestset "Tendency computations" begin @time include("prognostic_equations/tendency_tests.jl") end
++    @safetestset "Tracer/mass transport consistency" begin @time include("prognostic_equations/tracer_mass_consistency_tests.jl") end
+     @safetestset "Vertical water borrowing limiter" begin @time include("prognostic_equations/vertical_water_borrowing_tests.jl") end
+     @safetestset "Enforce physical constraints" begin @time include("prognostic_equations/enforce_physical_constraints_tests.jl") end
+ 

@@ -1,0 +1,11 @@
+--- a/Modelica/Media/package.mo
++++ b/Modelica/Media/package.mo
+@@ -6694,7 +6694,7 @@
+       "Return specific internal energy"
+       extends Modelica.Icons.Function;
+       algorithm
+-      u := (cp_const - R_gas)*(state.T - T0);
++      u := cp_const*(state.T - T0) - R_gas*state.T;
+       end specificInternalEnergy;
+ 
+     redeclare function extends specificEntropy "Return specific entropy"

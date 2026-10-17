@@ -1,0 +1,411 @@
+⚠ [8924/8938] Replayed PhysAudit.Cantera2107
+warning: PhysAudit/Cantera2107.lean:62:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:63:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:61:17: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:62:4: Unused tactic linter: `exact div_mul_cancel₀ a hV` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:63:4: Unused tactic linter: `(field_simp <;> ring)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:69:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:70:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:69:4: Unused tactic linter: `exact hasDerivAt_id x` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:70:4: Unused tactic linter: `exact hasDerivAt_id'` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:82:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:83:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:82:4: Unused tactic linter: `(simp only [map_add, map_smul, smul_eq_mul])` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:83:4: Unused tactic linter: `(simp only [map_add, ContinuousLinearMap.map_smul, smul_eq_mul])` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:90:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:91:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:90:4: Unused tactic linter: `exact (hasDerivAt_idfun T0).prod hp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:91:4: Unused tactic linter: `exact HasDerivAt.prodMk (hasDerivAt_idfun T0) hp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:100:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:100:4: Unused tactic linter: `exact HasFDerivAt.comp_hasDerivAt T0 hF hγ` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:113:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:114:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:117:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:113:6: Unused tactic linter: `exact (hasDerivAt_const P T).prod (hasDerivAt_idfun P)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:114:6: Unused tactic linter: `exact HasDerivAt.prodMk (hasDerivAt_const P T) (hasDerivAt_idfun P)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:117:4: Unused tactic linter: `exact HasFDerivAt.comp_hasDerivAt P h hγ` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:143:17: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:143:17: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:170:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Cantera2107.lean:207:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Cantera2107.lean:208:17: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:208:17: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:290:6: This simp argument is unused:
+  Finset.sum_ite_eq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [mul_add, Finset.sum_add_distrib, mul_ite, mul_zero, Finset.sum_ite_eq', Finset.mem_univ,
+    ↓reduceIte, ← Finset.sum_mul, hX]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: PhysAudit/Cantera2107.lean:291:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:290:77: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Cantera2107.lean:291:4: Unused tactic linter: `((simp [mul_add, Finset.sum_add_distrib, mul_ite, Finset.sum_ite_eq', ← Finset.sum_mul, hX]) <;>
+    ring)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:523:79: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:523:79: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:538:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:539:4: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:538:4: Unused tactic linter: `exact lt_mem_nhds hT` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:539:4: Unused tactic linter: `exact Ioi_mem_nhds hT` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:723:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:723:6: Unused tactic linter: `(apply HasDerivAt.sum; intro k _;
+  exact ((hP k).add_const (vbarExcess M T X k)).const_mul (X k))` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:740:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:740:6: Unused tactic linter: `(apply HasDerivAt.sum; intro k _;
+  exact ((hT' k).add (vbarExcess_hasDerivAt_T M T X k)).const_mul (X k))` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:790:35: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Cantera2107.lean:858:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Cantera2107.lean:858:18: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Cantera2107.lean:860:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Cantera2107.lean:860:18: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Cantera2107.lean:861:19: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:861:19: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:888:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:898:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Cantera2107.lean:888:8: Unused tactic linter: `(apply HasDerivAt.sum; intro k _; exact (hT' k).const_mul (X k))` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:898:8: Unused tactic linter: `(apply HasDerivAt.sum; intro k _; exact (hP' k).const_mul (X k))` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Cantera2107.lean:978:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Cantera2107.lean:982:35: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Cantera2107.lean:987:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Cantera2107.lean:989:15: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Cantera2107.lean:999:13: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8925/8938] Replayed PhysAudit.ClimaAtmos4637
+warning: PhysAudit/ClimaAtmos4637.lean:77:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:77:6: Unused tactic linter: `(rw [mul_div_assoc', mul_div_cancel_left₀ _ hg]; ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:171:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:172:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:170:19: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:171:6: Unused tactic linter: `(field_simp; ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:172:6: Unused tactic linter: `(rw [mul_div_assoc', mul_div_cancel_left₀ _ hi'])` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:212:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:211:19: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:212:6: Unused tactic linter: `(field_simp; ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:228:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/ClimaAtmos4637.lean:232:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4637.lean:318:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:318:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:323:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:323:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:332:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:332:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:342:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:342:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:351:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:351:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:479:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/ClimaAtmos4637.lean:480:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4637.lean:487:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:487:8: Unused tactic linter: `(rw [mul_div_assoc, mul_div_assoc, mul_div_cancel_right₀ _ hA, mul_div_cancel_right₀ _ hρ];
+  ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [8926/8938] Replayed PhysAudit.ClimaAtmos4822
+warning: PhysAudit/ClimaAtmos4822.lean:508:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4822.lean:529:28: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4822.lean:858:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+⚠ [8927/8938] Replayed PhysAudit.CoolProp2851
+warning: PhysAudit/CoolProp2851.lean:415:10: This simp argument is unused:
+  Pi.single_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [hj]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: PhysAudit/CoolProp2851.lean:438:10: `tendsto_finset_sum` has been deprecated: Use `tendsto_finsetSum` instead
+⚠ [8929/8938] Replayed PhysAudit.Moose33307
+warning: PhysAudit/Moose33307.lean:663:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Moose33307.lean:686:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8930/8938] Replayed PhysAudit.Moose34020
+warning: PhysAudit/Moose34020.lean:247:28: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Moose34020.lean:277:42: `if_pos` has been deprecated: Use `ite_eq_left` instead
+⚠ [8931/8938] Replayed PhysAudit.Oceananigans6024
+warning: PhysAudit/Oceananigans6024.lean:195:51: Variable name `hCD` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hCD
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: PhysAudit/Oceananigans6024.lean:256:59: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8932/8938] Replayed PhysAudit.Oceananigans6083
+warning: PhysAudit/Oceananigans6083.lean:92:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:106:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:201:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:203:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:208:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:217:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:219:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:224:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:206:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:207:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:213:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:214:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:222:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:223:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:229:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:230:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:206:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:207:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:213:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:214:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:222:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:223:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:229:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:230:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:286:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:284:21: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:286:8: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:454:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:467:4: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: PhysAudit/Oceananigans6083.lean:540:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:570:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:573:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:573:18: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:625:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:627:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:627:33: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:638:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:640:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:642:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:652:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8933/8938] Replayed PhysAudit.Pandapower3016
+warning: PhysAudit/Pandapower3016.lean:762:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Pandapower3016.lean:824:82: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Pandapower3016.lean:832:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Pandapower3016.lean:824:82: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Pandapower3016.lean:870:17: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Pandapower3016.lean:870:17: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Pandapower3016.lean:880:17: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Pandapower3016.lean:880:17: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Pandapower3016.lean:904:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Pandapower3016.lean:913:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PhysAudit/Pandapower3016.lean:1053:25: Variable name `hE` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hE
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8935/8938] Replayed PhysAudit.PyBaMM5889
+warning: PhysAudit/PyBaMM5889.lean:125:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: PhysAudit/PyBaMM5889.lean:312:4: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+✔ [8937/8938] Built PhysAudit (5.9s)
+Build completed successfully (8938 jobs).
+rc=0

@@ -1,0 +1,835 @@
+modelica/ModelicaStandardLibrary|author:app/devin-ai-integration 0 0 
+modelica/ModelicaStandardLibrary|author:app/copilot-swe-agent 0 0 
+modelica/ModelicaStandardLibrary|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+modelica/ModelicaStandardLibrary|author:app/chatgpt-codex-connector 0 0 
+modelica/ModelicaStandardLibrary|author:app/google-labs-jules 0 0 
+modelica/ModelicaStandardLibrary|author:openhands-agent 0 0 
+modelica/ModelicaStandardLibrary|author:app/claude 0 0 
+modelica/ModelicaStandardLibrary|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+modelica/ModelicaStandardLibrary|text:"Generated with Claude Code" 0 0 
+modelica/ModelicaStandardLibrary|text:"Co-Authored-By: Claude" 0 0 
+modelica/ModelicaStandardLibrary|text:"claude.ai/code" 0 0 
+modelica/ModelicaStandardLibrary|text:"Devin run" 0 0 
+modelica/ModelicaStandardLibrary|text:"chatgpt.com/codex" 0 0 
+modelica/ModelicaStandardLibrary|text:"Codex" 0 0 
+modelica/ModelicaStandardLibrary|commit:"Co-Authored-By: Claude" 2 2 
+modelica/ModelicaStandardLibrary|commit:"copilot-swe-agent" 0 0 
+modelica/ModelicaStandardLibrary|commit:"devin-ai-integration" 0 0 
+lbl-srg/modelica-buildings|author:app/devin-ai-integration 0 0 
+lbl-srg/modelica-buildings|author:app/copilot-swe-agent 0 0 
+lbl-srg/modelica-buildings|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+lbl-srg/modelica-buildings|author:app/chatgpt-codex-connector 0 0 
+lbl-srg/modelica-buildings|author:app/google-labs-jules 0 0 
+lbl-srg/modelica-buildings|author:openhands-agent 0 0 
+lbl-srg/modelica-buildings|author:app/claude 0 0 
+lbl-srg/modelica-buildings|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+lbl-srg/modelica-buildings|text:"Generated with Claude Code" 0 0 
+lbl-srg/modelica-buildings|text:"Co-Authored-By: Claude" 0 0 
+lbl-srg/modelica-buildings|text:"claude.ai/code" 0 0 
+lbl-srg/modelica-buildings|text:"Devin run" 0 0 
+lbl-srg/modelica-buildings|text:"chatgpt.com/codex" 0 0 
+lbl-srg/modelica-buildings|text:"Codex" 0 0 
+lbl-srg/modelica-buildings|commit:"Co-Authored-By: Claude" 0 0 
+lbl-srg/modelica-buildings|commit:"copilot-swe-agent" 0 0 
+lbl-srg/modelica-buildings|commit:"devin-ai-integration" 0 0 
+ibpsa/modelica-ibpsa|author:app/devin-ai-integration 0 0 
+ibpsa/modelica-ibpsa|author:app/copilot-swe-agent 0 0 
+ibpsa/modelica-ibpsa|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+ibpsa/modelica-ibpsa|author:app/chatgpt-codex-connector 0 0 
+ibpsa/modelica-ibpsa|author:app/google-labs-jules 0 0 
+ibpsa/modelica-ibpsa|author:openhands-agent 0 0 
+ibpsa/modelica-ibpsa|author:app/claude 0 0 
+ibpsa/modelica-ibpsa|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+ibpsa/modelica-ibpsa|text:"Generated with Claude Code" 0 0 
+ibpsa/modelica-ibpsa|text:"Co-Authored-By: Claude" 0 0 
+ibpsa/modelica-ibpsa|text:"claude.ai/code" 0 0 
+ibpsa/modelica-ibpsa|text:"Devin run" 0 0 
+ibpsa/modelica-ibpsa|text:"chatgpt.com/codex" 0 0 
+ibpsa/modelica-ibpsa|text:"Codex" 0 0 
+ibpsa/modelica-ibpsa|commit:"Co-Authored-By: Claude" 0 0 
+ibpsa/modelica-ibpsa|commit:"copilot-swe-agent" 0 0 
+ibpsa/modelica-ibpsa|commit:"devin-ai-integration" 0 0 
+RWTH-EBC/AixLib|author:app/devin-ai-integration 0 0 
+RWTH-EBC/AixLib|author:app/copilot-swe-agent 0 0 
+RWTH-EBC/AixLib|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+RWTH-EBC/AixLib|author:app/chatgpt-codex-connector 0 0 
+RWTH-EBC/AixLib|author:app/google-labs-jules 0 0 
+RWTH-EBC/AixLib|author:openhands-agent 0 0 
+RWTH-EBC/AixLib|author:app/claude 0 0 
+RWTH-EBC/AixLib|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+RWTH-EBC/AixLib|text:"Generated with Claude Code" 0 0 
+RWTH-EBC/AixLib|text:"Co-Authored-By: Claude" 0 0 
+RWTH-EBC/AixLib|text:"claude.ai/code" 0 0 
+RWTH-EBC/AixLib|text:"Devin run" 0 0 
+RWTH-EBC/AixLib|text:"chatgpt.com/codex" 0 0 
+RWTH-EBC/AixLib|text:"Codex" 0 0 
+RWTH-EBC/AixLib|commit:"Co-Authored-By: Claude" 0 0 
+RWTH-EBC/AixLib|commit:"copilot-swe-agent" 0 0 
+RWTH-EBC/AixLib|commit:"devin-ai-integration" 0 0 
+UdK-VPT/BuildingSystems|author:app/devin-ai-integration 0 0 
+UdK-VPT/BuildingSystems|author:app/copilot-swe-agent 0 0 
+UdK-VPT/BuildingSystems|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+UdK-VPT/BuildingSystems|author:app/chatgpt-codex-connector 0 0 
+UdK-VPT/BuildingSystems|author:app/google-labs-jules 0 0 
+UdK-VPT/BuildingSystems|author:openhands-agent 0 0 
+UdK-VPT/BuildingSystems|author:app/claude 0 0 
+UdK-VPT/BuildingSystems|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+UdK-VPT/BuildingSystems|text:"Generated with Claude Code" 0 0 
+UdK-VPT/BuildingSystems|text:"Co-Authored-By: Claude" 0 0 
+UdK-VPT/BuildingSystems|text:"claude.ai/code" 0 0 
+UdK-VPT/BuildingSystems|text:"Devin run" 0 0 
+UdK-VPT/BuildingSystems|text:"chatgpt.com/codex" 0 0 
+UdK-VPT/BuildingSystems|text:"Codex" 0 0 
+UdK-VPT/BuildingSystems|commit:"Co-Authored-By: Claude" 0 0 
+UdK-VPT/BuildingSystems|commit:"copilot-swe-agent" 0 0 
+UdK-VPT/BuildingSystems|commit:"devin-ai-integration" 0 0 
+TransiEnt-Library/TransiEnt|author:app/devin-ai-integration None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|author:app/copilot-swe-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+TransiEnt-Library/TransiEnt|author:app/chatgpt-codex-connector None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|author:app/google-labs-jules None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|author:openhands-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|author:app/claude None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+TransiEnt-Library/TransiEnt|text:"Generated with Claude Code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|text:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|text:"claude.ai/code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|text:"Devin run" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|text:"chatgpt.com/codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|text:"Codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|commit:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|commit:"copilot-swe-agent" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+TransiEnt-Library/TransiEnt|commit:"devin-ai-integration" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+casella/ThermoPower|author:app/devin-ai-integration 0 0 
+casella/ThermoPower|author:app/copilot-swe-agent 0 0 
+casella/ThermoPower|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+casella/ThermoPower|author:app/chatgpt-codex-connector 0 0 
+casella/ThermoPower|author:app/google-labs-jules 0 0 
+casella/ThermoPower|author:openhands-agent 0 0 
+casella/ThermoPower|author:app/claude 0 0 
+casella/ThermoPower|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+casella/ThermoPower|text:"Generated with Claude Code" 0 0 
+casella/ThermoPower|text:"Co-Authored-By: Claude" 0 0 
+casella/ThermoPower|text:"claude.ai/code" 0 0 
+casella/ThermoPower|text:"Devin run" 0 0 
+casella/ThermoPower|text:"chatgpt.com/codex" 0 0 
+casella/ThermoPower|text:"Codex" 0 0 
+casella/ThermoPower|commit:"Co-Authored-By: Claude" 0 0 
+casella/ThermoPower|commit:"copilot-swe-agent" 0 0 
+casella/ThermoPower|commit:"devin-ai-integration" 0 0 
+xrg-simulation/ClaRa-official|author:app/devin-ai-integration 0 0 
+xrg-simulation/ClaRa-official|author:app/copilot-swe-agent 0 0 
+xrg-simulation/ClaRa-official|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+xrg-simulation/ClaRa-official|author:app/chatgpt-codex-connector 0 0 
+xrg-simulation/ClaRa-official|author:app/google-labs-jules 0 0 
+xrg-simulation/ClaRa-official|author:openhands-agent 0 0 
+xrg-simulation/ClaRa-official|author:app/claude 0 0 
+xrg-simulation/ClaRa-official|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+xrg-simulation/ClaRa-official|text:"Generated with Claude Code" 0 0 
+xrg-simulation/ClaRa-official|text:"Co-Authored-By: Claude" 0 0 
+xrg-simulation/ClaRa-official|text:"claude.ai/code" 0 0 
+xrg-simulation/ClaRa-official|text:"Devin run" 0 0 
+xrg-simulation/ClaRa-official|text:"chatgpt.com/codex" 0 0 
+xrg-simulation/ClaRa-official|text:"Codex" 0 0 
+xrg-simulation/ClaRa-official|commit:"Co-Authored-By: Claude" 0 0 
+xrg-simulation/ClaRa-official|commit:"copilot-swe-agent" 0 0 
+xrg-simulation/ClaRa-official|commit:"devin-ai-integration" 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:app/devin-ai-integration 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:app/copilot-swe-agent 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SciML/ModelingToolkitStandardLibrary.jl|author:app/chatgpt-codex-connector 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:app/google-labs-jules 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:openhands-agent 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:app/claude 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SciML/ModelingToolkitStandardLibrary.jl|text:"Generated with Claude Code" 15 15 
+SciML/ModelingToolkitStandardLibrary.jl|text:"Co-Authored-By: Claude" 2 2 
+SciML/ModelingToolkitStandardLibrary.jl|text:"claude.ai/code" 1 1 
+SciML/ModelingToolkitStandardLibrary.jl|text:"Devin run" 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|text:"chatgpt.com/codex" 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|text:"Codex" 2 2 
+SciML/ModelingToolkitStandardLibrary.jl|commit:"Co-Authored-By: Claude" 18 18 
+SciML/ModelingToolkitStandardLibrary.jl|commit:"copilot-swe-agent" 0 0 
+SciML/ModelingToolkitStandardLibrary.jl|commit:"devin-ai-integration" 1 1 
+SciML/ModelingToolkit.jl|author:app/devin-ai-integration 0 0 
+SciML/ModelingToolkit.jl|author:app/copilot-swe-agent 0 0 
+SciML/ModelingToolkit.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SciML/ModelingToolkit.jl|author:app/chatgpt-codex-connector 0 0 
+SciML/ModelingToolkit.jl|author:app/google-labs-jules 0 0 
+SciML/ModelingToolkit.jl|author:openhands-agent 0 0 
+SciML/ModelingToolkit.jl|author:app/claude 0 0 
+SciML/ModelingToolkit.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SciML/ModelingToolkit.jl|text:"Generated with Claude Code" 159 159 
+SciML/ModelingToolkit.jl|text:"Co-Authored-By: Claude" 6 6 
+SciML/ModelingToolkit.jl|text:"claude.ai/code" 90 90 
+SciML/ModelingToolkit.jl|text:"Devin run" 3 3 
+SciML/ModelingToolkit.jl|text:"chatgpt.com/codex" 9 9 
+SciML/ModelingToolkit.jl|text:"Codex" 29 29 
+SciML/ModelingToolkit.jl|commit:"Co-Authored-By: Claude" 310 310 
+SciML/ModelingToolkit.jl|commit:"copilot-swe-agent" 0 0 
+SciML/ModelingToolkit.jl|commit:"devin-ai-integration" 12 12 
+ClapeyronThermo/Clapeyron.jl|author:app/devin-ai-integration 0 0 
+ClapeyronThermo/Clapeyron.jl|author:app/copilot-swe-agent 0 0 
+ClapeyronThermo/Clapeyron.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+ClapeyronThermo/Clapeyron.jl|author:app/chatgpt-codex-connector 0 0 
+ClapeyronThermo/Clapeyron.jl|author:app/google-labs-jules 0 0 
+ClapeyronThermo/Clapeyron.jl|author:openhands-agent 0 0 
+ClapeyronThermo/Clapeyron.jl|author:app/claude 0 0 
+ClapeyronThermo/Clapeyron.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+ClapeyronThermo/Clapeyron.jl|text:"Generated with Claude Code" 0 0 
+ClapeyronThermo/Clapeyron.jl|text:"Co-Authored-By: Claude" 0 0 
+ClapeyronThermo/Clapeyron.jl|text:"claude.ai/code" 0 0 
+ClapeyronThermo/Clapeyron.jl|text:"Devin run" 0 0 
+ClapeyronThermo/Clapeyron.jl|text:"chatgpt.com/codex" 0 0 
+ClapeyronThermo/Clapeyron.jl|text:"Codex" 0 0 
+ClapeyronThermo/Clapeyron.jl|commit:"Co-Authored-By: Claude" 1 1 
+ClapeyronThermo/Clapeyron.jl|commit:"copilot-swe-agent" 0 0 
+ClapeyronThermo/Clapeyron.jl|commit:"devin-ai-integration" 0 0 
+CliMA/Thermodynamics.jl|author:app/devin-ai-integration 0 0 
+CliMA/Thermodynamics.jl|author:app/copilot-swe-agent 0 0 
+CliMA/Thermodynamics.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CliMA/Thermodynamics.jl|author:app/chatgpt-codex-connector 0 0 
+CliMA/Thermodynamics.jl|author:app/google-labs-jules 0 0 
+CliMA/Thermodynamics.jl|author:openhands-agent 0 0 
+CliMA/Thermodynamics.jl|author:app/claude 0 0 
+CliMA/Thermodynamics.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CliMA/Thermodynamics.jl|text:"Generated with Claude Code" 1 1 
+CliMA/Thermodynamics.jl|text:"Co-Authored-By: Claude" 0 0 
+CliMA/Thermodynamics.jl|text:"claude.ai/code" 0 0 
+CliMA/Thermodynamics.jl|text:"Devin run" 0 0 
+CliMA/Thermodynamics.jl|text:"chatgpt.com/codex" 0 0 
+CliMA/Thermodynamics.jl|text:"Codex" 0 0 
+CliMA/Thermodynamics.jl|commit:"Co-Authored-By: Claude" 3 3 
+CliMA/Thermodynamics.jl|commit:"copilot-swe-agent" 0 0 
+CliMA/Thermodynamics.jl|commit:"devin-ai-integration" 0 0 
+CliMA/Oceananigans.jl|author:app/devin-ai-integration 0 0 
+CliMA/Oceananigans.jl|author:app/copilot-swe-agent 2 2 
+CliMA/Oceananigans.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CliMA/Oceananigans.jl|author:app/chatgpt-codex-connector 0 0 
+CliMA/Oceananigans.jl|author:app/google-labs-jules 0 0 
+CliMA/Oceananigans.jl|author:openhands-agent 0 0 
+CliMA/Oceananigans.jl|author:app/claude 0 0 
+CliMA/Oceananigans.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CliMA/Oceananigans.jl|text:"Generated with Claude Code" 103 103 
+CliMA/Oceananigans.jl|text:"Co-Authored-By: Claude" 1 1 
+CliMA/Oceananigans.jl|text:"claude.ai/code" 1 1 
+CliMA/Oceananigans.jl|text:"Devin run" 0 0 
+CliMA/Oceananigans.jl|text:"chatgpt.com/codex" 0 0 
+CliMA/Oceananigans.jl|text:"Codex" 4 4 
+CliMA/Oceananigans.jl|commit:"Co-Authored-By: Claude" 238 238 
+CliMA/Oceananigans.jl|commit:"copilot-swe-agent" 9 9 
+CliMA/Oceananigans.jl|commit:"devin-ai-integration" 0 0 
+CliMA/ClimaAtmos.jl|author:app/devin-ai-integration 0 0 
+CliMA/ClimaAtmos.jl|author:app/copilot-swe-agent 1 1 
+CliMA/ClimaAtmos.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CliMA/ClimaAtmos.jl|author:app/chatgpt-codex-connector 0 0 
+CliMA/ClimaAtmos.jl|author:app/google-labs-jules 0 0 
+CliMA/ClimaAtmos.jl|author:openhands-agent 0 0 
+CliMA/ClimaAtmos.jl|author:app/claude 0 0 
+CliMA/ClimaAtmos.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CliMA/ClimaAtmos.jl|text:"Generated with Claude Code" 2 2 
+CliMA/ClimaAtmos.jl|text:"Co-Authored-By: Claude" 0 0 
+CliMA/ClimaAtmos.jl|text:"claude.ai/code" 0 0 
+CliMA/ClimaAtmos.jl|text:"Devin run" 0 0 
+CliMA/ClimaAtmos.jl|text:"chatgpt.com/codex" 0 0 
+CliMA/ClimaAtmos.jl|text:"Codex" 0 0 
+CliMA/ClimaAtmos.jl|commit:"Co-Authored-By: Claude" 31 31 
+CliMA/ClimaAtmos.jl|commit:"copilot-swe-agent" 1 1 
+CliMA/ClimaAtmos.jl|commit:"devin-ai-integration" 0 0 
+lanl-ansi/PowerModels.jl|author:app/devin-ai-integration 0 0 
+lanl-ansi/PowerModels.jl|author:app/copilot-swe-agent 0 0 
+lanl-ansi/PowerModels.jl|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+lanl-ansi/PowerModels.jl|author:app/chatgpt-codex-connector 0 0 
+lanl-ansi/PowerModels.jl|author:app/google-labs-jules 0 0 
+lanl-ansi/PowerModels.jl|author:openhands-agent 0 0 
+lanl-ansi/PowerModels.jl|author:app/claude 0 0 
+lanl-ansi/PowerModels.jl|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+lanl-ansi/PowerModels.jl|text:"Generated with Claude Code" 0 0 
+lanl-ansi/PowerModels.jl|text:"Co-Authored-By: Claude" 0 0 
+lanl-ansi/PowerModels.jl|text:"claude.ai/code" 0 0 
+lanl-ansi/PowerModels.jl|text:"Devin run" 0 0 
+lanl-ansi/PowerModels.jl|text:"chatgpt.com/codex" 0 0 
+lanl-ansi/PowerModels.jl|text:"Codex" 0 0 
+lanl-ansi/PowerModels.jl|commit:"Co-Authored-By: Claude" 0 0 
+lanl-ansi/PowerModels.jl|commit:"copilot-swe-agent" 0 0 
+lanl-ansi/PowerModels.jl|commit:"devin-ai-integration" 0 0 
+pybamm-team/PyBaMM|author:app/devin-ai-integration 0 0 
+pybamm-team/PyBaMM|author:app/copilot-swe-agent 0 0 
+pybamm-team/PyBaMM|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+pybamm-team/PyBaMM|author:app/chatgpt-codex-connector 0 0 
+pybamm-team/PyBaMM|author:app/google-labs-jules 0 0 
+pybamm-team/PyBaMM|author:openhands-agent 0 0 
+pybamm-team/PyBaMM|author:app/claude 0 0 
+pybamm-team/PyBaMM|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+pybamm-team/PyBaMM|text:"Generated with Claude Code" 70 70 
+pybamm-team/PyBaMM|text:"Co-Authored-By: Claude" 0 0 
+pybamm-team/PyBaMM|text:"claude.ai/code" 0 0 
+pybamm-team/PyBaMM|text:"Devin run" 0 0 
+pybamm-team/PyBaMM|text:"chatgpt.com/codex" 0 0 
+pybamm-team/PyBaMM|text:"Codex" 3 3 
+pybamm-team/PyBaMM|commit:"Co-Authored-By: Claude" 89 89 
+pybamm-team/PyBaMM|commit:"copilot-swe-agent" 0 0 
+pybamm-team/PyBaMM|commit:"devin-ai-integration" 0 0 
+e2nIEE/pandapower|author:app/devin-ai-integration 0 0 
+e2nIEE/pandapower|author:app/copilot-swe-agent 0 0 
+e2nIEE/pandapower|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+e2nIEE/pandapower|author:app/chatgpt-codex-connector 0 0 
+e2nIEE/pandapower|author:app/google-labs-jules 0 0 
+e2nIEE/pandapower|author:openhands-agent 0 0 
+e2nIEE/pandapower|author:app/claude 0 0 
+e2nIEE/pandapower|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+e2nIEE/pandapower|text:"Generated with Claude Code" 2 2 
+e2nIEE/pandapower|text:"Co-Authored-By: Claude" 0 0 
+e2nIEE/pandapower|text:"claude.ai/code" 0 0 
+e2nIEE/pandapower|text:"Devin run" 0 0 
+e2nIEE/pandapower|text:"chatgpt.com/codex" 0 0 
+e2nIEE/pandapower|text:"Codex" 3 3 
+e2nIEE/pandapower|commit:"Co-Authored-By: Claude" 5 5 
+e2nIEE/pandapower|commit:"copilot-swe-agent" 0 0 
+e2nIEE/pandapower|commit:"devin-ai-integration" 0 0 
+PyPSA/PyPSA|author:app/devin-ai-integration 0 0 
+PyPSA/PyPSA|author:app/copilot-swe-agent 1 1 
+PyPSA/PyPSA|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+PyPSA/PyPSA|author:app/chatgpt-codex-connector 0 0 
+PyPSA/PyPSA|author:app/google-labs-jules 0 0 
+PyPSA/PyPSA|author:openhands-agent 0 0 
+PyPSA/PyPSA|author:app/claude 0 0 
+PyPSA/PyPSA|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+PyPSA/PyPSA|text:"Generated with Claude Code" 2 2 
+PyPSA/PyPSA|text:"Co-Authored-By: Claude" 0 0 
+PyPSA/PyPSA|text:"claude.ai/code" 0 0 
+PyPSA/PyPSA|text:"Devin run" 0 0 
+PyPSA/PyPSA|text:"chatgpt.com/codex" 0 0 
+PyPSA/PyPSA|text:"Codex" 1 1 
+PyPSA/PyPSA|commit:"Co-Authored-By: Claude" 6 6 
+PyPSA/PyPSA|commit:"copilot-swe-agent" 1 1 
+PyPSA/PyPSA|commit:"devin-ai-integration" 0 0 
+IDAES/idaes-pse|author:app/devin-ai-integration 0 0 
+IDAES/idaes-pse|author:app/copilot-swe-agent 0 0 
+IDAES/idaes-pse|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+IDAES/idaes-pse|author:app/chatgpt-codex-connector 0 0 
+IDAES/idaes-pse|author:app/google-labs-jules 0 0 
+IDAES/idaes-pse|author:openhands-agent 0 0 
+IDAES/idaes-pse|author:app/claude 0 0 
+IDAES/idaes-pse|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+IDAES/idaes-pse|text:"Generated with Claude Code" 0 0 
+IDAES/idaes-pse|text:"Co-Authored-By: Claude" 0 0 
+IDAES/idaes-pse|text:"claude.ai/code" 0 0 
+IDAES/idaes-pse|text:"Devin run" 0 0 
+IDAES/idaes-pse|text:"chatgpt.com/codex" 0 0 
+IDAES/idaes-pse|text:"Codex" 0 0 
+IDAES/idaes-pse|commit:"Co-Authored-By: Claude" 0 0 
+IDAES/idaes-pse|commit:"copilot-swe-agent" 0 0 
+IDAES/idaes-pse|commit:"devin-ai-integration" 0 0 
+Cantera/cantera|author:app/devin-ai-integration 0 0 
+Cantera/cantera|author:app/copilot-swe-agent 0 0 
+Cantera/cantera|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+Cantera/cantera|author:app/chatgpt-codex-connector 0 0 
+Cantera/cantera|author:app/google-labs-jules 0 0 
+Cantera/cantera|author:openhands-agent 0 0 
+Cantera/cantera|author:app/claude 0 0 
+Cantera/cantera|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+Cantera/cantera|text:"Generated with Claude Code" 1 1 
+Cantera/cantera|text:"Co-Authored-By: Claude" 0 0 
+Cantera/cantera|text:"claude.ai/code" 0 0 
+Cantera/cantera|text:"Devin run" 0 0 
+Cantera/cantera|text:"chatgpt.com/codex" 0 0 
+Cantera/cantera|text:"Codex" 20 20 
+Cantera/cantera|commit:"Co-Authored-By: Claude" 128 128 
+Cantera/cantera|commit:"copilot-swe-agent" 0 0 
+Cantera/cantera|commit:"devin-ai-integration" 0 0 
+CoolProp/CoolProp|author:app/devin-ai-integration 0 0 
+CoolProp/CoolProp|author:app/copilot-swe-agent 0 0 
+CoolProp/CoolProp|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CoolProp/CoolProp|author:app/chatgpt-codex-connector 0 0 
+CoolProp/CoolProp|author:app/google-labs-jules 0 0 
+CoolProp/CoolProp|author:openhands-agent 0 0 
+CoolProp/CoolProp|author:app/claude 0 0 
+CoolProp/CoolProp|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CoolProp/CoolProp|text:"Generated with Claude Code" 449 449 
+CoolProp/CoolProp|text:"Co-Authored-By: Claude" 13 13 
+CoolProp/CoolProp|text:"claude.ai/code" 13 13 
+CoolProp/CoolProp|text:"Devin run" 0 0 
+CoolProp/CoolProp|text:"chatgpt.com/codex" 0 0 
+CoolProp/CoolProp|text:"Codex" 2 2 
+CoolProp/CoolProp|commit:"Co-Authored-By: Claude" 478 478 
+CoolProp/CoolProp|commit:"copilot-swe-agent" 0 0 
+CoolProp/CoolProp|commit:"devin-ai-integration" 0 0 
+CalebBell/thermo|author:app/devin-ai-integration 0 0 
+CalebBell/thermo|author:app/copilot-swe-agent 0 0 
+CalebBell/thermo|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/thermo|author:app/chatgpt-codex-connector 0 0 
+CalebBell/thermo|author:app/google-labs-jules 0 0 
+CalebBell/thermo|author:openhands-agent 0 0 
+CalebBell/thermo|author:app/claude 0 0 
+CalebBell/thermo|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/thermo|text:"Generated with Claude Code" 0 0 
+CalebBell/thermo|text:"Co-Authored-By: Claude" 0 0 
+CalebBell/thermo|text:"claude.ai/code" 0 0 
+CalebBell/thermo|text:"Devin run" 0 0 
+CalebBell/thermo|text:"chatgpt.com/codex" 0 0 
+CalebBell/thermo|text:"Codex" 0 0 
+CalebBell/thermo|commit:"Co-Authored-By: Claude" 0 0 
+CalebBell/thermo|commit:"copilot-swe-agent" 0 0 
+CalebBell/thermo|commit:"devin-ai-integration" 0 0 
+CalebBell/fluids|author:app/devin-ai-integration 0 0 
+CalebBell/fluids|author:app/copilot-swe-agent 0 0 
+CalebBell/fluids|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/fluids|author:app/chatgpt-codex-connector 0 0 
+CalebBell/fluids|author:app/google-labs-jules 0 0 
+CalebBell/fluids|author:openhands-agent 0 0 
+CalebBell/fluids|author:app/claude 0 0 
+CalebBell/fluids|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/fluids|text:"Generated with Claude Code" 0 0 
+CalebBell/fluids|text:"Co-Authored-By: Claude" 0 0 
+CalebBell/fluids|text:"claude.ai/code" 0 0 
+CalebBell/fluids|text:"Devin run" 0 0 
+CalebBell/fluids|text:"chatgpt.com/codex" 0 0 
+CalebBell/fluids|text:"Codex" 0 0 
+CalebBell/fluids|commit:"Co-Authored-By: Claude" 0 0 
+CalebBell/fluids|commit:"copilot-swe-agent" 0 0 
+CalebBell/fluids|commit:"devin-ai-integration" 0 0 
+CalebBell/ht|author:app/devin-ai-integration 0 0 
+CalebBell/ht|author:app/copilot-swe-agent 0 0 
+CalebBell/ht|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/ht|author:app/chatgpt-codex-connector 0 0 
+CalebBell/ht|author:app/google-labs-jules 0 0 
+CalebBell/ht|author:openhands-agent 0 0 
+CalebBell/ht|author:app/claude 0 0 
+CalebBell/ht|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/ht|text:"Generated with Claude Code" 0 0 
+CalebBell/ht|text:"Co-Authored-By: Claude" 0 0 
+CalebBell/ht|text:"claude.ai/code" 0 0 
+CalebBell/ht|text:"Devin run" 0 0 
+CalebBell/ht|text:"chatgpt.com/codex" 0 0 
+CalebBell/ht|text:"Codex" 0 0 
+CalebBell/ht|commit:"Co-Authored-By: Claude" 0 0 
+CalebBell/ht|commit:"copilot-swe-agent" 0 0 
+CalebBell/ht|commit:"devin-ai-integration" 0 0 
+CalebBell/chemicals|author:app/devin-ai-integration 0 0 
+CalebBell/chemicals|author:app/copilot-swe-agent 0 0 
+CalebBell/chemicals|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/chemicals|author:app/chatgpt-codex-connector 0 0 
+CalebBell/chemicals|author:app/google-labs-jules 0 0 
+CalebBell/chemicals|author:openhands-agent 0 0 
+CalebBell/chemicals|author:app/claude 0 0 
+CalebBell/chemicals|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+CalebBell/chemicals|text:"Generated with Claude Code" 0 0 
+CalebBell/chemicals|text:"Co-Authored-By: Claude" 0 0 
+CalebBell/chemicals|text:"claude.ai/code" 0 0 
+CalebBell/chemicals|text:"Devin run" 0 0 
+CalebBell/chemicals|text:"chatgpt.com/codex" 0 0 
+CalebBell/chemicals|text:"Codex" 0 0 
+CalebBell/chemicals|commit:"Co-Authored-By: Claude" 0 0 
+CalebBell/chemicals|commit:"copilot-swe-agent" 0 0 
+CalebBell/chemicals|commit:"devin-ai-integration" 0 0 
+pvlib/pvlib-python|author:app/devin-ai-integration 0 0 
+pvlib/pvlib-python|author:app/copilot-swe-agent 0 0 
+pvlib/pvlib-python|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+pvlib/pvlib-python|author:app/chatgpt-codex-connector 0 0 
+pvlib/pvlib-python|author:app/google-labs-jules 0 0 
+pvlib/pvlib-python|author:openhands-agent 0 0 
+pvlib/pvlib-python|author:app/claude 0 0 
+pvlib/pvlib-python|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+pvlib/pvlib-python|text:"Generated with Claude Code" 2 2 
+pvlib/pvlib-python|text:"Co-Authored-By: Claude" 0 0 
+pvlib/pvlib-python|text:"claude.ai/code" 1 1 
+pvlib/pvlib-python|text:"Devin run" 0 0 
+pvlib/pvlib-python|text:"chatgpt.com/codex" 0 0 
+pvlib/pvlib-python|text:"Codex" 0 0 
+pvlib/pvlib-python|commit:"Co-Authored-By: Claude" 6 6 
+pvlib/pvlib-python|commit:"copilot-swe-agent" 0 0 
+pvlib/pvlib-python|commit:"devin-ai-integration" 0 0 
+wind-python/windpowerlib|author:app/devin-ai-integration 0 0 
+wind-python/windpowerlib|author:app/copilot-swe-agent 0 0 
+wind-python/windpowerlib|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+wind-python/windpowerlib|author:app/chatgpt-codex-connector 0 0 
+wind-python/windpowerlib|author:app/google-labs-jules 0 0 
+wind-python/windpowerlib|author:openhands-agent 0 0 
+wind-python/windpowerlib|author:app/claude 0 0 
+wind-python/windpowerlib|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+wind-python/windpowerlib|text:"Generated with Claude Code" 0 0 
+wind-python/windpowerlib|text:"Co-Authored-By: Claude" 0 0 
+wind-python/windpowerlib|text:"claude.ai/code" 0 0 
+wind-python/windpowerlib|text:"Devin run" 0 0 
+wind-python/windpowerlib|text:"chatgpt.com/codex" 0 0 
+wind-python/windpowerlib|text:"Codex" 0 0 
+wind-python/windpowerlib|commit:"Co-Authored-By: Claude" 0 0 
+wind-python/windpowerlib|commit:"copilot-swe-agent" 0 0 
+wind-python/windpowerlib|commit:"devin-ai-integration" 0 0 
+OpenMDAO/OpenMDAO|author:app/devin-ai-integration 0 0 
+OpenMDAO/OpenMDAO|author:app/copilot-swe-agent 0 0 
+OpenMDAO/OpenMDAO|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+OpenMDAO/OpenMDAO|author:app/chatgpt-codex-connector 0 0 
+OpenMDAO/OpenMDAO|author:app/google-labs-jules 0 0 
+OpenMDAO/OpenMDAO|author:openhands-agent 0 0 
+OpenMDAO/OpenMDAO|author:app/claude 0 0 
+OpenMDAO/OpenMDAO|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+OpenMDAO/OpenMDAO|text:"Generated with Claude Code" 0 0 
+OpenMDAO/OpenMDAO|text:"Co-Authored-By: Claude" 0 0 
+OpenMDAO/OpenMDAO|text:"claude.ai/code" 0 0 
+OpenMDAO/OpenMDAO|text:"Devin run" 0 0 
+OpenMDAO/OpenMDAO|text:"chatgpt.com/codex" 0 0 
+OpenMDAO/OpenMDAO|text:"Codex" 0 0 
+OpenMDAO/OpenMDAO|commit:"Co-Authored-By: Claude" 1 1 
+OpenMDAO/OpenMDAO|commit:"copilot-swe-agent" 0 0 
+OpenMDAO/OpenMDAO|commit:"devin-ai-integration" 0 0 
+usnistgov/fipy|author:app/devin-ai-integration 0 0 
+usnistgov/fipy|author:app/copilot-swe-agent 0 0 
+usnistgov/fipy|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+usnistgov/fipy|author:app/chatgpt-codex-connector 0 0 
+usnistgov/fipy|author:app/google-labs-jules 0 0 
+usnistgov/fipy|author:openhands-agent 0 0 
+usnistgov/fipy|author:app/claude 0 0 
+usnistgov/fipy|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+usnistgov/fipy|text:"Generated with Claude Code" 0 0 
+usnistgov/fipy|text:"Co-Authored-By: Claude" 0 0 
+usnistgov/fipy|text:"claude.ai/code" 0 0 
+usnistgov/fipy|text:"Devin run" 0 0 
+usnistgov/fipy|text:"chatgpt.com/codex" 0 0 
+usnistgov/fipy|text:"Codex" 1 1 
+usnistgov/fipy|commit:"Co-Authored-By: Claude" 0 0 
+usnistgov/fipy|commit:"copilot-swe-agent" 0 0 
+usnistgov/fipy|commit:"devin-ai-integration" 0 0 
+sfepy/sfepy|author:app/devin-ai-integration 0 0 
+sfepy/sfepy|author:app/copilot-swe-agent 0 0 
+sfepy/sfepy|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+sfepy/sfepy|author:app/chatgpt-codex-connector 0 0 
+sfepy/sfepy|author:app/google-labs-jules 0 0 
+sfepy/sfepy|author:openhands-agent 0 0 
+sfepy/sfepy|author:app/claude 0 0 
+sfepy/sfepy|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+sfepy/sfepy|text:"Generated with Claude Code" 0 0 
+sfepy/sfepy|text:"Co-Authored-By: Claude" 0 0 
+sfepy/sfepy|text:"claude.ai/code" 0 0 
+sfepy/sfepy|text:"Devin run" 0 0 
+sfepy/sfepy|text:"chatgpt.com/codex" 0 0 
+sfepy/sfepy|text:"Codex" 0 0 
+sfepy/sfepy|commit:"Co-Authored-By: Claude" 0 0 
+sfepy/sfepy|commit:"copilot-swe-agent" 0 0 
+sfepy/sfepy|commit:"devin-ai-integration" 0 0 
+devitocodes/devito|author:app/devin-ai-integration 0 0 
+devitocodes/devito|author:app/copilot-swe-agent 0 0 
+devitocodes/devito|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+devitocodes/devito|author:app/chatgpt-codex-connector 0 0 
+devitocodes/devito|author:app/google-labs-jules 0 0 
+devitocodes/devito|author:openhands-agent 0 0 
+devitocodes/devito|author:app/claude 0 0 
+devitocodes/devito|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+devitocodes/devito|text:"Generated with Claude Code" 1 1 
+devitocodes/devito|text:"Co-Authored-By: Claude" 0 0 
+devitocodes/devito|text:"claude.ai/code" 1 1 
+devitocodes/devito|text:"Devin run" 0 0 
+devitocodes/devito|text:"chatgpt.com/codex" 0 0 
+devitocodes/devito|text:"Codex" 2 2 
+devitocodes/devito|commit:"Co-Authored-By: Claude" 2 2 
+devitocodes/devito|commit:"copilot-swe-agent" 0 0 
+devitocodes/devito|commit:"devin-ai-integration" 0 0 
+FEniCS/dolfinx|author:app/devin-ai-integration 0 0 
+FEniCS/dolfinx|author:app/copilot-swe-agent 0 0 
+FEniCS/dolfinx|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+FEniCS/dolfinx|author:app/chatgpt-codex-connector 0 0 
+FEniCS/dolfinx|author:app/google-labs-jules 0 0 
+FEniCS/dolfinx|author:openhands-agent 0 0 
+FEniCS/dolfinx|author:app/claude 0 0 
+FEniCS/dolfinx|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+FEniCS/dolfinx|text:"Generated with Claude Code" 56 56 
+FEniCS/dolfinx|text:"Co-Authored-By: Claude" 20 20 
+FEniCS/dolfinx|text:"claude.ai/code" 1 1 
+FEniCS/dolfinx|text:"Devin run" 0 0 
+FEniCS/dolfinx|text:"chatgpt.com/codex" 0 0 
+FEniCS/dolfinx|text:"Codex" 19 19 
+FEniCS/dolfinx|commit:"Co-Authored-By: Claude" 154 154 
+FEniCS/dolfinx|commit:"copilot-swe-agent" 1 1 
+FEniCS/dolfinx|commit:"devin-ai-integration" 0 0 
+firedrakeproject/firedrake|author:app/devin-ai-integration 0 0 
+firedrakeproject/firedrake|author:app/copilot-swe-agent 0 0 
+firedrakeproject/firedrake|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+firedrakeproject/firedrake|author:app/chatgpt-codex-connector 0 0 
+firedrakeproject/firedrake|author:app/google-labs-jules 0 0 
+firedrakeproject/firedrake|author:openhands-agent 0 0 
+firedrakeproject/firedrake|author:app/claude 0 0 
+firedrakeproject/firedrake|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+firedrakeproject/firedrake|text:"Generated with Claude Code" 15 15 
+firedrakeproject/firedrake|text:"Co-Authored-By: Claude" 1 1 
+firedrakeproject/firedrake|text:"claude.ai/code" 5 5 
+firedrakeproject/firedrake|text:"Devin run" 0 0 
+firedrakeproject/firedrake|text:"chatgpt.com/codex" 0 0 
+firedrakeproject/firedrake|text:"Codex" 5 5 
+firedrakeproject/firedrake|commit:"Co-Authored-By: Claude" 32 32 
+firedrakeproject/firedrake|commit:"copilot-swe-agent" 0 0 
+firedrakeproject/firedrake|commit:"devin-ai-integration" 0 0 
+NREL/BLAST-Lite|author:app/devin-ai-integration None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|author:app/copilot-swe-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+NREL/BLAST-Lite|author:app/chatgpt-codex-connector None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|author:app/google-labs-jules None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|author:openhands-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|author:app/claude None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+NREL/BLAST-Lite|text:"Generated with Claude Code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|text:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|text:"claude.ai/code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|text:"Devin run" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|text:"chatgpt.com/codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|text:"Codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|commit:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|commit:"copilot-swe-agent" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/BLAST-Lite|commit:"devin-ai-integration" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:app/devin-ai-integration None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:app/copilot-swe-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+NREL/ssc|author:app/chatgpt-codex-connector None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:app/google-labs-jules None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:openhands-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:app/claude None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+NREL/ssc|text:"Generated with Claude Code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|text:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|text:"claude.ai/code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|text:"Devin run" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|text:"chatgpt.com/codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|text:"Codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|commit:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|commit:"copilot-swe-agent" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NREL/ssc|commit:"devin-ai-integration" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+NatLabRockies/EnergyPlus|author:app/devin-ai-integration 0 0 
+NatLabRockies/EnergyPlus|author:app/copilot-swe-agent 0 0 
+NatLabRockies/EnergyPlus|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+NatLabRockies/EnergyPlus|author:app/chatgpt-codex-connector 0 0 
+NatLabRockies/EnergyPlus|author:app/google-labs-jules 0 0 
+NatLabRockies/EnergyPlus|author:openhands-agent 0 0 
+NatLabRockies/EnergyPlus|author:app/claude 0 0 
+NatLabRockies/EnergyPlus|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+NatLabRockies/EnergyPlus|text:"Generated with Claude Code" 0 0 
+NatLabRockies/EnergyPlus|text:"Co-Authored-By: Claude" 0 0 
+NatLabRockies/EnergyPlus|text:"claude.ai/code" 0 0 
+NatLabRockies/EnergyPlus|text:"Devin run" 0 0 
+NatLabRockies/EnergyPlus|text:"chatgpt.com/codex" 0 0 
+NatLabRockies/EnergyPlus|text:"Codex" 2 2 
+NatLabRockies/EnergyPlus|commit:"Co-Authored-By: Claude" 2 2 
+NatLabRockies/EnergyPlus|commit:"copilot-swe-agent" 0 0 
+NatLabRockies/EnergyPlus|commit:"devin-ai-integration" 0 0 
+SINTEF/thermopack|author:app/devin-ai-integration None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|author:app/copilot-swe-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SINTEF/thermopack|author:app/chatgpt-codex-connector None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|author:app/google-labs-jules None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|author:openhands-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|author:app/claude None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SINTEF/thermopack|text:"Generated with Claude Code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|text:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|text:"claude.ai/code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|text:"Devin run" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|text:"chatgpt.com/codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|text:"Codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|commit:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|commit:"copilot-swe-agent" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SINTEF/thermopack|commit:"devin-ai-integration" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:app/devin-ai-integration None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:app/copilot-swe-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SanPen/GridCal|author:app/chatgpt-codex-connector None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:app/google-labs-jules None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:openhands-agent None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:app/claude None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+SanPen/GridCal|text:"Generated with Claude Code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|text:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|text:"claude.ai/code" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|text:"Devin run" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|text:"chatgpt.com/codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|text:"Codex" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|commit:"Co-Authored-By: Claude" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|commit:"copilot-swe-agent" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+SanPen/GridCal|commit:"devin-ai-integration" None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"ht
+idaholab/moose|author:app/devin-ai-integration 0 0 
+idaholab/moose|author:app/copilot-swe-agent 0 0 
+idaholab/moose|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+idaholab/moose|author:app/chatgpt-codex-connector 0 0 
+idaholab/moose|author:app/google-labs-jules 0 0 
+idaholab/moose|author:openhands-agent 0 0 
+idaholab/moose|author:app/claude 0 0 
+idaholab/moose|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+idaholab/moose|text:"Generated with Claude Code" 27 27 
+idaholab/moose|text:"Co-Authored-By: Claude" 1 1 
+idaholab/moose|text:"claude.ai/code" 0 0 
+idaholab/moose|text:"Devin run" 0 0 
+idaholab/moose|text:"chatgpt.com/codex" 0 0 
+idaholab/moose|text:"Codex" 67 67 
+idaholab/moose|commit:"Co-Authored-By: Claude" 439 439 
+idaholab/moose|commit:"copilot-swe-agent" 0 0 
+idaholab/moose|commit:"devin-ai-integration" 0 0 
+OpenFOAM/OpenFOAM-dev|author:app/devin-ai-integration 0 0 
+OpenFOAM/OpenFOAM-dev|author:app/copilot-swe-agent 0 0 
+OpenFOAM/OpenFOAM-dev|author:Copilot None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+OpenFOAM/OpenFOAM-dev|author:app/chatgpt-codex-connector 0 0 
+OpenFOAM/OpenFOAM-dev|author:app/google-labs-jules 0 0 
+OpenFOAM/OpenFOAM-dev|author:openhands-agent 0 0 
+OpenFOAM/OpenFOAM-dev|author:app/claude 0 0 
+OpenFOAM/OpenFOAM-dev|author:app/sweep-ai None 0 gh: Validation Failed (HTTP 422)
+{"message":"Validation Failed","errors":[{"message":"The listed users cannot be searched either because the users do not exist or you do not have permission to view the users.","resource":"Search","field":"q","code":"invalid"}],"documentation_url":"https://docs.githu
+OpenFOAM/OpenFOAM-dev|text:"Generated with Claude Code" 0 0 
+OpenFOAM/OpenFOAM-dev|text:"Co-Authored-By: Claude" 0 0 
+OpenFOAM/OpenFOAM-dev|text:"claude.ai/code" 0 0 
+OpenFOAM/OpenFOAM-dev|text:"Devin run" 0 0 
+OpenFOAM/OpenFOAM-dev|text:"chatgpt.com/codex" 0 0 
+OpenFOAM/OpenFOAM-dev|text:"Codex" 0 0 
+OpenFOAM/OpenFOAM-dev|commit:"Co-Authored-By: Claude" 0 0 
+OpenFOAM/OpenFOAM-dev|commit:"copilot-swe-agent" 0 0 
+OpenFOAM/OpenFOAM-dev|commit:"devin-ai-integration" 0 0 

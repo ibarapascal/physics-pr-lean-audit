@@ -1,0 +1,146 @@
+{
+  "library": "lbl-srg/modelica-buildings",
+  "candidate": "#3027 → PR #3049",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/lbl-srg/modelica-buildings/issues/3027",
+  "request_note": "issue body preserved verbatim, with images replaced by [image omitted]; all subsequent discussion removed",
+  "pre_change_sha": "dff251c2a154412386ce4dab02a1631766b4ad23",
+  "pre_change_note": "Parent commit of PR #3049 squash merge commit df7415eb (#3065 also refers to dff251c2a1 as the pre-change version)",
+  "historical_wrong_sha": "df7415ebeb3ab0ca09d476dccef9e3143b6fe1d0",
+  "historical_wrong_note": "HexElementLatent removes heaConVapCoi (latent heat no longer enters the coil metal node); water-side Q1 equals only sensible heat, leaving the latent heat portion unbalanced (issue #3065)",
+  "final_correct_sha": "b9f105345d5a411be57784797ea0ae711cd62837",
+  "final_correct_note": "PR #3073 merged: reverts the changes to HexElementLatent in df7415eb and changes the inlet air humidity in the validation model added by the PR from supersaturated to RH 99.5%; after the revert, approximately 17 W (≈1% of the design heat flow) of residual sensible heat remains with fully saturated inlet air; the author of #3065 considers this a modeling approximation, not a defect",
+  "invariant": "Steady-state energy conservation for wet coils (WetCoilCounterFlow / WetCoilDiscretized / HexElementLatent): the sum of water-side heat gain Q1_flow and total air-side heat gain (sensible heat + latent heat) Q2_flow is 0, meaning that the coil neither creates nor destroys energy; the evaluation configuration is implemented using port enthalpy flows: m1*(h1_out-h1_in) + m2*(h2_out-h2_in) + (enthalpy flow carried away by condensate, per the library convention) = 0. Applies to SteadyState or constant inputs as t→∞",
+  "convention_dispute": false,
+  "convention_note": "Whether latent heat is accounted for at the coil surface or in the air volume is a modeling choice, but in either case, the total water-side and air-side heat flows must be equal and opposite at steady state; the statement in #3065 that “Q1 should be the negative of Q2” expresses this property",
+  "regression_examples": [
+    {
+      "model": "Buildings.Fluid.HeatExchangers.BaseClasses.Examples.HexElementLatent",
+      "path": "Buildings/Fluid/HeatExchangers/BaseClasses/Examples/HexElementLatent.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.BaseClasses.Examples.HexElementLatentLoop",
+      "path": "Buildings/Fluid/HeatExchangers/BaseClasses/Examples/HexElementLatentLoop.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilCounterFlowMassFlow",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilCounterFlowMassFlow.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilCounterFlowPControl",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilCounterFlowPControl.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilDiscretizedMassFlow",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilDiscretizedMassFlow.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilDiscretizedPControl",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilDiscretizedPControl.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilDiscretizedInitialization",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilDiscretizedInitialization.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilDiscretizedInitializationPerfectGases",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilDiscretizedInitializationPerfectGases.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilEffectivenessNTUCounterFlow",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilEffectivenessNTUCounterFlow.mo",
+      "note": "The energy imbalance in #3065 was discovered in this model"
+    }
+  ],
+  "regression_pr_added_tests": [
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilCounterFlowLowWaterFlowRate",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilCounterFlowLowWaterFlowRate.mo",
+      "version_sha": "df7415ebeb3ab0ca09d476dccef9e3143b6fe1d0",
+      "note": "Entered master with #3049 via PR #3043 (merged into the issue branch); in that version, inlet air X={0.01,0.99} is supersaturated at 12°C; #3073 changes it to 0.0086. (i) Run using the PR version; not included in the task package"
+    }
+  ],
+  "regression_note": "The reference results for all 9 models above were modified by #3049 (Resources/ReferenceResults/Dymola); use the pre-change version as the reference; no models outside the HeatExchangers package use WetCoilCounterFlow/WetCoilDiscretized (grep across the entire dff251c2a1 tree)",
+  "sampling_domain": {
+    "note": "All sources are from dff251c2a1; an additional physical constraint is imposed: inlet air relative humidity ≤ 1 (our choice, not sourced from the library)",
+    "variables": {
+      "T_water_in_K": {
+        "range": [
+          278.15,
+          293.15
+        ],
+        "source": [
+          "Buildings/Fluid/HeatExchangers/Validation/WetCoilEffectivenessNTUCounterFlow.mo:12-13 42°F",
+          "Buildings/Fluid/HeatExchangers/Examples/WetCoilCounterFlowPControl.mo:7 5°C",
+          "Buildings/Fluid/HeatExchangers/Examples/BaseClasses/WetCoilDiscretized.mo:57-58 5→20°C"
+        ]
+      },
+      "T_air_in_K": {
+        "range": [
+          278.15,
+          303.15
+        ],
+        "source": [
+          "Buildings/Fluid/HeatExchangers/BaseClasses/Examples/HexElementLatent.mo:33 TDb=278.15、:73 TDb1=303.15",
+          "Validation/WetCoilEffectivenessNTUCounterFlow.mo:14-15 80°F",
+          "Examples/WetCoilCounterFlowPControl.mo:9 30°C"
+        ]
+      },
+      "X_w_air_in": {
+        "range": [
+          0.0035,
+          0.02
+        ],
+        "source": [
+          "Validation/WetCoilEffectivenessNTUCounterFlow.mo:172 w_a2 table 0.0035383–0.01765",
+          "Examples/WetCoilCounterFlowPControl.mo:26 X={0.02,0.98}",
+          "Examples/BaseClasses/EffectivenessNTUMassFlow.mo:45 relHum=0.8"
+        ]
+      },
+      "m1_rel_water": {
+        "range": [
+          0.01,
+          1.0
+        ],
+        "source": [
+          "Examples/BaseClasses/EffectivenessNTUMassFlow.mo:55-56 mWatGai table 1→0.01"
+        ]
+      },
+      "m2_rel_air": {
+        "range": [
+          -1.0,
+          1.0
+        ],
+        "source": [
+          "Examples/BaseClasses/EffectivenessNTUMassFlow.mo:60-61 mAirGai table 1→-1→0"
+        ]
+      },
+      "nominal_sizing": {
+        "sets": [
+          "UA_nominal=4748, m1=3.78, m2=2.646 (Validation/WetCoilEffectivenessNTUCounterFlow.mo:24-28)",
+          "m1=0.1, UA according to PControl.mo:11-14,77",
+          "m1=m2=5, UA=9999 (BaseClasses/Examples/HexElementLatent.mo:63-65)"
+        ]
+      },
+      "energyDynamics": {
+        "value": "SteadyState or integration with constant inputs until steady state"
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Buildings/Fluid/HeatExchangers (DXCoils, CoolingTowers, ActiveBeams, RadiantSlabs, Radiators removed; package.order unchanged)",
+    "Buildings/Fluid/MixingVolumes",
+    "Buildings/Fluid/Interfaces",
+    "Buildings/Fluid/BaseClasses",
+    "Buildings/Fluid/Types.mo",
+    "Buildings/Fluid/Sources",
+    "Buildings/Fluid/Sensors",
+    "Buildings/HeatTransfer/Sources",
+    "Buildings/Utilities/Psychrometrics",
+    "Buildings/Media"
+  ],
+  "snapshot_excluded": "Buildings/Resources, all other directories outside the package",
+  "training_cutoff_side": "Before the cutoff (2022)",
+  "snapshot_bytes": 1916852,
+  "regression_count": 10
+}

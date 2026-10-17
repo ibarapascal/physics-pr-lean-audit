@@ -1,0 +1,110 @@
+{
+  "module": "Moose33307",
+  "merge_commit": "b5a1d9e3df14e98850e514f3e57d02c25c44fca9",
+  "native_replay": "SKIP: no MOOSE build available; float64 transcription of the C++ is compared with the Lean formulas instead",
+  "lean_side_precision": "mpmath 50 digits",
+  "diff_tri_friction_cpp_vs_lean": {
+    "points": 2000,
+    "max_rel_diff": 8.075170658246896e-15,
+    "mooseError_count_cpp": 0,
+    "none_mismatch_count": 0
+  },
+  "thm_ReL_pos_lt_ReT": {
+    "grid_P_over_D_1_to_2": true,
+    "ReL(1.42)": 841.6857574065222,
+    "ReT(1.0)": 10000.0
+  },
+  "thm_psi_mem_Icc": {
+    "holds_on_samples": true
+  },
+  "thm_regimeFriction_continuousOn": {
+    "max_rel_jump_across_ReL_ReT_by_delta": {
+      "0.0001": 0.8306335561390563,
+      "1e-06": 0.6335166222770167,
+      "1e-08": 0.2036398968960382
+    },
+    "note": "jump shrinks proportionally to delta (no discontinuity)"
+  },
+  "thm_transitionBlend_nonneg": {
+    "min_over_grid_fL_fT_1": 0.9999962252318377
+  },
+  "thm_transitionBlend_exceeds_ends": {
+    "psi_1_8_value_fL_eq_fT_1": 1.45646513530786,
+    "max_weight_sum": 1.5827263599628327,
+    "argmax_psi": 0.46236,
+    "min_weight_sum_near_psi_1": 0.9999962020671356,
+    "argmin_psi": 0.9999542911810385,
+    "physical_example": {
+      "P_over_D": 1.2,
+      "Re_i=Reb": 2645.909521627406,
+      "fL": 0.03731873640912228,
+      "fT": 0.03672909686706242,
+      "f_transition": 0.0585403987449393,
+      "ratio_to_max_end": 1.5686597237153383
+    }
+  },
+  "thm_WsT_pos": {
+    "min_on_[8,52]": 0.12396322001720925,
+    "zero_at_H_over_D": 53.3669923120631
+  },
+  "thm_WsTold_neg": {
+    "max_on_[8,52]": -3.873856958478195
+  },
+  "thm_edgeCorr_cornerCorr_ge_one": {
+    "min_new_correction": 1.0000707140362786
+  },
+  "old_ln_version_mooseError_cases": {
+    "count": 32,
+    "example": {
+      "type": "CORNER",
+      "D": 0.009285112211660802,
+      "H_over_D": 10.03213356050517,
+      "Dw_over_D": 0.05996666113796336,
+      "P_over_D": 1.3300982073749998,
+      "S": 1.6563461683696607e-06,
+      "old_corr": -0.18403283363575307,
+      "new_corr": 2.485625772626591
+    }
+  },
+  "thm_mixingRegime_between": {
+    "holds_on_samples": true
+  },
+  "diff_mixing_cpp_vs_lean": {
+    "points": 2000,
+    "max_rel_diff": 1.208713932724683e-15
+  },
+  "thm_borishanskiiPoly_gt_one": {
+    "min_poly_on_[1.1,1.5]": 1.4995000000000012
+  },
+  "thm_borishanskiiNuBase_pos": {
+    "Nu_log10": {
+      "1.1": 4.249107252807443,
+      "1.2": 6.928764274282858,
+      "1.5": 10.826922323143917
+    },
+    "Nu_ln_parent": {
+      "1.1": 9.783931018847298,
+      "1.2": 15.954069330833413,
+      "1.5": 24.929909944275646
+    },
+    "ratio_ln_over_log10": 2.3025850929940455
+  },
+  "thm_bulkReynolds_uniform_mu": {
+    "rel_diff": 5.46860731107678e-16
+  },
+  "zero_inlet_flow_edge_case": {
+    "bulk_Re": "nan",
+    "friction_factor": "nan",
+    "note": "NaN bulk Re fails both comparisons and falls into the transition branch"
+  },
+  "constructor_range_check": {
+    "value_read": 1.0,
+    "threshold": 50.0,
+    "note": "SCMFrictionUpgradedChengTodreas.C:44,58 reads getBulkReynoldsNumber() in the constructor; _bulk_Re is initialised to 1.0 (SubChannel1PhaseProblem.C:209) and only computed in externalSolve (:2759), so the Reb range warning is flagged for every triangular-lattice run"
+  },
+  "parallel_bulk_re_static": {
+    "guard": "SubChannel1PhaseProblem.C:420-421 if (processor_id() != 0) return;",
+    "consumers": "computeFrictionFactor at :875,:940,:1159 and mixing at :1958,:2031,:2048, all reached only from computeWijFromSolve / implicitPetscSolve / computeh / computeT which run under if (processor_id() == 0) (:2832) or after goto aux_close on ranks > 0 (:2855-2860); post-solve HTC loops (:2928-2992) iterate over _n_channels / _n_pins which are 0 on ranks > 0 (comment :264-269)",
+    "replay": "not executed (no MOOSE build)"
+  }
+}

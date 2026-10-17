@@ -1,0 +1,64 @@
+buildings_2725 pre pre reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 ctrl_wrong 01064f299bf76513 reg_pass True fail [] | samp rejected True viol 618 failed_pts 446
+buildings_2725 ctrl_correct pre reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s01 acc922dc659863a3 reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s02 8b9757f2a33577dd reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s03 d345d64a4d71738a reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s04 be971eebe2a75513 reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s05 59bb82eae7d1ab2b reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s06 7d688504fae294d8 reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s07 3cfec49a6b06cf1f reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s08 a5fa11158e89b5e3 reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s09 ebef683ecf03ed11 reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_2725 s10 a24d2663e1e9d049 reg_pass True fail [] | samp rejected False viol 0 failed_pts 801
+buildings_4775 pre pre reg_pass True fail [] | samp rejected True viol 618 failed_pts 446
+buildings_4775 ctrl_wrong aa8dafb83d8d7f70 reg_pass True fail [] | samp rejected True viol 8220 failed_pts 1276
+buildings_4775 s01 invalid: hunk location failed (329 candidate positions)
+buildings_4775 s02 invalid: hunk location failed (6 candidate positions)
+buildings_4775 s03 invalid: hunk location failed (618 candidate positions)
+buildings_4775 s04 invalid: hunk location failed (2 candidate positions)
+buildings_4775 s05 invalid: hunk location failed (329 candidate positions)
+buildings_4775 s06 invalid: hunk location failed (2 candidate positions)
+buildings_4775 s07 d3b4faa44fb91717 reg_pass False fail ['Buildings.DHC.Plants.Steam.BaseClasses.Examples.BoilerPolynomial'] | samp rejected True viol 8220 failed_pts 1276
+buildings_4775 s08 47ce8e7453c7351c reg_pass True fail [] | samp rejected True viol 8220 failed_pts 1276
+buildings_4775 s09 invalid: hunk location failed (2 candidate positions)
+buildings_4775 s10 816d3c25938c49ba reg_pass False fail ['Buildings.DHC.Plants.Steam.BaseClasses.Examples.BoilerPolynomial'] | samp rejected True viol 8220 failed_pts 1276
+buildings_3027 pre pre reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 ctrl_wrong df4bc9c1c606235b reg_pass True fail [] | samp rejected True viol 3941 failed_pts 0
+buildings_3027 ctrl_correct e8d24b96cee45e03 reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s01 45a9109304b63fae reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s02 invalid: hunk location failed (0 candidate positions)
+buildings_3027 s03 7a838c6eeb003ddf reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s04 0b21e6b1b899cbd5 reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s05 f041be30044eb228 reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s06 d39f40f620aaf3f0 reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s07 8beb96281870c70b reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s08 e62377c52a563b25 reg_pass False fail ['Buildings.Fluid.HeatExchangers.Validation.WetCoilCounterFlowLowWaterFlowRate'] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s09 b5b54583212ca61b reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+buildings_3027 s10 8d60a3daf3145915 reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 pre pre reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 ctrl_wrong 9095605935b90427 reg_pass False fail ['ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapOverall_KC', 'ModelicaTest.Fluid.Dissipation.TestCases.PressureLoss.SeveralTestCases'] | samp rejected True viol 10916 failed_pts 0
+msl_1335 ctrl_correct eac6bf83747e5ffb reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s01 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s02 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s03 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s04 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s05 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s06 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s07 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s08 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s09 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1335 s10 9f84068c67d5a49c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 pre pre reg_pass False fail ['ModelicaTest.Media.TestAllProperties.SimpleAir'] | samp rejected True viol 10000 failed_pts 0
+msl_1530 ctrl_wrong 19439581c8d25a05 reg_pass True fail [] | samp rejected True viol 10000 failed_pts 0
+msl_1530 ctrl_correct d9c659b732076f39 reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s01 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s02 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s03 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s04 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s05 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s06 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s07 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s08 9e6b2fce04f6185d reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s09 8282eb6ad5082a4c reg_pass True fail [] | samp rejected False viol 0 failed_pts 0
+msl_1530 s10 9e6b2fce04f6185d reg_pass True fail [] | samp rejected False viol 0 failed_pts 0

@@ -1,0 +1,533 @@
+diff --git a/Buildings/Examples/Tutorial/Boiler/System3.mo b/Buildings/Examples/Tutorial/Boiler/System3.mo
+index feec25ad1b..33c7a65bb1 100644
+--- a/Buildings/Examples/Tutorial/Boiler/System3.mo
++++ b/Buildings/Examples/Tutorial/Boiler/System3.mo
+@@ -159,6 +159,10 @@ model System3
+     Q_flow_nominal=Q_flow_nominal,
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue()) "Boiler"
+     annotation (Placement(transformation(extent={{20,-320},{0,-300}})));
++
++  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature TBoiRoo(T=293.15)
++    "Boiler room temperature for boiler heat loss"
++    annotation (Placement(transformation(extent={{-20,-290},{0,-270}})));
+ //----------------------------------------------------------------------------//
+ 
+ //--------------------------Step 3: Three-way Valve---------------------------//
+@@ -210,7 +214,7 @@ model System3
+     annotation (Placement(transformation(extent={{-100,-290},{-80,-270}})));
+   Buildings.Controls.OBC.CDL.Reals.Sources.Constant const1(k=0.5)
+     "Constant control signal for valves"
+-    annotation (Placement(transformation(extent={{0,-290},{20,-270}})));
++    annotation (Placement(transformation(extent={{60,-350},{40,-330}})));
+   Buildings.Controls.OBC.CDL.Reals.Hysteresis hysPum(
+     uLow=273.15 + 19,
+     uHigh=273.15 + 21)
+@@ -221,6 +225,7 @@ model System3
+     annotation (Placement(transformation(extent={{-140,-80},{-120,-60}})));
+   Buildings.Controls.OBC.CDL.Logical.Not not1 "Negate output of hysteresis"
+     annotation (Placement(transformation(extent={{-180,-80},{-160,-60}})));
++
+ equation
+   connect(TOut.port, theCon.port_a) annotation (Line(
+       points={{5.55112e-16,50},{20,50}},
+@@ -352,7 +357,7 @@ equation
+       smooth=Smooth.None));
+ 
+   connect(const1.y, boi.y) annotation (Line(
+-      points={{22,-280},{32,-280},{32,-302},{22,-302}},
++      points={{38,-340},{32,-340},{32,-302},{22,-302}},
+       color={0,0,127},
+       smooth=Smooth.None));
+   connect(temRoo.T,hysPum. u) annotation (Line(
+@@ -371,6 +376,8 @@ equation
+       points={{-118,-70},{-90.5,-70},{-90.5,-70},{-62,-70}},
+       color={0,0,127},
+       smooth=Smooth.None));
++  connect(TBoiRoo.port, boi.heatPort) annotation (Line(points={{0,-280},{10,-280},
++          {10,-302.8}}, color={191,0,0}));
+   annotation (Documentation(info="<html>
+ <p>
+ This part of the system model adds the boiler loop with
+@@ -411,7 +418,10 @@ to model the three-way valves, and
+ an instance of
+ <a href=\"modelica://Buildings.Fluid.Boilers.BoilerPolynomial\">
+ Buildings.Fluid.Boilers.BoilerPolynomial</a>
+-to model the boiler.
++to model the boiler, and we made an instance of
++<a href=\"modelica://Modelica.Thermal.HeatTransfer.Sources.FixedTemperature\">
++Modelica.Thermal.HeatTransfer.Sources.FixedTemperature</a>
++to model the heat loss of the boiler to the ambient.
+ </p>
+ <p>
+ Note that we also made an instance of
+@@ -578,6 +588,12 @@ this indicates that the model is correct.
+ </html>", revisions="<html>
+ <ul>
+ <li>
++October 14, 2026, by Michael Wetter:<br/>
++Added prescribed temperature model for boiler heat loss.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ April 9, 2024, by Hongxiang Fu:<br/>
+ Specified <code>nominalValuesDefineDefaultPressureCurve=true</code>
+ in the mover component to suppress a warning.
+diff --git a/Buildings/Examples/Tutorial/Boiler/System4.mo b/Buildings/Examples/Tutorial/Boiler/System4.mo
+index b87945d29e..132fc8d252 100644
+--- a/Buildings/Examples/Tutorial/Boiler/System4.mo
++++ b/Buildings/Examples/Tutorial/Boiler/System4.mo
+@@ -159,7 +159,10 @@ model System4
+     Q_flow_nominal=Q_flow_nominal,
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue()) "Boiler"
+     annotation (Placement(transformation(extent={{20,-320},{0,-300}})));
+-//----------------------------------------------------------------------------//
++
++  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature TBoiRoo(T=293.15)
++    "Boiler room temperature for boiler heat loss"
++    annotation (Placement(transformation(extent={{-20,-290},{0,-270}})));
+ 
+ //--------------------------Step 3: Three-way Valve---------------------------//
+   Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear valRad(
+@@ -447,6 +450,8 @@ equation
+       points={{-118,-180},{-88,-180},{-88,-280},{-62,-280}},
+       color={0,0,127},
+       smooth=Smooth.None));
++  connect(TBoiRoo.port, boi.heatPort) annotation (Line(points={{0,-280},{10,
++          -280},{10,-302.8}}, color={191,0,0}));
+   annotation (Documentation(info="<html>
+ <p>
+ This part of the system model adds to the model that is implemented in
+@@ -536,6 +541,12 @@ Buildings.Examples.Tutorial.Boiler.System5</a>.
+ </html>", revisions="<html>
+ <ul>
+ <li>
++October 14, 2026, by Michael Wetter:<br/>
++Added prescribed temperature model for boiler heat loss.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ April 9, 2024, by Hongxiang Fu:<br/>
+ Specified <code>nominalValuesDefineDefaultPressureCurve=true</code>
+ in the mover component to suppress a warning.
+diff --git a/Buildings/Examples/Tutorial/Boiler/System5.mo b/Buildings/Examples/Tutorial/Boiler/System5.mo
+index 2c9e599c13..8ffedf90ea 100644
+--- a/Buildings/Examples/Tutorial/Boiler/System5.mo
++++ b/Buildings/Examples/Tutorial/Boiler/System5.mo
+@@ -159,6 +159,11 @@ model System5
+     Q_flow_nominal=Q_flow_nominal,
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue()) "Boiler"
+     annotation (Placement(transformation(extent={{20,-320},{0,-300}})));
++
++  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature TBoiRoo(T=293.15)
++    "Boiler room temperature for boiler heat loss"
++    annotation (Placement(transformation(extent={{-20,-290},{0,-270}})));
++
+ //----------------------------------------------------------------------------//
+ 
+ //--------------------------Step 3: Three-way Valve---------------------------//
+@@ -496,6 +501,8 @@ equation
+           -84},{-222,-84}},       color={0,0,127}));
+   connect(TSetSup.u, temRoo.T) annotation (Line(points={{-222,-80},{-270,-80},{-270,30},
+           {-50,30}},     color={0,0,127}));
++  connect(TBoiRoo.port, boi.heatPort) annotation (Line(points={{0,-280},{10,
++          -280},{10,-302.8}}, color={191,0,0}));
+   annotation (Documentation(info="<html>
+ <p>
+ This part of the system model adds to the model that is implemented in
+@@ -603,6 +610,12 @@ Buildings.Examples.Tutorial.Boiler.System4</a>.
+ </html>", revisions="<html>
+ <ul>
+ <li>
++October 14, 2026, by Michael Wetter:<br/>
++Added prescribed temperature model for boiler heat loss.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ April 9, 2024, by Hongxiang Fu:<br/>
+ Specified <code>nominalValuesDefineDefaultPressureCurve=true</code>
+ in the mover component to suppress a warning.
+diff --git a/Buildings/Examples/Tutorial/Boiler/System6.mo b/Buildings/Examples/Tutorial/Boiler/System6.mo
+index 5abe189113..1f5c198197 100644
+--- a/Buildings/Examples/Tutorial/Boiler/System6.mo
++++ b/Buildings/Examples/Tutorial/Boiler/System6.mo
+@@ -154,6 +154,11 @@ model System6
+     Q_flow_nominal=Q_flow_nominal,
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue()) "Boiler"
+     annotation (Placement(transformation(extent={{20,-320},{0,-300}})));
++
++  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature TBoiRoo(T=293.15)
++    "Boiler room temperature for boiler heat loss"
++    annotation (Placement(transformation(extent={{-20,-290},{0,-270}})));
++
+ //----------------------------------------------------------------------------//
+ 
+   Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear valRad(
+@@ -514,6 +519,8 @@ equation
+           30},{-50,30}}, color={0,0,127}));
+   connect(conPIDRad.u_s,TSetSup. y) annotation (Line(points={{-182,-10},{-190,-10},
+           {-190,-80},{-198,-80}}, color={0,0,127}));
++  connect(TBoiRoo.port, boi.heatPort) annotation (Line(points={{0,-280},{10,
++          -280},{10,-302.8}}, color={191,0,0}));
+   annotation (Documentation(info="<html>
+ <p>
+ This part of the system model adds to the model that is implemented in
+@@ -591,6 +598,12 @@ maintained at their set point.
+ </html>", revisions="<html>
+ <ul>
+ <li>
++October 14, 2026, by Michael Wetter:<br/>
++Added prescribed temperature model for boiler heat loss.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ April 9, 2024, by Hongxiang Fu:<br/>
+ Specified <code>nominalValuesDefineDefaultPressureCurve=true</code>
+ in the mover component to suppress a warning.
+diff --git a/Buildings/Examples/Tutorial/Boiler/System7.mo b/Buildings/Examples/Tutorial/Boiler/System7.mo
+index b0a4bfdf9e..de1b54774f 100644
+--- a/Buildings/Examples/Tutorial/Boiler/System7.mo
++++ b/Buildings/Examples/Tutorial/Boiler/System7.mo
+@@ -154,6 +154,11 @@ model System7
+     Q_flow_nominal=Q_flow_nominal,
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue()) "Boiler"
+     annotation (Placement(transformation(extent={{20,-320},{0,-300}})));
++
++  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature TBoiRoo(T=293.15)
++    "Boiler room temperature for boiler heat loss"
++    annotation (Placement(transformation(extent={{-20,-290},{0,-270}})));
++
+ //----------------------------------------------------------------------------//
+ 
+   Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear valRad(
+@@ -579,6 +584,8 @@ equation
+           30},{-51,30}}, color={0,0,127}));
+   connect(conPIDRad.u_s,TSetSup. y) annotation (Line(points={{-182,-10},{-188,-10},
+           {-188,-60},{-198,-60}}, color={0,0,127}));
++  connect(TBoiRoo.port, boi.heatPort) annotation (Line(points={{0,-280},{10,
++          -280},{10,-302.8}}, color={191,0,0}));
+   annotation (Documentation(info="<html>
+ <p>
+ This part of the system model changes the implementation of the control in
+@@ -665,6 +672,12 @@ response shown below should be seen.
+ </html>", revisions="<html>
+ <ul>
+ <li>
++October 14, 2026, by Michael Wetter:<br/>
++Added prescribed temperature model for boiler heat loss.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ April 9, 2024, by Hongxiang Fu:<br/>
+ Specified <code>nominalValuesDefineDefaultPressureCurve=true</code>
+ in the mover component to suppress a warning.
+diff --git a/Buildings/Examples/Tutorial/CDL/BaseClasses/PartialOpenLoop.mo b/Buildings/Examples/Tutorial/CDL/BaseClasses/PartialOpenLoop.mo
+index 36906c361a..f5912f6cb1 100644
+--- a/Buildings/Examples/Tutorial/CDL/BaseClasses/PartialOpenLoop.mo
++++ b/Buildings/Examples/Tutorial/CDL/BaseClasses/PartialOpenLoop.mo
+@@ -153,6 +153,10 @@ partial model PartialOpenLoop "Partial model with open loop system"
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue()) "Boiler"
+     annotation (Placement(transformation(extent={{20,-320},{0,-300}})));
+ 
++  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature TBoiRoo(T=293.15)
++    "Boiler room temperature for boiler heat loss"
++    annotation (Placement(transformation(extent={{-20,-290},{0,-270}})));
++
+   Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear valRad(
+     redeclare package Medium = MediumW,
+     energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
+@@ -344,6 +348,8 @@ equation
+       points={{-240,70},{-220,70},{-220,50},{-340,50},{-340,30},{-318,30}},
+       color={191,0,0},
+       smooth=Smooth.None));
++  connect(TBoiRoo.port, boi.heatPort) annotation (Line(points={{0,-280},{10,
++          -280},{10,-302.8}}, color={191,0,0}));
+   annotation (Documentation(info="<html>
+ <p>
+ This partial model implements the HVAC system model and a simple room, which is here modeled
+@@ -362,6 +368,12 @@ Buildings.Examples.Tutorial.Boiler</a>
+ revisions="<html>
+ <ul>
+ <li>
++October 14, 2026, by Michael Wetter:<br/>
++Added prescribed temperature model for boiler heat loss.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ February 18, 2020, by Michael Wetter:<br/>
+ First implementation.
+ </li>
+diff --git a/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo b/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo
+index c053cf0830..ecc9b627a5 100644
+--- a/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo
++++ b/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo
+@@ -9,9 +9,14 @@ partial model PartialBoiler "Boiler base class with efficiency unspecified"
+    annotation (choicesAllMatching = true);
+ 
+   // These parameters can be supplied via Data records
+-  parameter Modelica.Units.SI.Power Q_flow_nominal "Nominal heating power";
++  parameter Modelica.Units.SI.HeatFlowRate Q_flow_nominal(min=0) "Nominal heating power (useful heat)";
+   parameter Modelica.Units.SI.ThermalConductance UA=0.05*Q_flow_nominal/30
+-    "Overall UA value";
++    "Overall UA value"
++    annotation(Dialog(group="Heat loss to ambient"));
++//fixme  parameter Modelica.Units.SI.Temperature TAmb = 288.15
++//    "Ambient temperature used to compute heat loss if heatPort is unconnected"
++//    annotation(Dialog(group="Heat loss to ambient"));
++
+   parameter Modelica.Units.SI.Volume VWat=1.5E-6*Q_flow_nominal
+     "Water volume of boiler" annotation (Dialog(tab="Dynamics", enable=not (
+           energyDynamics == Modelica.Fluid.Types.Dynamics.SteadyState)));
+@@ -19,15 +24,38 @@ partial model PartialBoiler "Boiler base class with efficiency unspecified"
+     "Mass of boiler that will be lumped to water heat capacity" annotation (
+       Dialog(tab="Dynamics", enable=not (energyDynamics == Modelica.Fluid.Types.Dynamics.SteadyState)));
+   parameter Modelica.Units.SI.Efficiency eta_nominal
+-    "Boiler efficiency at nominal condition";
++    "Boiler efficiency at nominal condition, useful heat divided by fuel use";
++
++
++  final parameter Modelica.Units.SI.HeatFlowRate QFue_flow_nominal = Q_flow_nominal / eta_nominal
++    "Fuel use at nominal conditions";
++//  final parameter Modelica.Units.SI.HeatFlowRate QAmb_flow_nominal(max=0) = UA*(TAmb_nominal-TWat_nominal)
++//    "Heat loss to ambient at nominal conditions";
+ 
+-  input Modelica.Units.SI.Efficiency eta "Boiler efficiency";
+-  Modelica.Units.SI.Power QFue_flow=y*Q_flow_nominal/eta_nominal
++  input Modelica.Units.SI.Efficiency eta "Boiler efficiency, useful heat divided by fuel use";
++
++  // The direction of UAOve.Q_flow is from the ambient to the boiler
++  //   and therefore it takes a plus sign here.
++  // eta and eta_nominal is the ratio of useful heat (enthalpy stream difference of
++  // working fluid between inlet and outlet).
++  // Hence, the term QFue_flow must add an additional heat flow to cover
++  // the conduction losses from the water through the boiler insulation into the ambient
++  // air
++  Modelica.Units.SI.HeatFlowRate QFue_flow=y*QFue_flow_nominal
+     "Heat released by fuel";
+-  Modelica.Units.SI.Power QWat_flow=eta*QFue_flow + UAOve.Q_flow
+-    "Heat transfer from gas into water";
+-    // The direction of UAOve.Q_flow is from the ambient to the boiler
+-    //   and therefore it takes a plus sign here.
++  Modelica.Units.SI.HeatFlowRate QUse_flow=eta*QFue_flow
++    "Useful heat for exchange with fluid ports";
++
++  Modelica.Units.SI.HeatFlowRate QExh_flow = -QFue_flow + QWat_flow
++    "Heat exhausted by flu gas (negative)";
++
++  Modelica.Units.SI.Power QAmb_flow = UAOve.Q_flow
++    "Heat loss to ambient (negative)";
++
++  Modelica.Units.SI.Power QWat_flow=QUse_flow - QAmb_flow
++    "Heat transfer from gas into water (from where some heat is lost to ambient)";
++
++
+   Modelica.Units.SI.MassFlowRate mFue_flow=QFue_flow/fue.h
+     "Fuel mass flow rate";
+   Modelica.Units.SI.VolumeFlowRate VFue_flow=mFue_flow/fue.d
+@@ -46,7 +74,9 @@ partial model PartialBoiler "Boiler base class with efficiency unspecified"
+ 
+   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a heatPort
+     "Heat port, can be used to connect to ambient"
+-    annotation (Placement(transformation(extent={{-10,62}, {10,82}})));
++    annotation (
++      mustBeConnected = "heatPort must be connected to account for heat loss.",
++      Placement(transformation(extent={{-10,62}, {10,82}})));
+   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor heaCapDry(
+     C=500*mDry,
+     T(start=T_start))
+@@ -68,6 +98,14 @@ partial model PartialBoiler "Boiler base class with efficiency unspecified"
+     "Overall thermal conductance (if heatPort is connected)"
+     annotation (Placement(transformation(extent={{-48,10},{-28,30}})));
+ 
++protected
++//fixme  final parameter Boolean has_connectionToAmbient = xxx
++//    "True if heatPort is connected to ambient, false otherwise";
++//  HeatTransfer.Sources.FixedTemperature bouTAmb(
++//    T=TAmb)
++//    if not has_connectionToAmbient
++//#    "Ambient temperature in boiler room (if heatPort is unconnected)"
++//    annotation (Placement(transformation(extent={{-80,50},{-60,70}})));
+ equation
+   assert(eta > 0.001, "Efficiency curve is wrong.");
+ 
+@@ -134,6 +172,16 @@ Buildings.Fluid.Boilers.UsersGuide</a> for details.
+ revisions="<html>
+ <ul>
+ <li>
++October 11, 2026, by Michael Wetter:<br/>
++Corrected bug that led to heat loss of boiler to be accounted twice in the energy balance.
++With this change, the <code>heatPort</code> must be connected, as otherwise, the heat loss
++is not properly calculated.
++The translation will stop with an error message if the <code>heatPort</code> is unconnected.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++
++</li>
++<li>
+ November 10, 2021, by Hongxiang Fu:<br/>
+ The heating power output of the boiler is now corrected
+ by its heat loss to the ambient.
+diff --git a/Buildings/Fluid/Boilers/BoilerPolynomial.mo b/Buildings/Fluid/Boilers/BoilerPolynomial.mo
+index 8a72c57f7b..7e6ab3a22e 100644
+--- a/Buildings/Fluid/Boilers/BoilerPolynomial.mo
++++ b/Buildings/Fluid/Boilers/BoilerPolynomial.mo
+@@ -104,6 +104,15 @@ an arbitrary number of polynomial coefficients can be specified.
+ ", revisions="<html>
+ <ul>
+ <li>
++October 11, 2026, by Michael Wetter:<br/>
++Corrected bug in base class that led to heat loss of boiler to be accounted twice in the energy balance.
++With this change, the <code>heatPort</code> must be connected, as otherwise, the heat loss
++is not properly calculated.
++The translation will stop with an error message if the <code>heatPort</code> is unconnected.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ March 7, 2022, by Michael Wetter:<br/>
+ Set <code>final massDynamics=energyDynamics</code>.<br/>
+ This is for
+diff --git a/Buildings/Fluid/Boilers/BoilerTable.mo b/Buildings/Fluid/Boilers/BoilerTable.mo
+index f91fcdb399..240e2e48e2 100644
+--- a/Buildings/Fluid/Boilers/BoilerTable.mo
++++ b/Buildings/Fluid/Boilers/BoilerTable.mo
+@@ -52,6 +52,15 @@ Buildings.Fluid.Boilers.Data</a>.
+ </html>", revisions="<html>
+ <ul>
+ <li>
++October 11, 2026, by Michael Wetter:<br/>
++Corrected bug in base class that led to heat loss of boiler to be accounted twice in the energy balance.
++With this change, the <code>heatPort</code> must be connected, as otherwise, the heat loss
++is not properly calculated.
++The translation will stop with an error message if the <code>heatPort</code> is unconnected.<br/>
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/4775\">
++#4775</a>.
++</li>
++<li>
+ March 7, 2022, by Michael Wetter:<br/>
+ Set <code>final massDynamics=energyDynamics</code>.<br/>
+ This is for
+diff --git a/Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo b/Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo
+index 2b4297d640..683a5add4f 100644
+--- a/Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo
++++ b/Buildings/Fluid/Boilers/Examples/BoilerPolynomial.mo
+@@ -38,7 +38,7 @@ model BoilerPolynomial
+     from_dp=true,
+     T_start=293.15) "Boiler"
+     annotation (Placement(transformation(extent={{-10,-2},{10,18}})));
+-  Buildings.HeatTransfer.Sources.FixedTemperature TAmb1(      T=288.15)
++  Buildings.HeatTransfer.Sources.FixedTemperature TAmb1(T=288.15)
+     "Ambient temperature in boiler room"
+     annotation (Placement(transformation(extent={{-30,28},{-10,48}})));
+   Buildings.Fluid.Boilers.BoilerPolynomial boi2(
+diff --git a/Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo b/Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo
+index a407bced5f..0093003ed2 100644
+--- a/Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo
++++ b/Buildings/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mo
+@@ -19,11 +19,11 @@ model BoilerPolynomialClosedLoop
+     fue=Buildings.Fluid.Data.Fuels.HeatingOilLowerHeatingValue(),
+     energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
+     T_start=293.15) "Boiler"
+-    annotation (Placement(transformation(extent={{40,-110},{20,-90}})));
++    annotation (Placement(transformation(extent={{60,-150},{40,-130}})));
+   Modelica.Blocks.Logical.OnOffController onOffController(bandwidth=20)
+-    annotation (Placement(transformation(extent={{-130,-80},{-110,-60}})));
++    annotation (Placement(transformation(extent={{-80,-100},{-60,-80}})));
+   Modelica.Blocks.Math.BooleanToReal booleanToReal
+-    annotation (Placement(transformation(extent={{-92,-80},{-72,-60}})));
++    annotation (Placement(transformation(extent={{-40,-100},{-20,-80}})));
+   Actuators.Valves.ThreeWayEqualPercentageLinear val(
+     redeclare package Medium = Medium,
+     l={0.01,0.01},
+@@ -57,7 +57,7 @@ model BoilerPolynomialClosedLoop
+     annotation (Placement(transformation(extent={{-80,-30},{-60,-10}})));
+   Modelica.Blocks.Sources.Constant TSetBoi(k=273.15 + 70)
+     "Temperature setpoint for boiler"
+-    annotation (Placement(transformation(extent={{-170,-74},{-150,-54}})));
++    annotation (Placement(transformation(extent={{-120,-94},{-100,-74}})));
+   Controls.Continuous.LimPID conPID(
+     Td=1,
+     k=0.5,
+@@ -132,18 +132,21 @@ model BoilerPolynomialClosedLoop
+   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor TVol
+     "Sensor for volume temperature"
+     annotation (Placement(transformation(extent={{-60,120},{-80,140}})));
++  HeatTransfer.Sources.FixedTemperature           TAmb1(T=288.15)
++    "Ambient temperature in boiler room"
++    annotation (Placement(transformation(extent={{20,-120},{40,-100}})));
+ equation
+   connect(onOffController.y, booleanToReal.u) annotation (Line(
+-      points={{-109,-70},{-94,-70}},
++      points={{-59,-90},{-42,-90}},
+       color={255,0,255},
+       smooth=Smooth.None));
+   connect(boi.port_b, pumBoi.port_a)
+                                    annotation (Line(
+-      points={{20,-100},{-1.12703e-16,-100},{-1.12703e-16,-30}},
++      points={{40,-140},{0,-140},{0,-30}},
+       color={0,127,255},
+       smooth=Smooth.None));
+   connect(boi.T, onOffController.u) annotation (Line(
+-      points={{19,-92},{-140,-92},{-140,-76},{-132,-76}},
++      points={{39,-132},{-88,-132},{-88,-96},{-82,-96}},
+       color={0,0,127},
+       smooth=Smooth.None));
+   connect(conPID.y, val.y) annotation (Line(
+@@ -155,7 +158,7 @@ equation
+       color={0,0,127},
+       smooth=Smooth.None));
+   connect(TSetBoi.y, onOffController.reference) annotation (Line(
+-      points={{-149,-64},{-132,-64}},
++      points={{-99,-84},{-82,-84}},
+       color={0,0,127},
+       smooth=Smooth.None));
+   connect(val.port_2, spl.port_1) annotation (Line(
+@@ -179,11 +182,11 @@ equation
+       color={0,127,255},
+       smooth=Smooth.None));
+   connect(spl2.port_2, boi.port_a) annotation (Line(
+-      points={{80,1.22125e-15},{80,-100},{40,-100}},
++      points={{80,0},{80,-140},{60,-140}},
+       color={0,127,255},
+       smooth=Smooth.None));
+   connect(boi.port_a, exp.port_a) annotation (Line(
+-      points={{40,-100},{114,-100},{114,-80}},
++      points={{60,-140},{114,-140},{114,-80}},
+       color={0,127,255},
+       smooth=Smooth.None));
+   connect(spl3.port_2, spl4.port_1) annotation (Line(
+@@ -199,7 +202,7 @@ equation
+       color={0,127,255},
+       smooth=Smooth.None));
+   connect(booleanToReal.y, boi.y) annotation (Line(
+-      points={{-71,-70},{56,-70},{56,-92},{42,-92}},
++      points={{-19,-90},{72,-90},{72,-132},{62,-132}},
+       color={0,0,127},
+       smooth=Smooth.None));
+   connect(m_flow_pum.y, pumBoi.m_flow_in) annotation (Line(
+@@ -246,6 +249,8 @@ equation
+       points={{10,10},{70,10}},
+       color={0,127,255},
+       smooth=Smooth.None));
++  connect(TAmb1.port, boi.heatPort) annotation (Line(points={{40,-110},{50,-110},
++          {50,-132.8}}, color={191,0,0}));
+   annotation (Diagram(coordinateSystem(preserveAspectRatio=true, extent={{-200,-200},
+             {200,200}})),
+              __Dymola_Commands(file="modelica://Buildings/Resources/Scripts/Dymola/Fluid/Boilers/Examples/BoilerPolynomialClosedLoop.mos"
+diff --git a/Buildings/Fluid/Boilers/UsersGuide.mo b/Buildings/Fluid/Boilers/UsersGuide.mo
+index dd0f211b94..f73324f0d2 100644
+--- a/Buildings/Fluid/Boilers/UsersGuide.mo
++++ b/Buildings/Fluid/Boilers/UsersGuide.mo
+@@ -37,6 +37,7 @@ The heat transferred to the working fluid (typically water or air) is
+ where <i>&eta;</i> is the efficiency at the current operating point
+ and <i>Q&#775;<sub>amb</sub> > 0</i> is the heat loss from the boiler
+ to the ambient.
++</p>
+ <p>
+ <i>Q&#775;<sub>amb</sub></i> is considered only when the port <code>heatPort</code>
+ is connected to a heat port outside of this model

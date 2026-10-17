@@ -1,0 +1,777 @@
+Reading additional input from stdin...
+OpenAI Codex v0.162.0
+--------
+workdir: <workdir>/CoolProp_CoolProp_3339
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: detailed
+session id: <removed>
+--------
+user
+You are an "invariant writer" for an audit of physics software (one of two independent tracks; the other track cannot see you, and you may not look at it). For one GitHub PR that has been merged into a physics/engineering simulation library, write down the library-level invariants this change **should satisfy** physically, and how to check them numerically through the merged public API. The purpose is to test later, by random spot checks and formal proofs, whether these changes are physically right.
+
+## Input and output
+- Input: ./input/pr.json (repo, number, url, title, body, commits, files, merge commit) and ./input/pr.diff.
+- Output: ./spec.md in the current directory, one section following the template below.
+- **Independence rule**: read only ./input and GitHub (the PR page, the diff, the source at the merge commit, PR/issue discussion, the cited literature), e.g. https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>. Do not read any file on this computer outside the current working directory.
+
+## Template
+```
+## <repo>#<number> <title>
+- What changed (1–3 sentences, naming files and formulas):
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+- Common operating domain (range of each input, with the basis):
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+```
+- The invariants should target **the physics this change touches**; prefer narrow and checkable over a generic "energy is conserved". If a PR has several relevant invariants, list the most important 1–3 and mark which are primary and which secondary.
+- If you think no numerically checkable invariant can be written for this change, say why; do not force one.
+
+## Rules
+- Read GitHub public information only: no comments, issues, forks, or any write operation.
+- Do not clone the whole repository, and do not install, compile, or run any code.
+- When done, stop.
+codex
+我会只读取 `input` 中的材料和 GitHub 上相关公开源码，提炼这次变更涉及的物理不变量，并将可通过合并后公开 API 检查的方法写入 `spec.md`。不会安装、编译或运行项目代码。
+exec
+/bin/zsh -lc 'cat input/pr.json' in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 0ms:
+{"author":{"id":"MDQ6VXNlcjE4NTk5NDc=","is_bot":false,"login":"ibell","name":"Ian Bell"},"baseRefOid":"afcc79091533dfbd258cd59c065c0765747fd230","body":"The `rhosr-CS` viscosity correlation blends a liquid and a vapor branch with a\nlogistic switch centred on `x_crossover`. Every one of the eight `rhosr-CS`\nfluid files carries that centre as data, `parse_rhosr_viscosity` reads it into\n`ViscosityRhoSrVariables::x_crossover` — and nothing ever read it back.\n`TransportRoutines::viscosity_rhosr` hardcoded the centre as the literal `2`.\n\n## No shipped number changes\n\nAll eight fluids (R1233zd(E), R1234yf, R1234ze(E), R124, R152A, R22, R245fa,\nR32) carry `x_crossover` as the JSON integer `2`, which converts to a double\nthat is exactly `2.0`, so `x - data.x_crossover` is bit-identical to `x - 2`.\n\nThat is what makes it worth fixing rather than leaving. The field looks live,\nits presence in eight fluid files implies it means something, and it silently\ndoes nothing. It fails only for whoever next edits it, and it fails quietly.\n\nThe switch *sharpness* stays hardcoded at `100.0` — a constant of the\ncorrelation rather than fluid data, carried by no fluid file. It is now named\ninstead of being a bare literal.\n\n## Test\n\nClone R1233zd(E) twice through `add_fluids_as_JSON`, altering nothing but\n`x_crossover` (2 vs 12), and evaluate at `T = 300 K, ρ = 10000 mol/m³` — where\n`x = ρ·s_r/rhosr_critical` is 9.00, between the two switch locations, and single\nphase.\n\nBefore the fix the two clones agree to the bit:\n\n```\nCHECK( std::abs(clone_moved / shipped - 1) > 0.01 )\nwith expansion:\n  0.0 > 0.01\n```\n\nAfter it they differ by a factor of 2605. The test also pins that the shipped\nfluid is unchanged by the JSON round-trip (1e-14) and `REQUIRE`s its premises —\nthat the block is still `rhosr-CS` and the shipped `x_crossover` is still 2 — so\nit degrades to a clear failure rather than a false pass if the data moves.\n\n## Deliberately not included\n\nValidation of `c_liq`/`c_vap` arity and of a zero `rhosr_critical` — both one\nline from the line fixed here, both real (`viscosity_rhosr` indexes `[0..3]`\nunconditionally and divides by `rhosr_critical`). A throwing guard there cannot\nbe given a negative test today: `FluidLibrary.cpp` appends to `name_vector`\nbefore `add_one`'s `try`, so any rejected fluid permanently strands its name in\n`fluids_list`, and 12+ test sites walk that list calling `factory()` on every\nname. Shipping an untested throw inside a commit whose other half closes a gate\nhole would be the wrong trade. Filed instead, blocked on the orphan fix.\n\n## Verification\n\nFull `~[slow]`: 519 cases, 177,207 assertions, 0 failures — byte-identical to\nthe pre-change baseline. CI runs the whole suite (`~[slow]` in\n`dev_checks.yml`, everything in `test_catch2.yml`), so the new test is gated\nthere.\n\nNote for local runs: `dev/ci/preflight.sh` maps `src/Backends/Helmholtz/` to\n`[Helmholtz],[REFPROP]`, which selects no transport, viscosity or conductivity\ntest at all — so a local preflight on this diff exercises none of the changed\ncode. That is a preflight-scope issue only, not a CI coverage gap, and it is\nbeing handled separately.\n\n`cppcheck` and `clang-tidy` were skipped locally. Being precise about what that\nmeans: `clang-tidy` ran and produced 80 signal findings, none in the added\nlines. `cppcheck` bails out of `CoolProp-Tests.cpp` at line 332 with a\n`syntaxError` and never reaches the new test, so \"no findings there\" is vacuous\nrather than reassuring. Both fail identically on `origin/master`'s copies of the\nsame files.\n\nWritten by Claude Opus 5, reviewed adversarially before and after the\npost-review changes.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n","commits":[{"authoredDate":"2026-08-29T15:33:50Z","authors":[{"email":"<email>","id":"MDQ6VXNlcjE4NTk5NDc=","login":"ibell","name":"Ian Bell"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Opus 5"}],"committedDate":"2026-08-29T16:05:48Z","messageBody":"… file\n\nThe rho*s_r corresponding-states correlation blends a liquid and a vapor\nbranch with a logistic switch centred on x_crossover, which every\nrhosr-CS fluid file carries as data.  parse_rhosr_viscosity reads it into\nViscosityRhoSrVariables::x_crossover, and nothing ever read it back:\nTransportRoutines::viscosity_rhosr hardcoded the centre as the literal 2.\n\nNo shipped number changes.  All eight rhosr-CS fluids — R1233zd(E),\nR1234yf, R1234ze(E), R124, R152A, R22, R245fa, R32 — carry x_crossover as\nthe JSON integer 2, which converts to a double that is exactly 2.0, so\n`x - data.x_crossover` is bit-identical to `x - 2`.  That is what makes\nthis worth fixing rather than leaving: the field looks live, is implied\nto be meaningful by its presence in eight fluid files, and silently does\nnothing.  It fails only for whoever next edits it, and it fails quietly.\n\nThe sharpness of the switch stays hardcoded at 100.0.  That is a constant\nof the correlation rather than fluid data, no fluid file carries it, and\nit is now named instead of being a bare literal.\n\nRegression test, verified to fail before the change: clone R1233zd(E)\ntwice through add_fluids_as_JSON, altering nothing but x_crossover (2 vs\n12), and evaluate at T = 300 K, rho = 10000 mol/m^3, where\nx = rho*s_r/rhosr_critical is 9.00 — between the two switch locations, and\nsingle phase.  Before the fix the two clones agree to the bit and the\ncheck reads \"0.0 > 0.01\"; after it they differ by a factor of 2605,\nbecause the switch has moved from the liquid branch to the vapor branch\nat that state.  The test also pins that the shipped fluid is unchanged by\nthe JSON round-trip (1e-14) and REQUIREs its premises — that the block is\nstill rhosr-CS and that the shipped x_crossover is still 2 — so it\ndegrades to a clear failure rather than a false pass if the data moves.\n\nDeliberately not included: validation of c_liq/c_vap arity and of a zero\nrhosr_critical, both one line from the line fixed here and both real.  A\nthrowing guard there cannot be given a negative test today, because\nFluidLibrary.cpp appends to name_vector before add_one's try, so any\nrejected fluid permanently strands its name in fluids_list, and 12+ test\nsites walk that list calling factory() on every name.  Shipping an\nuntested throw inside this commit would be the wrong trade.  Filed\ninstead, blocked on the orphan fix.\n\nCloses CoolProp-bbrt\n\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>","messageHeadline":"fix(transport): rhosr-CS viscosity ignored x_crossover from the fluid…","oid":"29f7efcabae1edf37e590e2fafab573ada9c558b"}],"files":[{"path":"src/Backends/Helmholtz/TransportRoutines.cpp","additions":5,"deletions":2},{"path":"src/Tests/CoolProp-Tests.cpp","additions":65,"deletions":0}],"headRefOid":"29f7efcabae1edf37e590e2fafab573ada9c558b","mergeCommit":{"oid":"5418cec58c52183e3a010b2894e08b818ed4cc81"},"mergedAt":"2026-08-29T16:18:13Z","number":3339,"title":"fix(transport): rhosr-CS viscosity ignored x_crossover from the fluid file","url":"https://github.com/CoolProp/CoolProp/pull/3339"}
+
+exec
+/bin/zsh -lc 'cat input/pr.diff' in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 0ms:
+diff --git a/src/Backends/Helmholtz/TransportRoutines.cpp b/src/Backends/Helmholtz/TransportRoutines.cpp
+index 612abaa8de..4208bf00db 100644
+--- a/src/Backends/Helmholtz/TransportRoutines.cpp
++++ b/src/Backends/Helmholtz/TransportRoutines.cpp
+@@ -1274,8 +1274,11 @@ CoolPropDbl TransportRoutines::viscosity_rhosr(HelmholtzEOSMixtureBackend& HEOS)
+     // Calculate x
+     double x = HEOS.rhomolar() * HEOS.gas_constant() * (HEOS.tau() * HEOS.dalphar_dTau() - HEOS.alphar()) / data.rhosr_critical;
+ 
+-    // Crossover variable
+-    double psi_liq = 1 / (1 + exp(-100.0 * (x - 2)));
++    // Crossover variable.  The switch location comes from the fluid file
++    // (x_crossover); the sharpness is a fixed constant of the correlation and is
++    // deliberately not exposed as data.
++    const double crossover_sharpness = 100.0;
++    double psi_liq = 1 / (1 + exp(-crossover_sharpness * (x - data.x_crossover)));
+ 
+     // Evaluated using Horner's method
+     const std::vector<double>&cL = data.c_liq, cV = data.c_vap;
+diff --git a/src/Tests/CoolProp-Tests.cpp b/src/Tests/CoolProp-Tests.cpp
+index 28029ba010..24ed3335bc 100644
+--- a/src/Tests/CoolProp-Tests.cpp
++++ b/src/Tests/CoolProp-Tests.cpp
+@@ -665,6 +665,71 @@ TEST_CASE("R1233zd(E) has a viscosity model (#3330)", "[viscosity],[transport],[
+     }
+ }
+ 
++// The rho*s_r correlation blends a liquid and a vapor branch with a logistic
++// switch centred on x_crossover, which every rhosr-CS fluid file carries as
++// data.  TransportRoutines::viscosity_rhosr used to hardcode the centre as the
++// literal 2 and never read the parsed field, so editing x_crossover in a fluid
++// file silently did nothing.  All eight rhosr-CS fluids happen to set it to 2,
++// so nothing was numerically wrong -- the field was simply inert, which is the
++// worse kind of bug: it fails only for whoever next tries to use it.
++//
++// Clone R1233zd(E) twice, changing nothing but x_crossover, and evaluate at a
++// state whose x sits between the two values.  Before the fix both clones return
++// bit-identical viscosity; after it they must diverge, because the switch has
++// moved from "fully liquid branch" to "fully vapor branch" at that state.
++TEST_CASE("rhosr-CS viscosity honours x_crossover from the fluid file", "[viscosity],[transport],[rhosr]") {
++    using nlohmann::json;
++
++    json arr = json::parse(CoolProp::get_fluid_param_string("R1233zd(E)", "JSON"));
++    REQUIRE(arr.is_array());
++    REQUIRE(arr.size() == 1);
++
++    // Guard the premise: this test is meaningless if the block stops being
++    // rhosr-CS, or if the shipped switch location ever moves off 2.
++    REQUIRE(arr[0]["TRANSPORT"]["viscosity"].at("type").get<std::string>() == "rhosr-CS");
++    REQUIRE(arr[0]["TRANSPORT"]["viscosity"].at("x_crossover").get<double>() == 2);
++
++    auto register_clone = [&](const std::string& name, const std::string& CAS, double x_crossover) {
++        json fluid = arr[0];
++        fluid["INFO"]["NAME"] = name;
++        fluid["INFO"]["CAS"] = CAS;
++        fluid["INFO"]["ALIASES"] = json::array();
++        fluid["INFO"]["REFPROP_NAME"] = "N/A";
++        for (const char* key : {"INCHI_KEY", "INCHI_STRING", "SMILES", "CHEMSPIDER_ID", "2DPNG_URL"}) {
++            fluid["INFO"].erase(key);
++        }
++        fluid["TRANSPORT"]["viscosity"]["x_crossover"] = x_crossover;
++        json doc = json::array();
++        doc.push_back(fluid);
++        // add_fluids_as_JSON returns a literal true on the HEOS branch and
++        // signals failure only by throwing, so assert on the throw.
++        REQUIRE_NOTHROW(CoolProp::add_fluids_as_JSON("HEOS", doc.dump()));
++    };
++
++    register_clone("R1233zdE_XC_SHIPPED", "999-99-80", 2.0);
++    register_clone("R1233zdE_XC_MOVED", "999-99-81", 12.0);
++
++    // x = rho*s_r/rhosr_critical is 9.00 here, i.e. between the two crossover
++    // values, and the state is single-phase (supercritical liquid).
++    const double T = 300.0, rhomolar = 10000.0;
++
++    const double shipped = CoolProp::PropsSI("V", "T", T, "Dmolar", rhomolar, "R1233zd(E)");
++    const double clone_same = CoolProp::PropsSI("V", "T", T, "Dmolar", rhomolar, "R1233zdE_XC_SHIPPED");
++    const double clone_moved = CoolProp::PropsSI("V", "T", T, "Dmolar", rhomolar, "R1233zdE_XC_MOVED");
++    CAPTURE(shipped, clone_same, clone_moved);
++
++    REQUIRE(ValidNumber(shipped));
++    REQUIRE(ValidNumber(clone_same));
++    REQUIRE(ValidNumber(clone_moved));
++
++    // Round-tripping the fluid through JSON must not perturb the answer.
++    CHECK(std::abs(clone_same / shipped - 1) < 1e-14);
++
++    // The point of the test: moving the switch must move the result.  This
++    // failed before the fix, when the two clones agreed exactly.
++    CHECK(std::abs(clone_moved / shipped - 1) > 0.01);
++}
++
+ static CoolProp::input_pairs inputs[] = {
+   CoolProp::DmolarT_INPUTS,
+   //CoolProp::SmolarT_INPUTS,
+
+web search: 
+web search: https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Backends/Helmholtz/TransportRoutines.cpp
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Backends/Helmholtz/TransportRoutines.cpp' | sed -n '1250,1320p'" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 141ms:
+    // **********************
+    // Remaining calculations
+    // **********************
+
+    // The reference fluid's contribution to the viscosity [Pa-s]
+    CoolPropDbl eta_resid = HEOS_Reference.calc_viscosity_background();
+
+    // The F factor
+    CoolPropDbl F_eta = sqrt(f) * pow(h, -static_cast<CoolPropDbl>(2.0L / 3.0L)) * sqrt(M / M0);
+
+    // The total viscosity considering the contributions of the fluid of interest and the reference fluid [Pa-s]
+    CoolPropDbl eta = eta_dilute + eta_resid * F_eta;
+
+    return eta;
+}
+
+CoolPropDbl TransportRoutines::viscosity_rhosr(HelmholtzEOSMixtureBackend& HEOS) {
+
+    // Get a reference to the data
+    const CoolProp::ViscosityRhoSrVariables& data = HEOS.components[0].transport.viscosity_rhosr;
+
+    // The dilute gas portion for the fluid of interest [Pa-s]
+    CoolPropDbl eta_dilute = viscosity_dilute_kinetic_theory(HEOS);
+
+    // Calculate x
+    double x = HEOS.rhomolar() * HEOS.gas_constant() * (HEOS.tau() * HEOS.dalphar_dTau() - HEOS.alphar()) / data.rhosr_critical;
+
+    // Crossover variable.  The switch location comes from the fluid file
+    // (x_crossover); the sharpness is a fixed constant of the correlation and is
+    // deliberately not exposed as data.
+    const double crossover_sharpness = 100.0;
+    double psi_liq = 1 / (1 + exp(-crossover_sharpness * (x - data.x_crossover)));
+
+    // Evaluated using Horner's method
+    const std::vector<double>&cL = data.c_liq, cV = data.c_vap;
+    double f_liq = cL[0] + x * (cL[1] + x * (cL[2] + x * (cL[3])));
+    double f_vap = cV[0] + x * (cV[1] + x * (cV[2] + x * (cV[3])));
+
+    // Evaluate the reference fluid
+    double etastar_ref = exp(psi_liq * f_liq + (1 - psi_liq) * f_vap);
+
+    // Get the non-dimensionalized viscosity
+    double etastar_fluid = 1 + data.C * (etastar_ref - 1);
+
+    return etastar_fluid * eta_dilute;
+}
+
+CoolPropDbl TransportRoutines::conductivity_ECS(HelmholtzEOSMixtureBackend& HEOS, HelmholtzEOSMixtureBackend& HEOS_Reference) {
+    // Collect some parameters
+    CoolPropDbl M = HEOS.molar_mass(), M_kmol = M * 1000, M0 = HEOS_Reference.molar_mass(), Tc = HEOS.T_critical(), Tc0 = HEOS_Reference.T_critical(),
+                rhocmolar = HEOS.rhomolar_critical(), rhocmolar0 = HEOS_Reference.rhomolar_critical(), R_u = HEOS.gas_constant(),
+                R = HEOS.gas_constant() / HEOS.molar_mass(),  //[J/kg/K]
+      R_kJkgK = R_u / M_kmol;
+
+    // Get a reference to the ECS data
+    CoolProp::ConductivityECSVariables& ECS = HEOS.components[0].transport.conductivity_ecs;
+
+    // The correction polynomial psi_eta in rho/rho_red
+    double psi = 0;
+    for (std::size_t i = 0; i < ECS.psi_a.size(); ++i) {
+        psi += ECS.psi_a[i] * pow(HEOS.rhomolar() / ECS.psi_rhomolar_reducing, ECS.psi_t[i]);
+    }
+
+    // The correction polynomial f_int in T/T_red
+    double fint = 0;
+    for (std::size_t i = 0; i < ECS.f_int_a.size(); ++i) {
+        fint += ECS.f_int_a[i] * pow(HEOS.T() / ECS.f_int_T_reducing, ECS.f_int_t[i]);
+    }
+
+    // The dilute gas density for the fluid of interest [uPa-s]
+    CoolPropDbl eta_dilute = viscosity_dilute_kinetic_theory(HEOS) * 1e6;
+
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/dev/fluids/R1233zd%28E%29.json' | tail -150" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 376ms:
+            0.8834,
+            1.386,
+            0.5196,
+            1.133,
+            0.9788,
+            1.166,
+            0.9244,
+            0.9372
+          ],
+          "eta": [
+            1.532,
+            0.635,
+            1.4056,
+            1.451,
+            1.395,
+            2.259,
+            24.3,
+            23.6
+          ],
+          "gamma": [
+            1.7171,
+            0.63,
+            0.7852,
+            2.251,
+            1.821,
+            2.074,
+            1.0797,
+            1.084
+          ],
+          "n": [
+            4.24023,
+            -0.03152671,
+            -1.366494,
+            2.647143,
+            -2.325463,
+            -0.2541521,
+            0.1330834,
+            -0.1569217
+          ],
+          "t": [
+            1.852,
+            1.92,
+            1.936,
+            1.515,
+            2.668,
+            1.755,
+            0.526,
+            2.98
+          ],
+          "type": "ResidualHelmholtzGaussian"
+        }
+      ],
+      "gas_constant": 8.314462618,
+      "gas_constant_units": "J/mol/K",
+      "molar_mass": 0.1304962,
+      "molar_mass_units": "kg/mol",
+      "p_max": 100000000.0,
+      "p_max_units": "Pa",
+      "pseudo_pure": false
+    }
+  ],
+  "INFO": {
+    "2DPNG_URL": "http://www.chemspider.com/ImagesHandler.ashx?id=98647",
+    "ALIASES": [
+      "R-1233zd(E)",
+      "R1233zdE",
+      "R1233ZDE",
+      "TRANS-1-CHLORO-3,3,3-TRIFLUOROPROPENE"
+    ],
+    "CAS": "102687-65-0",
+    "CHEMSPIDER_ID": 98647,
+    "ENVIRONMENTAL": {
+      "ASHRAE34": "?",
+      "FH": 99999999,
+      "GWP100": 0.0,
+      "GWP20": -99999999999,
+      "GWP500": -9999999999,
+      "HH": -999999999,
+      "Name": "R1233zd(E)",
+      "ODP": 99999999.0,
+      "PH": -999999
+    },
+    "FORMULA": "CF3CH=CHCl",
+    "INCHI_KEY": "XXXZXJCOEBDUPS-UPHRSURJSA-N",
+    "INCHI_STRING": "InChI=1S/C3H2ClF3/c4-2-1-3(5,6)7/h1-2H/b2-1+",
+    "NAME": "R1233zd(E)",
+    "REFPROP_NAME": "R1233ZDE",
+    "SMILES": "C(=C/Cl)\\C(F)(F)F"
+  },
+  "STATES": {
+    "critical": {
+      "T": 438.86,
+      "T_units": "K",
+      "hmolar": 59244.11998897554,
+      "hmolar_units": "J/mol",
+      "p": 3582800.0,
+      "p_units": "Pa",
+      "rhomolar": 3704.0,
+      "rhomolar_units": "mol/m^3",
+      "smolar": 220.7440413503784,
+      "smolar_units": "J/mol/K"
+    },
+    "triple_liquid": {
+      "T": 165.75,
+      "T_units": "K",
+      "hmolar": 11446.20638899786,
+      "hmolar_units": "J/mol",
+      "p": 8.627970526720816,
+      "p_units": "Pa",
+      "rhomolar": 11848.813162596663,
+      "rhomolar_units": "mol/m^3",
+      "smolar": 62.82956356914848,
+      "smolar_units": "J/mol/K"
+    },
+    "triple_vapor": {
+      "T": 165.75,
+      "T_units": "K",
+      "hmolar": 44366.848813989534,
+      "hmolar_units": "J/mol",
+      "p": 8.627970526720816,
+      "p_units": "Pa",
+      "rhomolar": 0.0062608101952894,
+      "rhomolar_units": "mol/m^3",
+      "smolar": 261.44580746049974,
+      "smolar_units": "J/mol/K"
+    }
+  },
+  "TRANSPORT": {
+    "viscosity": {
+      "BibTeX": "Bell-PURDUE-2016-ETA",
+      "C": 0.8089,
+      "_note": "C and rhosr_critical were both refit for the Akasaka and Lemmon (JPCRD 2022) EOS that replaced Mondejar et al. in v8.0.0. rhosr_critical is not a fitted parameter: it is rho_c*R*(tau*dalphar_dtau - alphar) at the EOS critical point, the quantity that normalises x = rho*s_r/rhosr_critical, so it tracks whichever EOS ships. For R32, R22 and R152A, whose EOS were never replaced, the stored constant equals the value computed from the current EOS to seven digits. The value here is what the shipped EOS gives; the previous -47978.147551213806 came from Mondejar and left x = 1.011 rather than 1 at the critical point. C = 0.8089 is then fitted on top of it against the 61 primary liquid viscosity points of Miyara, Alam and Kariya, Int. J. Refrig. 92:86-93, 2018 (doi 10.1016/j.ijrefrig.2018.05.021), Table 3: 313.67-433.32 K, 1.005-4.074 MPa, stated combined standard uncertainty 3.0%. AAD 2.62%, bias -0.07%, comparable to REFPROP 10 ECS (2.78%) over the same states. The published C = 1.2474 was fitted to Hulse, Basu, Singh and Thomas, JCED 57:3581-3586, 2012, superseded by the later measurements; it runs ~50-70% high in the liquid. That diagnosis, and the first refit (C = 0.671156, against figure-digitized Meng and Cui data; on the superseded normaliser that is 13.9% low against Miyara, and 15.5% low if rescored on the rhosr_critical shipping here), are due to J. P. Kauffman in GitHub issue #1826, 2019-05-07. Miyara covers only 314-433 K; over 243-313 K, where only the paywalled Meng and Cui measurements exist, this pair sits 6.7% above REFPROP 10 ECS. c_liq, c_vap and x_crossover are the universal reference-fluid coefficients and are unchanged. Remaining limitation: saturated vapor is ~10% high whatever C is, because the vapor is dominated by the dilute-gas term, whose Lennard-Jones parameters are Chung estimates rather than fitted values. Fitting script: dev/scripts/fit_R1233zdE_viscosity.py",
+      "c_liq": [
+        0.6100913843,
+        0.4508958312,
+        -0.017063,
+        0.000564
+      ],
+      "c_vap": [
+        0.0,
+        1.2,
+        -0.308598,
+        0.035317
+      ],
+      "rhosr_critical": -48503.78752999625,
+      "type": "rhosr-CS",
+      "x_crossover": 2
+    }
+  }
+}
+**Preparing C=0 parser tests**
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Backends/Helmholtz/Fluids/FluidLibrary.h' | rg -n -A 24 -B 4 'parse_rhosr_viscosity'" in <workdir>/CoolProp_CoolProp_3339
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/include/AbstractState.h' | rg -n 'smolar_residual|alphar\\(|dalphar_dTau\\(|tau\\(|gas_constant\\(|viscosity\\('" in <workdir>/CoolProp_CoolProp_3339
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Tests/CoolProp-Tests.cpp' | sed -n '585,670p'" in <workdir>/CoolProp_CoolProp_3339
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/CoolPropBibTeXLibrary.bib' | rg -n -A 18 -B 2 'Bell-PURDUE-2016-ETA'" in <workdir>/CoolProp_CoolProp_3339
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/dev/fluids/R1233zd%28E%29.json' | rg -n 'T_max|Ttriple|T_max|Tmin|Tmax'" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 19ms:
+5:      "Tmax": 438.86,
+6:      "Tmin": 165.75,
+26:      "Tmax": 438.86,
+27:      "Tmin": 165.75,
+49:      "Tmax": 438.86,
+50:      "Tmin": 165.75,
+3869:          "Ttriple / K": 165.75,
+3904:      "T_max": 450.0,
+3905:      "T_max_units": "K",
+3906:      "Ttriple": 165.75,
+3907:      "Ttriple_units": "K",
+
+ exited 1 in 215ms:
+ succeeded in 225ms:
+792-        fluid.transport.viscosity_Chung.acentric = cpjson::get_double(viscosity, "acentric");
+793-        fluid.transport.viscosity_using_Chung = true;
+794-    }
+795-
+796:    void parse_rhosr_viscosity(const nlohmann::json& viscosity, CoolPropFluid& fluid) {
+797-        fluid.transport.viscosity_rhosr.C = cpjson::get_double(viscosity, "C");
+798-        fluid.transport.viscosity_rhosr.c_liq = cpjson::get_double_array(viscosity, "c_liq");
+799-        fluid.transport.viscosity_rhosr.c_vap = cpjson::get_double_array(viscosity, "c_vap");
+800-        fluid.transport.viscosity_rhosr.rhosr_critical = cpjson::get_double(viscosity, "rhosr_critical");
+801-        fluid.transport.viscosity_rhosr.x_crossover = cpjson::get_double(viscosity, "x_crossover");
+802-        fluid.transport.viscosity_using_rhosr = true;
+803-    }
+804-
+805-    /// Parse the transport properties
+806-    void parse_viscosity(const nlohmann::json& viscosity, CoolPropFluid& fluid) {
+807-        // If an array, use the first one, and then stop;
+808-        if (viscosity.is_array()) {
+809-            parse_viscosity(viscosity.front(), fluid);
+810-            return;
+811-        }
+812-
+813-        // Load the BibTeX key
+814-        fluid.transport.BibTeX_viscosity = cpjson::get_string(viscosity, "BibTeX");
+815-
+816-        // Set the Lennard-Jones 12-6 potential variables, or approximate them from method of Chung
+817-        if (!viscosity.contains("sigma_eta") || !viscosity.contains("epsilon_over_k")) {
+818-            default_transport(fluid);
+819-        } else {
+820-            fluid.transport.sigma_eta = cpjson::get_double(viscosity, "sigma_eta");
+--
+828-        }
+829-
+830-        // If it is using rho*sr CS, set parameters and quit
+831-        if (viscosity.contains("type") && !cpjson::get_string(viscosity, "type").compare("rhosr-CS")) {
+832:            parse_rhosr_viscosity(viscosity, fluid);
+833-            return;
+834-        }
+835-
+836-        // Use the method of Chung
+837-        // If it is using ECS, set ECS parameters and quit
+838-        if (viscosity.contains("type") && !cpjson::get_string(viscosity, "type").compare("Chung")) {
+839-            parse_Chung_viscosity(viscosity, fluid);
+840-            return;
+841-        }
+842-
+843-        if (viscosity.contains("hardcoded")) {
+844-            std::string target = cpjson::get_string(viscosity, "hardcoded");
+845-            if (!target.compare("Water")) {
+846-                fluid.transport.hardcoded_viscosity = CoolProp::TransportPropertyData::VISCOSITY_HARDCODED_WATER;
+847-                return;
+848-            } else if (!target.compare("HeavyWater")) {
+849-                fluid.transport.hardcoded_viscosity = CoolProp::TransportPropertyData::VISCOSITY_HARDCODED_HEAVYWATER;
+850-                return;
+851-            } else if (!target.compare("Helium")) {
+852-                fluid.transport.hardcoded_viscosity = CoolProp::TransportPropertyData::VISCOSITY_HARDCODED_HELIUM;
+853-                return;
+854-            } else if (!target.compare("R23")) {
+855-                fluid.transport.hardcoded_viscosity = CoolProp::TransportPropertyData::VISCOSITY_HARDCODED_R23;
+856-                return;
+
+ succeeded in 246ms:
+480-}
+481-
+482:@InProceedings{Bell-PURDUE-2016-ETA,
+483-  Title                    = {{Viscosity of refrigerants and other working fluids from residual entropy scaling }},
+484-  Author                   = {Ian H. Bell and Arno Laesecke},
+485-  Booktitle                = {16th International Refrigeration and Air Conditioning Conference at Purdue, July 11-14, 2016},
+486-  Year                     = {2016}
+487-}
+488-
+489-@Article{Bell-JCED-2016,
+490-  Title                    = {{Automatic fitting of binary interaction parameters for multi-fluid Helmholtz-energy-explicit mixture models}},
+491-  Author                   = {Bell, Ian H. and Lemmon, Eric W.},
+492-  Journal                  = {J. Chem. Eng. Data},
+493-  Volume                   = {61},
+494-  Doi                      = {10.1021/acs.jced.6b00257},
+495-  Year                     = {2016}
+496-}
+497-
+498-@Article{Bell-JPCRD-2022,
+499-  Title                    = {{Mixture Models for Refrigerants R-1234yf/134a, R-1234yf/1234ze(E), and R-134a/1234ze(E) and Interim Models for R-125/1234yf, R-1234ze(E)/227ea, and R-1234yf/152a}},
+500-  Author                   = {Ian H. Bell},
+
+ succeeded in 263ms:
+};
+
+TEST_CASE_METHOD(TransportValidationFixture, "Compare thermal conductivities against published data", "[conductivity],[transport]") {
+    int inputsN = sizeof(conductivity_validation_data) / sizeof(conductivity_validation_data[0]);
+    for (int i = 0; i < inputsN; ++i) {
+        vel el = conductivity_validation_data[i];
+        CHECK_NOTHROW(set_backend("HEOS", el.fluid));
+        CAPTURE(el.fluid);
+        CAPTURE(el.in1);
+        CAPTURE(el.v1);
+        CAPTURE(el.in2);
+        CAPTURE(el.v2);
+        CHECK_NOTHROW(set_pair(el.in1, el.v1, el.in2, el.v2));
+        get_value(CoolProp::iconductivity);
+        CAPTURE(el.expected);
+        CAPTURE(actual);
+        CHECK(std::abs(actual / el.expected - 1) < el.tol);
+    }
+}
+
+}; /* namespace TransportValidation */
+
+// #2768 swapped R1233zd(E) to the Akasaka & Lemmon (JPCRD 2022) international
+// standard EOS and dropped the rho*s_r corresponding-states viscosity
+// correlation that had shipped since v6, so viscosity became unavailable
+// entirely (#3330).  The block is back, with the entropy-scaling constant C
+// refit -- the published C = 1.2474 came from a dataset that later measurements
+// superseded, and ran ~50-70% high in the liquid (#1826).  rhosr_critical is
+// now the value the current EOS gives at its own critical point, and C is
+// fitted on top of it to the primary data of Miyara, Alam & Kariya,
+// Int. J. Refrig. 92:86-93 (2018).
+//
+// These values therefore deliberately do NOT reproduce v7.2.0; they are roughly
+// 29-38% lower along the saturated liquid line, and agree with Miyara's
+// measurements to 2.6% AAD against a stated 3.0% experimental uncertainty.  They
+// are a regression lock on "the coefficients are the ones we intend and the EOS
+// feeding them has not moved".
+//
+// If an EOS or coefficient change moves these, that is a decision to make
+// consciously rather than absorb silently -- in particular rhosr_critical must
+// be recomputed from the new EOS and C refitted on top of it, since the two are
+// coupled through x = rho*s_r/rhosr_critical.
+TEST_CASE("R1233zd(E) has a viscosity model (#3330)", "[viscosity],[transport],[3330]") {
+    SECTION("the state from the bug report is finite") {
+        const double eta = CoolProp::PropsSI("V", "T", 273.15, "Q", 0, "R1233zd(E)");
+        CAPTURE(eta);
+        REQUIRE(ValidNumber(eta));
+        // Saturated liquid at 0 C.  v7.2.0 answered 6.3689e-4 Pa-s here; with the
+        // refit constants this is 3.99e-4, against 3.71e-4 from REFPROP 10 ECS.
+        CHECK(eta > 1e-4);
+        CHECK(eta < 1e-3);
+    }
+    SECTION("the correlation is the published one") {
+        CHECK(CoolProp::get_fluid_param_string("R1233zd(E)", "BibTeX-VISCOSITY") == "Bell-PURDUE-2016-ETA");
+    }
+    SECTION("pinned values") {
+        struct row
+        {
+            double T, rhomolar, eta;
+        };
+        // T [K], rhomolar [mol/m^3], eta [Pa-s]
+        // All four are single phase at the stated (T, rho): rhoL(300 K) = 9643.6 and
+        // rhoL(400 K) = 7219.8 mol/m^3, rhoV(350 K) = 246.0 mol/m^3.  The two
+        // compressed-liquid rows sit at 18.2 and 10.8 MPa, outside the 1.0-4.1 MPa
+        // range C was fitted over, so they lock extrapolation behaviour on purpose.
+        const row rows[] = {
+          {250.0, 1e-10, 9.2922657253765002e-06},  // dilute-gas limit; C drops out here
+          {350.0, 100.0, 1.314939784502e-05},      // vapor
+          {300.0, 10000.0, 3.6854833102371e-04},   // compressed liquid, liquid branch of the crossover
+          {400.0, 8000.0, 1.289196192878e-04},     // compressed liquid, rho = 2.2 rho_c
+        };
+        shared_ptr<CoolProp::AbstractState> AS(CoolProp::AbstractState::factory("HEOS", "R1233zd(E)"));
+        for (const auto& r : rows) {
+            CAPTURE(r.T);
+            CAPTURE(r.rhomolar);
+            AS->update(CoolProp::DmolarT_INPUTS, r.rhomolar, r.T);
+            const double eta = AS->viscosity();
+            CAPTURE(eta);
+            CHECK(std::abs(eta / r.eta - 1) < 1e-6);
+        }
+    }
+}
+
+// The rho*s_r correlation blends a liquid and a vapor branch with a logistic
+// switch centred on x_crossover, which every rhosr-CS fluid file carries as
+// data.  TransportRoutines::viscosity_rhosr used to hardcode the centre as the
+
+**Checking GitHub tree API**
+codex
+已确认变更影响的是残余熵黏度模型中两条经验分支的切换位置。检查重点会放在指定位置是否等权混合、混合值是否位于两分支之间，以及移动切换位置时响应是否符合公式；同时区分模型内部一致性与实验准确性，避免把测试中的大幅变化当作物理正确性的证据。
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://api.github.com/repos/CoolProp/CoolProp/git/trees/5418cec58c52183e3a010b2894e08b818ed4cc81?recursive=1' | rg -n 'AbstractState.h|CoolProp.h|pyx|CMakeLists.txt'" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 438ms:
+588:      "path": "CMakeLists.txt",
+9551:      "path": "dev/pdsim_cimport_contract/pdsim_surface.pyx",
+9653:      "path": "dev/pseudo-pure/summer.pyx",
+10058:      "path": "dev/scripts/summer.pyx",
+10105:      "path": "dev/state_capsule/State.pyx",
+10113:      "path": "dev/state_capsule/cimport_check.pyx",
+11040:      "path": "include/AbstractState.h",
+11104:      "path": "include/CoolProp.h",
+11119:      "path": "include/CoolProp/AbstractState.h",
+11157:      "path": "include/CoolProp/CoolProp.h",
+13488:      "path": "wrappers/EES/CoolProp.htm",
+13684:      "path": "wrappers/Fortran/detailed_example/CMakeLists.txt",
+15094:      "path": "wrappers/Python/CMakeLists.txt",
+15117:      "path": "wrappers/Python/CoolProp/AbstractState.pyx",
+15149:      "path": "wrappers/Python/CoolProp/CoolProp.pyx",
+15196:      "path": "wrappers/Python/CoolProp/HumidAirProp.pyx",
+15489:      "path": "wrappers/Python/_nanobind/State.pyx",
+15613:      "path": "wrappers/Python/nanobind/CMakeLists.txt",
+
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/include/CoolProp/AbstractState.h' | rg -n 'smolar_residual|alphar\\(|dalphar_dTau\\(|tau\\(|gas_constant\\(|viscosity\\(|phase\\(|p\\('" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 350ms:
+122:    CAE _hmolar_residual = cache.next(), _smolar_residual = cache.next(), _gibbsmolar_residual = cache.next();
+169:    virtual CoolPropDbl calc_smolar_residual() {
+170:        throw NotImplementedError("calc_smolar_residual is not implemented for this backend");
+197:    virtual CoolPropDbl calc_gibbsmolar_residual() {
+198:        throw NotImplementedError("calc_gibbsmolar_residual is not implemented for this backend");
+221:    virtual CoolPropDbl calc_viscosity() {
+245:    virtual CoolPropDbl calc_gas_constant() {
+356:    virtual CoolPropDbl calc_alphar() {
+364:    virtual CoolPropDbl calc_dalphar_dTau() {
+663:    virtual phases calc_phase() {
+667:    virtual void calc_specify_phase(phases phase) {
+671:    virtual void calc_unspecify_phase() {
+787:    AbstractState() : _fluid_type(FLUID_TYPE_UNDEFINED), _phase(iphase_unknown) {
+1085:    phases phase() {
+1086:        return calc_phase();
+1089:    void specify_phase(phases phase) {
+1090:        calc_specify_phase(phase);
+1093:    void unspecify_phase() {
+1094:        calc_unspecify_phase();
+1207:    double p() {
+1217:    double tau();
+1225:    double gas_constant();
+1257:    double smolar_residual();
+1311:    double gibbsmolar_residual();
+1583:    double viscosity();
+1598:        return cpmass() * viscosity() / conductivity();
+1673:    CoolPropDbl alphar() {
+1674:        if (!_alphar) _alphar = calc_alphar();
+1683:    CoolPropDbl dalphar_dTau() {
+1684:        if (!_dalphar_dTau) _dalphar_dTau = calc_dalphar_dTau();
+
+exec
+/bin/zsh -lc "curl -L --fail --silent 'https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Backends/Helmholtz/TransportRoutines.cpp' | rg -n -A 30 'TransportRoutines::viscosity_dilute_kinetic_theory'" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 0ms:
+9:CoolPropDbl TransportRoutines::viscosity_dilute_kinetic_theory(HelmholtzEOSMixtureBackend& HEOS) {
+10-    if (HEOS.is_pure_or_pseudopure) {
+11-        CoolPropDbl Tstar = HEOS.T() / HEOS.components[0].transport.epsilon_over_k;
+12-        CoolPropDbl sigma_nm = HEOS.components[0].transport.sigma_eta * 1e9;  // 1e9 to convert from m to nm
+13-        CoolPropDbl molar_mass_kgkmol = HEOS.molar_mass() * 1000;             // 1000 to convert from kg/mol to kg/kmol
+14-
+15-        // The nondimensional empirical collision integral from Neufeld
+16-        // Neufeld, P. D.; Janzen, A. R.; Aziz, R. A. Empirical Equations to Calculate 16 of the Transport Collision Integrals (l,s)*
+17-        // for the Lennard-Jones (12-6) Potential. J. Chem. Phys. 1972, 57, 1100-1102
+18-        CoolPropDbl OMEGA22 =
+19-          1.16145 * pow(Tstar, static_cast<CoolPropDbl>(-0.14874)) + 0.52487 * exp(-0.77320 * Tstar) + 2.16178 * exp(-2.43787 * Tstar);
+20-
+21-        // The dilute gas component -
+22-        return 26.692e-9 * sqrt(molar_mass_kgkmol * HEOS.T()) / (pow(sigma_nm, 2) * OMEGA22);  // Pa-s
+23-    } else {
+24:        throw NotImplementedError("TransportRoutines::viscosity_dilute_kinetic_theory is only for pure and pseudo-pure");
+25-    }
+26-}
+27-
+28-CoolPropDbl TransportRoutines::viscosity_dilute_collision_integral(HelmholtzEOSMixtureBackend& HEOS) {
+29-    if (HEOS.is_pure_or_pseudopure) {
+30-        // Retrieve values from the state class
+31-        CoolProp::ViscosityDiluteGasCollisionIntegralData& data = HEOS.components[0].transport.viscosity_dilute.collision_integral;
+32-        const std::vector<CoolPropDbl>&a = data.a, &t = data.t;
+33-        const CoolPropDbl C = data.C, molar_mass = data.molar_mass;
+34-
+35-        CoolPropDbl S = NAN;
+36-        // Unit conversions and variable definitions
+37-        const CoolPropDbl Tstar = HEOS.T() / HEOS.components[0].transport.epsilon_over_k;
+38-        const CoolPropDbl sigma_nm = HEOS.components[0].transport.sigma_eta * 1e9;  // 1e9 to convert from m to nm
+39-        const CoolPropDbl molar_mass_kgkmol = molar_mass * 1000;                    // 1000 to convert from kg/mol to kg/kmol
+40-
+41-        /// Both the collision integral \f$\mathfrak{S}^*\f$ and effective cross section \f$\Omega^{(2,2)}\f$ have the same form,
+42-        /// in general we don't care which is used.  The are related through \f$\Omega^{(2,2)} = (5/4)\mathfrak{S}^*\f$
+43-        /// see Vesovic(JPCRD, 1990) for CO\f$_2\f$ for further information
+44-        CoolPropDbl summer = 0, lnTstar = log(Tstar);
+45-        for (std::size_t i = 0; i < a.size(); ++i) {
+46-            summer += a[i] * pow(lnTstar, t[i]);
+47-        }
+48-        S = exp(summer);
+49-
+50-        // The dilute gas component
+51-        return C * sqrt(molar_mass_kgkmol * HEOS.T()) / (pow(sigma_nm, 2) * S);  // Pa-s
+52-    } else {
+53-        throw NotImplementedError("TransportRoutines::viscosity_dilute_collision_integral is only for pure and pseudo-pure");
+54-    }
+
+exec
+/bin/zsh -lc "cat > spec.md <<'EOF'
+## CoolProp/CoolProp#3339 fix(transport): rhosr-CS viscosity ignored x_crossover from the fluid file
+
+- What changed (1–3 sentences, naming files and formulas):
+  "'`src/Backends/Helmholtz/TransportRoutines.cpp` 中 `viscosity_rhosr` 把液相分支权重从 `1/(1+exp(-100*(x-2)))` 改成 `1/(1+exp(-100*(x-x_crossover)))`，读取已经由 JSON 解析的切换中心，并将固定陡峭度 100 命名为局部常量。`src/Tests/CoolProp-Tests.cpp` 新增通过公共 JSON 注册接口改变切换中心的回归测试；分支多项式、残余熵定义和最终黏度缩放均未改变。
+
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+  统一记号：纯流体 HEOS 状态的温度为 '"\\(T>0\\) [K]，摩尔密度为 \\(\\rho>0\\) [mol/m³]，无量纲残余 Helmholtz 能为 \\(\\alpha"'^r'"\\)，\\(\\tau=T_r/T\\)。采用有符号的摩尔残余熵
+  \\[
+  s"'^r=R('"\\tau\\alpha"'^r_'"\\tau-\\alpha"'^r)'"\\quad[\\mathrm{J/(mol\\,K)}],\\qquad
+  x=\\rho s"'^r/q_c,
+  '"\\]
+  其中 \\(q_c\\) 是 JSON 的 "'`rhosr_critical` [J/(m³ K)]，必须非零。不要额外对残余熵取负号；在选定流体常见致密态，'"\\(s"'^r'"\\) 与 \\(q_c\\) 都是负数，\\(x\\) 为正。令 \\(a=\\texttt{x_crossover}\\)、\\(k=100\\)，二者对应无量纲 \\(x\\)；\\(L(x)=\\sum_{j=0}"'^3 c_{L,j}x''^j'"\\)、\\(V(x)=\\sum_{j=0}"'^3 c_{V,j}x''^j'"\\)，\\(C\\) 是无量纲缩放系数，\\(\\eta_0(T)>0\\) 是同一流体的稀薄气体动黏性系数以外的**动力黏度** [Pa·s]。以下 \\(\\eta\\) 均指动力黏度。
+
+  1. **Primary — 残余熵坐标下的对数混合及中心定位。** 对有限且有效的模型参数与单相状态，定义 \\(w=1/(1+e"'^{-k(x-a)})'"\\)，应有
+     \\[
+     \\eta(T,\\rho;a)=\\eta_0(T)\\{1+C[\\exp(wL+(1-w)V)-1]\\}.
+     \\]
+     特别地，\\(a=x\\) 时，归一化参考黏度必须为两分支的几何平均：
+     \\[
+     Z:=1+\\frac{\\eta/\\eta_0-1}{C}=e"'^{(L+V)/2},'"\\qquad C\\ne0.
+     \\]
+     这不是最终动力黏度两端值的几何平均，因为最后还有仿射缩放。远离中心时，\\(x-a\\to+\\infty\\) 选择液相分支，\\(x-a\\to-\\infty\\) 选择气相分支；这里的极限在固定状态下通过移动参数 \\(a\\) 定义，不要求把物理状态推到无限密度。
+
+  2. **Secondary — 无超调与有条件的正耗散。** 令
+     \\(\\eta_L=\\eta_0[1+C(e"'^L-1)]'"\\)、\\(\\eta_V=\\eta_0[1+C(e"'^V-1)]'"\\)。对于 \\(C>0\\)，应有
+     \\[
+     \\min(\\eta_L,\\eta_V)\\le\\eta(a)\\le\\max(\\eta_L,\\eta_V).
+     \\]
+     若两端均为正，则 \\(\\eta(a)>0\\)，符合剪切黏性耗散非负的要求；尤其 \\(0<C\\le1\\) 时正性自动成立。不能对任意用户 JSON 系数断言正性：\\(C>1\\) 时还需 \\(\\min(e"'^L,e''^V)>1-1/C'"\\)。本检查选用 R1233zd(E) 的 \\(C=0.8089\\)，因此无需额外假设。
+
+  3. **Secondary — 切换中心的定向、平滑响应。** 固定 \\(T,\\rho\\) 与其他系数，仅改变 \\(a\\)，有
+     \\[
+     \\frac{\\partial\\log Z}{\\partial a}=-k\\,w(1-w)(L-V),\\qquad
+     \\left.\\frac{\\partial\\log Z}{\\partial a}\\right|_{a=x}=-25(L-V).
+     \\]
+     因此若 \\(L>V\\)，增加中心必须使黏度减小；若 \\(L<V\\)，方向相反；若 \\(L=V\\)，改变中心不能改变黏度。这是对参数的偏导，不是沿状态路径对温度或密度的单调性断言。不得假设标为“液相”的多项式在所有 \\(x\\) 上都较大。
+
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+  残余熵关系来自 Helmholtz 热力学恒等式 \\(s=-(\\partial a/\\partial T)_\\rho\\)；\\(\\rho s"'^r'"\\) 与 \\(q_c\\) 同量纲，所以指数中的 \\(x-a\\) 无量纲。正性与剪切耗散的联系来自牛顿流体的 \\(2\\eta D':D'\\ge0\\)。具体混合模型属于经验关联式，不由热力学唯一决定：上述中心、边界和导数是该关联式必须满足的数学后果，不能单凭它们证明实验准确性。
+
+  合并版本的 [TransportRoutines.cpp](https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Backends/Helmholtz/TransportRoutines.cpp) 给出混合、最终缩放和稀薄气体公式；[FluidLibrary.h](https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Backends/Helmholtz/Fluids/FluidLibrary.h) 的 "'`parse_rhosr_viscosity` 确认全部参数来自 JSON。[R1233zd(E) 数据](https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/dev/fluids/R1233zd%28E%29.json) 的文献键为 `Bell-PURDUE-2016-ETA`，[库内书目](https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/CoolPropBibTeXLibrary.bib) 将其标为 Bell 与 Laesecke，2016，*Viscosity of refrigerants and other working fluids from residual entropy scaling*。本审阅未读取论文正文，故不将固定常数 100 或可任意更改中心的物理有效性宣称为已由原论文验证。
+
+- Common operating domain (range of each input, with the basis):
+  首选纯 R1233zd(E)，以及只修改中心和身份字段的克隆，保留 EOS 与四项分支系数。数据为 '"\\(q_c=-48503.78752999625\\) J/(m³ K)、\\(C=0.8089\\)、默认 \\(a=2\\)，\\(c_L=(0.6100913843,0.4508958312,-0.017063,0.000564)\\)，\\(c_V=(0,1.2,-0.308598,0.035317)\\)。
+
+  建议抽样域为 \\(250\\le T\\le433\\) K、\\(1\\le\\rho\\le10000\\) mol/m³（密度按对数抽样并增加致密点），只接受公共 API 判为稳定单相、\\(0<p<100\\) MPa、\\(0\\le x\\le10\\) 且分支指数有限的点，不强制相态来绕过两相区。该矩形是审计采样范围，不是每一点都有效的模型适用域；EOS 数据给出三相点 165.75 K、温度上限 450 K、压力上限 100 MPa。四个现有回归点中可直接选取 \\((350,100),(300,10000),(400,8000)\\)，单位依上；其单相性在实际检查时仍应确认。
+
+  更接近实验约束的液体子域是 313.67–433.32 K、1.005–4.074 MPa，数据注释称 C 在这一区间的 61 个 Miyara 等人液体测量点上拟合，实验标准不确定度 3.0%；这只是源码记录，未独立核验实验表格。300 K、10000 mol/m³ 是约 18.2 MPa 的回归外推点，不应称为实验验证点。
+
+  中心参数采样 \\(a=x+d\\)，\\(d\\in[-0.4,0.4]\\)，重点取 \\(0,\\pm0.001,\\pm0.01,\\pm0.05,\\pm0.2,\\pm0.4\\)，另保留 PR 的 \\(a=2,12\\) 比较。前者控制指数在 ±40 内并覆盖过渡；任意改动中心的克隆只用于关联式结构测试，不当作真实流体的新标定。默认中心为 2 的单一流体点不能检验数据驱动的中心是否生效。
+
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+  建议后续使用 C++ 公共 API，声明可核对 [include/CoolProp/AbstractState.h](https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/include/CoolProp/AbstractState.h)。本次仅给出方案，未运行。
+
+  1. 用 "'`get_fluid_param_string("R1233zd(E)", "JSON")` 取得单元素数组。按 PR 测试修改 `INFO.NAME`、`INFO.CAS` 为唯一标识，清空 `ALIASES`、设 `REFPROP_NAME="N/A"` 并移除测试列出的身份字段；使用 `add_fluids_as_JSON("HEOS", json_text)` 注册。每种中心用新克隆，不能覆盖现有流体或复用旧 `AbstractState` 对象。
+  2. 通过 `AbstractState::factory("HEOS", name)`、`update(DmolarT_INPUTS,rho,T)` 建状态，以 `phase()` 和 `p()` 筛选。由 `gas_constant()`、`tau()`、`dalphar_dTau()`、`alphar()` 重建 '"\\(s"'^r'"\\) 和 \\(x\\)，也可与 "'`smolar_residual()` 核对。以 `viscosity()` 得到 '"\\(\\eta\\)；高层 "'`PropsSI("V","T",T,"Dmolar",rho,name)` 应给出相同量和单位。
+  3. 为避免调用内部稀薄气体函数，注册一个额外的 **C=0 控制克隆**，其余物性参数保持一致，在同一状态调用 `viscosity()` 得到 '"\\(\\eta_0\\)。这是公共 API 可实施的隔离控制，不是物理标定；仅在分支指数有限的域使用，避免 0 乘无穷。它隔离本 PR 的混合行为，不独立验证原有稀薄气体模型。
+  4. 独立计算多项式与 logistic（可用稳定的分段实现），算出不变量 1 的完整 \\(\\eta_{pred}\\)，与每个克隆的 \\(\\eta_{API}\\) 比较：\\(|\\eta_{API}-\\eta_{pred}|\\le10"'^{-10}'"\\max(|\\eta_{pred}|,\\eta_0)\\)。另用 \\(y=\\log Z\\) 检查中心等式与分支界，绝对误差界取 \\(10"'^{-10}'"\\max(1,|L|,|V|)\\)。这些是双精度公式一致性容差，不是实验误差；远小于百分比但允许 EOS 求值、JSON 往返及指数舍入差异。取 \\(d=\\pm0.4\\) 时，更严谨的尾端界是 \\(|y-L|\\le|L-V|e"'^{-40}'"\\) 或 \\(|y-V|\\le|L-V|e"'^{-40}'"\\)，再加上述数值误差，不要求浮点下严格到达极限。
+  5. 检查不变量 2 时将同一尺度的绝对容差加入端点界，正性单独要求 \\(\\eta>0\\) 且有限。不要用日志归一化后的正性替代最终动力黏度的正性。
+  6. 对不变量 3，在固定状态为 \\(a\\pm h\\) 各注册克隆，计算 \\([y(a+h)-y(a-h)]/(2h)\\)。中心附近从 \\(h=10"'^{-4}'"\\) 起，依次减半到约 \\(10"'^{-6}'"\\)，寻找二阶误差下降及稳定平台；以 \\(10"'^{-5}'"\\max(1,|\\partial_a y|)\\) 为建议导数误差界。步长依据切换宽度 \\(1/k=0.01\\)，过大将平均过渡，过小放大舍入；在饱和尾端不用相对导数误差。\\(|L-V|\\) 太小时仅做绝对误差检查，勿由噪声判定单调方向。
+
+  不额外强加任意中心下精确的 \\(\\eta\\to\\eta_0\\) 稀薄极限：这套系数 \\(L(0)\\ne0\\)，有限 \\(a\\) 时 logistic 液相权重严格非零；默认 \\(a=2\\) 的偏差极小，但移到零附近会使该偏差明显。这是经验模型参数物理适用性的限制，不等同于本次中心读取修复出错。
+
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+  **整体 partial。** 新增 "'`src/Tests/CoolProp-Tests.cpp` 的 `rhosr-CS viscosity honours x_crossover from the fluid file` 要求类型为 `rhosr-CS`、默认中心为 2、克隆注册不抛异常，检查三个黏度有限，要求 `abs(clone_same/shipped-1)<1e-14` 与 `abs(clone_moved/shipped-1)>0.01`。这部分覆盖了不变量 1 的“中心参数确实生效”，但不检查预测数值、等权中心、混合方向或陡峭度；不变量 2 与 3 均 **no**，有限性不等于正性或无超调。
+
+  同文件已有 `R1233zd(E) has a viscosity model (#3330)` 检查一个饱和液态值在 '"\\(10"'^{-4}'"\\) 与 \\(10"'^{-3}'"\\) Pa·s 之间，以及四个固定点相对误差低于 \\(10"'^{-6}'"\\)，能保护默认参数的回归行为，仍不能验证可变中心的上述性质。[合并版本测试源码](https://raw.githubusercontent.com/CoolProp/CoolProp/5418cec58c52183e3a010b2894e08b818ed4cc81/src/Tests/CoolProp-Tests.cpp)。输入 PR 所称全套测试通过不是本次执行结果。
+
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+  **satisfies（预期，未执行验证）**：对上述有限、单相且正端点的域，合并实现直接采用数据中的中心，余下结构与三项不变量的代数推导一致。任意中心的实验可靠性仍 **uncertain**；两克隆黏度相差很大只证明参数有效，不能证明新参数是正确物理标定。
+
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+  合并 SHA："'`5418cec58c52183e3a010b2894e08b818ed4cc81`。建议 C++ 检查驱动，依赖此提交构建的 CoolProp HEOS 库及公共头文件、可用 C++ 编译器与构建系统，JSON 克隆可使用项目已有的 nlohmann/json；若运行原测试还需项目 Catch2 测试配置及构建依赖。预计 **medium**：公开安装包不保证对应这次合并，必须固定源码版本及构建所需依赖；本次没有安装、编译或执行任何项目代码，也未实测构建环境。
+
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+  **可以。** 将 '"\\(x,a,C,\\eta_0\\) 及两组四维系数作为实数参数，三个命题都只需多项式、指数、对数、序与单变量微分；先证明 \\(0<w<1\\)，即可推出几何中心、无超调与带端点假设的正性。导数命题需先证明 \\(Z>0\\)，再用链式法则。
+
+  主要障碍是把 EOS 的残余熵输出与该实数模型连接、证明指定状态处于有效单相域，以及验证 C++ 浮点、指数溢出、JSON 解析和 API 分派与实数语义之间的对应。可将 EOS 输出作为假设输入先证明混合层；这不能替代对实验准确性、EOS 全域正确性或任意自定义 JSON 安全性的证明。
+EOF" in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 0ms:
+exec
+/bin/zsh -lc 'wc -l spec.md' in <workdir>/CoolProp_CoolProp_3339
+ succeeded in 0ms:
+      78 spec.md
+
+codex
+已完成并写入 [spec.md](spec.md)，按模板列出三个可检查的不变量：切换中心的对数等权混合、分支间无超调与有条件的黏度正性，以及中心参数的定向平滑响应。
+
+文档包含合并版本公共 API 的检查步骤、采样范围、数值容差、现有测试覆盖和 Lean 形式化边界，并区分了关联式内部一致性与实验物理准确性。仅读取了 `input` 和 GitHub 公开源码；未安装、编译或运行项目代码。
+tokens used
+34,918
+已完成并写入 [spec.md](spec.md)，按模板列出三个可检查的不变量：切换中心的对数等权混合、分支间无超调与有条件的黏度正性，以及中心参数的定向平滑响应。
+
+文档包含合并版本公共 API 的检查步骤、采样范围、数值容差、现有测试覆盖和 Lean 形式化边界，并区分了关联式内部一致性与实验物理准确性。仅读取了 `input` 和 GitHub 公开源码；未安装、编译或运行项目代码。

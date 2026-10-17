@@ -1,0 +1,17 @@
+1792158994 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:sweep-ai rc=0
+1792158996 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:app/sweep-ai-dep rc=0
+1792158999 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:app/devin-ai-int rc=0
+1792159002 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:app/copilot-swe- rc=0
+1792159005 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:app/chatgpt-code rc=0
+1792159008 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:app/google-labs- rc=0
+1792159011 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:openhands-agent rc=0
+1792159014 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 author:app/claude rc=0
+1792159016 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 "Generated with Claude  rc=0
+1792159019 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 "Co-Authored-By: Claude rc=0
+1792159022 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 "claude.ai/code" rc=0
+1792159025 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 "Devin run" rc=0
+1792159027 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 "chatgpt.com/codex" rc=0
+1792159030 search/issues repo:SanPen/VeraGrid is:pr is:merged merged:2025-01-01..2026-10-16 "Codex" rc=0
+1792159032 search/commits repo:SanPen/VeraGrid "Co-Authored-By: Claude" committer-date:2025-01-01..2026-10-16 rc=0
+1792159035 search/commits repo:SanPen/VeraGrid "copilot-swe-agent" committer-date:2025-01-01..2026-10-16 rc=0
+1792159038 search/commits repo:SanPen/VeraGrid "devin-ai-integration" committer-date:2025-01-01..2026-10-16 rc=0

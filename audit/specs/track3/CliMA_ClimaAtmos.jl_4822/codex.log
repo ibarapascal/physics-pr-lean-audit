@@ -1,0 +1,2773 @@
+Reading additional input from stdin...
+OpenAI Codex v0.162.0
+--------
+workdir: <workdir>/CliMA_ClimaAtmos.jl_4822
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: detailed
+session id: <removed>
+--------
+user
+You are an "invariant writer" for an audit of physics software (one of two independent tracks; the other track cannot see you, and you may not look at it). For one GitHub PR that has been merged into a physics/engineering simulation library, write down the library-level invariants this change **should satisfy** physically, and how to check them numerically through the merged public API. The purpose is to test later, by random spot checks and formal proofs, whether these changes are physically right.
+
+## Input and output
+- Input: ./input/pr.json (repo, number, url, title, body, commits, files, merge commit) and ./input/pr.diff.
+- Output: ./spec.md in the current directory, one section following the template below.
+- **Independence rule**: read only ./input and GitHub (the PR page, the diff, the source at the merge commit, PR/issue discussion, the cited literature), e.g. https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>. Do not read any file on this computer outside the current working directory.
+
+## Template
+```
+## <repo>#<number> <title>
+- What changed (1–3 sentences, naming files and formulas):
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+- Common operating domain (range of each input, with the basis):
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+```
+- The invariants should target **the physics this change touches**; prefer narrow and checkable over a generic "energy is conserved". If a PR has several relevant invariants, list the most important 1–3 and mark which are primary and which secondary.
+- If you think no numerically checkable invariant can be written for this change, say why; do not force one.
+
+## Rules
+- Read GitHub public information only: no comments, issues, forks, or any write operation.
+- Do not clone the whole repository, and do not install, compile, or run any code.
+- When done, stop.
+codex
+我会只读取 `./input` 和 GitHub 上的公开资料，围绕这次改动涉及的物理关系写出可检验的不变量，并保存到 `./spec.md`；不会安装或运行代码。
+exec
+/bin/zsh -lc 'ls input && cat input/pr.json && cat input/pr.diff' in <workdir>/CliMA_ClimaAtmos.jl_4822
+ succeeded in 0ms:
+pr.diff
+pr.json
+source
+{"author":{"id":"MDQ6VXNlcjExNTk4NDMz","is_bot":false,"login":"szy21","name":"Zhaoyi Shen"},"baseRefOid":"e853363fa93882900b87e9572d8971f677246b7e","body":"<!--- THESE LINES ARE COMMENTED -->\r\n## Purpose \r\n<!--- One sentence to describe the purpose of this PR, refer to any linked issues:\r\n#14 -- this will link to issue 14\r\nCloses #2 -- this will automatically close issue 2 on PR merge\r\n-->\r\nThe horizontal resolved-gradient (geometric) SGS variance term is built on the gradient of q_tot along the θ_li surface, |∇_h q_tot − r ∇_h θ_li|² with r = (∂q_tot/∂z)/max(∂θ_li/∂z, θz_min), added to q′q′ only: large-scale stirring is quasi-adiabatic, so the moisture contrast a parcel brings to a level is the contrast along its isentrope, and after the adiabatic displacement only q_tot differs.\r\n\r\n## To-do\r\n<!---  list of proposed tasks in the PR, move to \"Content\" on completion \r\n- Proposed task\r\n-->\r\n\r\n\r\n## Content\r\n<!---  specific tasks that are currently complete \r\n- Solution implemented\r\n-->\r\n\r\n\r\n<!---\r\nReview checklist\r\n\r\nI have:\r\n- followed the codebase contribution guide: https://clima.github.io/ClimateMachine.jl/latest/Contributing/\r\n- followed the style guide: https://clima.github.io/ClimateMachine.jl/latest/DevDocs/CodeStyle/\r\n- followed the documentation policy: https://github.com/CliMA/policies/wiki/Documentation-Policy\r\n- checked that this PR does not duplicate an open PR.\r\n\r\nIn the Content, I have included \r\n- relevant unit tests, and integration tests, \r\n- appropriate docstrings on all functions, structs, and modules, and included relevant documentation.\r\n\r\n-->\r\n\r\n----\r\n- [ ] I have read and checked the items on the review checklist.\r\n","commits":[{"authoredDate":"2026-09-30T22:29:20Z","authors":[{"email":"11598433+szy21@users.noreply.github.com","id":"MDQ6VXNlcjExNTk4NDMz","login":"szy21","name":"Zhaoyi Shen"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Fable 5.1"}],"committedDate":"2026-10-10T00:46:02Z","messageBody":"Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>","messageHeadline":"Geometric SGS variance: isentropic form of the horizontal term","oid":"bd6f0166d93ea0f2193d26c49d404a4a3774533c"}],"files":[{"path":"NEWS.md","additions":9,"deletions":0},{"path":"config/default_configs/default_config.yml","additions":1,"deletions":1},{"path":"docs/src/prophet_closures.md","additions":34,"deletions":20},{"path":"reproducibility_tests/ref_counter.jl","additions":4,"deletions":1},{"path":"src/config/model_getters.jl","additions":0,"deletions":4},{"path":"src/parameterized_tendencies/microphysics/cloud_fraction.jl","additions":130,"deletions":27},{"path":"src/parameters/Parameters.jl","additions":8,"deletions":0},{"path":"src/parameters/create_parameters.jl","additions":3,"deletions":0},{"path":"test/parameter_tests.jl","additions":1,"deletions":0},{"path":"test/parameterized_tendencies/microphysics/cloud_fraction.jl","additions":52,"deletions":0}],"headRefOid":"bd6f0166d93ea0f2193d26c49d404a4a3774533c","mergeCommit":{"oid":"ba2bf1225fc48058d709853c065b1db21a412204"},"mergedAt":"2026-10-10T03:34:49Z","number":4822,"title":"Compute horizontal gradient along isentropes in SGS variance","url":"https://github.com/CliMA/ClimaAtmos.jl/pull/4822"}
+diff --git a/NEWS.md b/NEWS.md
+index dfac6b65c65..531c98aabde 100644
+--- a/NEWS.md
++++ b/NEWS.md
+@@ -5,6 +5,15 @@ main
+ ----
+ - ![][badge-✨feature/enhancement] Add back CloudMicrophysics v0.43 to the
+   compat.
++- ![][badge-🔥behavioralΔ] The horizontal resolved-gradient (geometric) SGS variance
++  term is now the isentropic form: `q′q′` carries `|∇_h q_tot − r ∇_h θ_li|²`, the
++  gradient of `q_tot` along the `θ_li` surface with `r = (∂q_tot/∂z)/(∂θ_li/∂z)`, the
++  stratification floored at the provisional `sgs_variance_isentropic_min_dtheta_dz`,
++  there is no horizontal `θ′θ′` (or `θ′q′`) term, and the displacement along the surface
++  is bounded by the cell, `ℓ² = Δx² / (1 + (s Δx / Δz)²)` with the surface slope
++  `s = |∇_h θ_li| / ∂_z θ_li`. The `q′q′` and `θ′q′` terms of the vertical uniform-box block are
++  scaled by the same factor, the share of the cell's vertical excursion not already
++  sampled along the surface.
+ 
+ 0.42.14
+ -------
+diff --git a/config/default_configs/default_config.yml b/config/default_configs/default_config.yml
+index df576f75560..72deec11ecc 100644
+--- a/config/default_configs/default_config.yml
++++ b/config/default_configs/default_config.yml
+@@ -262,7 +262,7 @@ use_sgs_quadrature:
+   help: "Enable subgrid-scale quadrature integration for microphysics tendencies. When true, microphysics tendencies are integrated over the joint SGS PDF of (T, q_tot). [`true` (default), `false`]"
+   value: true
+ tq_correlation_model:
+-  help: "Closure for the SGS T-q correlation that couples σ_T and σ_q in the sampled joint PDF. `constant` uses the prescribed `Tq_correlation_coefficient`. `diagnosed` builds T′q′ as the sum of three blocks consistent with the variance decomposition — turbulent (prescribed ρ_turb · σ_T,turb · σ_q,turb), horizontal geometric (c_g (c_Δx Δx_h)² ∇_h θ_li · ∇_h q_tot), and vertical uniform-box (Δz² ∂_z θ_li · ∂_z q_tot / 12) — then forms ρ = T′q′ / √(T′T′ q′q′), falling back to the prescribed value where the variances vanish. [`constant` (default), `diagnosed`]"
++  help: "Closure for the SGS T-q correlation that couples σ_T and σ_q in the sampled joint PDF. `constant` uses the prescribed `Tq_correlation_coefficient`. `diagnosed` builds T′q′ as the sum of the covariance blocks consistent with the variance decomposition — turbulent (prescribed ρ_turb · σ_T,turb · σ_q,turb) and vertical uniform-box (Δz² ∂_z θ_li · ∂_z q_tot / 12); the isentropic horizontal block carries no θ′ and contributes none — then forms ρ = T′q′ / √(T′T′ q′q′), falling back to the prescribed value where the variances vanish. [`constant` (default), `diagnosed`]"
+   value: "constant"
+ sgs_distribution:
+   help: "Distribution type for SGS quadrature over microphysics. [`gaussian` (default), `lognormal`, `mean` (grid-mean only, no SGS sampling)]"
+diff --git a/docs/src/prophet_closures.md b/docs/src/prophet_closures.md
+index e10ff741619..c30ad3d36cd 100644
+--- a/docs/src/prophet_closures.md
++++ b/docs/src/prophet_closures.md
+@@ -542,21 +542,31 @@ a single isotropic intra-subdomain variance shared across subdomains, driven by
+ the vertical grid-mean gradients with the grid-mean mixing length.
+ 
+ An optional second term adds the subgrid variance implied by the resolved
+-horizontal field — the leading-order scale-similarity estimate from the
+-horizontal gradient and the horizontal grid scale alone,
+-
+-```math
+-\sigma_{\psi,\mathrm{geo}}^2 = c_g \, (c_{\Delta x} \Delta x_h)^2 \, |\nabla_h \psi|^2 ,
+-```
+-
+-added to both the ``\theta_{li}`` and ``q_t`` variances. The term is off by
+-default (``c_{\Delta x} = 0``). It is not Richardson-weighted: this is a
+-physical feature of the resolved mean field and is independent of whether the
+-turbulent closure (above) is active, so the two blocks contribute additively
+-without double-counting (they are not two estimates of the same quantity).
+-The total-water standard deviation is then bounded by ``\sigma_q \le r_{\max} q_t`` (``r_{\max} = 0.5``), because a wider Gaussian places a quadrature node
+-at negative total water, and condensing the clamped excess can drive the
+-grid-mean vapor negative.
++horizontal field. Large-scale stirring of the free troposphere is
++quasi-adiabatic, so parcels move along surfaces of ``\theta_{li}``; the
++moisture contrast a parcel brings to the cell's level is therefore the
++contrast *along the isentrope*, and after the adiabatic displacement to that
++level only ``q_t`` differs. The term is the leading-order scale-similarity
++estimate built on that gradient,
++
++```math
++\sigma_{q,\mathrm{geo}}^2 = c_g \, c_{\Delta x}^2 \, \ell^2 \,
++  |\nabla_h q_t - r \nabla_h \theta_{li}|^2 ,
++\qquad r = \frac{\partial_z q_t}{\max(\partial_z \theta_{li}, \theta_{z,\min})} ,
++```
++
++added to the ``q_t`` variance only; there is no horizontal ``\theta_{li}``
++variance or ``\theta_{li}``–``q_t`` covariance term. ``r`` is the slope ratio
++``(\partial_z q_t)/(\partial_z \theta_{li})`` with the stratification floored at
++``\theta_{z,\min}`` (`sgs_variance_isentropic_min_dtheta_dz`), which bounds ``|r|``
++by ``|\partial_z q_t| / \theta_{z,\min}`` and treats a neutral or overturned layer
++as one of minimal stable stratification rather than as a surface of opposite tilt.
++The displacement length ``\ell`` is bounded by the cell: a surface of slope
++``s = |\nabla_h \theta_{li}| / \partial_z \theta_{li}`` leaves a layer of depth
++``\Delta z`` after a horizontal distance ``\Delta z / s``, so
++``\ell^2 = \Delta x_h^2 / (1 + (s \Delta x_h / \Delta z)^2)``; for steep surfaces
++(weak stratification) the projected part ``r^2 |\nabla_h \theta_{li}|^2 \Delta x^2``
++then reduces to ``(\partial_z q_t \Delta z)^2``.
+ 
+ A resolved vertical-gradient block is also added,
+ 
+@@ -571,9 +581,11 @@ uniform position in a box of size ``\Delta z``. The scale factor
+ switch (``c_{\Delta z} = 0`` disables the term). This block keeps
+ ``\sigma_T^2``, ``\sigma_q^2`` non-zero where the turbulent closure collapses,
+ so the quadrature integrand retains in-cell variability in laminar cells and
+-single-column configurations. It is not Richardson-weighted — the resolved
+-vertical gradient is a physical feature of the mean profile, not a turbulent
+-property.
++single-column configurations.
++
++The total-water standard deviation is then bounded by ``\sigma_q \le r_{\max} q_t`` (``r_{\max} = 0.5``),
++because a wider Gaussian places a quadrature node at negative total water, and
++condensing the clamped excess can drive the grid-mean vapor negative.
+ 
+ The cross-covariance is set either as a prescribed correlation,
+ 
+@@ -582,17 +594,19 @@ The cross-covariance is set either as a prescribed correlation,
+ \qquad (\texttt{tq\_correlation\_model: constant}, \text{default})
+ ```
+ 
+-or as a diagnosed covariance that combines the three variance blocks with the
++or as a diagnosed covariance that combines the variance blocks with the
+ correlation structure appropriate to each
+ (``\texttt{tq\_correlation\_model: diagnosed}``):
+ 
+ ```math
+ \langle T' q_t' \rangle
+   = r_{\mathrm{turb}} \sigma_{T,\mathrm{turb}} \sigma_{q,\mathrm{turb}}
+-  + c_g (c_{\Delta x} \Delta x_h)^2 \, \nabla_h \theta_{li} \cdot \nabla_h q_t
+   + c_g (c_{\Delta z} \Delta z)^2 \, \partial_z \theta_{li} \, \partial_z q_t ,
+ ```
+ 
++the isentropic horizontal block contributing nothing (no ``\theta_{li}'`` along
++the surface), so its ``q_t`` variance only dilutes the correlation,
++
+ followed by the thermodynamic Jacobian transform to ``T`` basis and
+ ``r = \langle T' q_t' \rangle / \sqrt{\sigma_T^2 \sigma_q^2}``, which is
+ naturally in ``[-1, 1]`` because each variance block satisfies Cauchy-Schwarz
+diff --git a/reproducibility_tests/ref_counter.jl b/reproducibility_tests/ref_counter.jl
+index 0c2e15273e7..2c489813b50 100644
+--- a/reproducibility_tests/ref_counter.jl
++++ b/reproducibility_tests/ref_counter.jl
+@@ -1,4 +1,4 @@
+-426
++427
+ 
+ # **README**
+ #
+@@ -32,6 +32,9 @@
+ # 3) (optional) leave a link to the buildkite run that prompted this ref counter bump.
+ 
+ #=
++427
++- Change the horizontal geometric SGS variance term to the isentropic form
++
+ 426
+ - Update to CloudMicrophysics v0.44 from v0.43
+ 
+diff --git a/src/config/model_getters.jl b/src/config/model_getters.jl
+index 31426837b98..bae9f22124b 100644
+--- a/src/config/model_getters.jl
++++ b/src/config/model_getters.jl
+@@ -1142,10 +1142,6 @@ function AtmosWater(config::AtmosConfig, params, ::Type{FT}) where {FT}
+     microphysics_model = get_microphysics_model(pa)
+     sgs_quadrature = get_sgs_quadrature(pa, params)
+     tq_correlation_model = get_tq_correlation_model(pa)
+-    # No horizontal-term requirement for `DiagnosedTqCorrelation`: the vertical
+-    # resolved-gradient block (uniform-box, always on) and the prescribed-ρ_turb
+-    # turbulent cross together give a well-defined T′q′ even in single-column
+-    # configurations where `sgs_variance_horizontal_scale_factor = 0`.
+ 
+     if microphysics_model isa DryModel
+         @warn "Running simulations without any moisture present."
+diff --git a/src/parameterized_tendencies/microphysics/cloud_fraction.jl b/src/parameterized_tendencies/microphysics/cloud_fraction.jl
+index 58e2c2f6091..0ae1b97f2a6 100644
+--- a/src/parameterized_tendencies/microphysics/cloud_fraction.jl
++++ b/src/parameterized_tendencies/microphysics/cloud_fraction.jl
+@@ -223,6 +223,62 @@ function materialized_mixing_length!(Y, p)
+     end
+ end
+ 
++"""
++    isentropic_cell_cap(inv_θ, ∂θ∂z, θz_min, Δx, Δz)
++
++Geometric factor `ℓ²/Δx²` in `(0, 1]` that bounds the displacement along the
++`θ_li` surface by the grid cell. A surface of slope
++`s = |∇_h θ_li| / max(∂θ_li/∂z, θz_min)` leaves a layer of depth `Δz` after a
++horizontal distance `Δz / s`, so the along-surface segment inside the cell is
++`ℓ = min(Δx, Δz / s)`, smoothed here as `ℓ² = Δx² / (1 + (s Δx / Δz)²)`. For
++flat surfaces (strong stratification, small horizontal `θ_li` contrast) the
++factor is 1 and the term keeps its `(c_Δx Δx)²` scale; for steep surfaces
++(weak stratification) it falls like `(Δz θ_z / (|∇_h θ_li| Δx))²`, which
++turns the projected part `r² |∇_h θ_li|² Δx²` of the invariant into
++`(∂q/∂z Δz)²`.
++
++The same factor is the across-surface share of the cell's vertical excursion
++left for the `q′q′` part of the vertical uniform-box block: the along-surface
++segment `ℓ` already samples a vertical displacement `s ℓ`, and
++`Δz² − (s ℓ)² = Δz² / (1 + (s Δx / Δz)²)`, so the vertical `q′q′` term is scaled
++by it (`set_covariance_cache!`). Flat surfaces keep both blocks in full; steep
++surfaces keep only the along-surface `q` sample, so the two never count the
++same `q` excursion twice. The vertical `θ′q′` term carries the same factor
++(the block's Cauchy–Schwarz bound holds since `f² ≤ f`); the vertical `θ′θ′`
++term is left unchanged (the horizontal block carries no `θ′`). The diagnosed
++correlation is clamped to `[-1, 1]` downstream.
++
++# TODO: θ and q variances are not treated consistently.
++"""
++@inline function isentropic_cell_cap(inv_θ, ∂θ∂z, θz_min, Δx, Δz)
++    s = sqrt(max(inv_θ, zero(inv_θ))) / max(∂θ∂z, θz_min)
++    x = s * Δx / Δz
++    return one(x) / (one(x) + x^2)
++end
++
++"""
++    isentropic_slope_ratio(∂q∂z, ∂θ∂z, θz_min)
++
++Ratio `r = (∂q_tot/∂z) / max(∂θ_li/∂z, θz_min)` that converts the horizontal
++gradient of `θ_li` into the vertical displacement a horizontal excursion along a
++sloping `θ_li` surface implies, times the vertical `q_tot` gradient (the isentropic
++geometric variance term). The floor `θz_min` (`sgs_variance_isentropic_min_dtheta_dz`)
++on the stratification keeps the ratio finite and bounds it by `|∂q/∂z| / θz_min`: a
++neutral or overturned layer (`∂θ_li/∂z ≤ θz_min`) is treated as one of minimal stable
++stratification.
++"""
++@inline isentropic_slope_ratio(∂q∂z, ∂θ∂z, θz_min) = ∂q∂z / max(∂θ∂z, θz_min)
++
++"""
++    isentropic_gradient_invariant(inv_q, inv_θq, inv_θ, r)
++
++`|∇_h q_tot − r ∇_h θ_li|² = |∇_h q|² − 2 r (∇_h θ_li · ∇_h q) + r² |∇_h θ_li|²`, the
++squared horizontal gradient of `q_tot` along the `θ_li` surface; floored
++at zero against round-off.
++"""
++@inline isentropic_gradient_invariant(inv_q, inv_θq, inv_θ, r) =
++    max(inv_q - 2 * r * inv_θq + r^2 * inv_θ, zero(inv_q))
++
+ """
+     hgrad_invariant!(ᶜinv, ᶜψ, p)
+ 
+@@ -264,8 +320,9 @@ Diagnosed SGS T–q correlation `clamp(T′q′ / √(T′T′ q′q′), -1, 1)
+ `fallback` where the product of the variances is at the round-off floor.
+ 
+ In exact arithmetic each variance block satisfies its own Cauchy-Schwarz
+-inequality and the Cauchy-Schwarz bound on the sum of the three (turbulent,
+-horizontal geometric, vertical uniform-box) covariances also holds, so
++inequality and the Cauchy-Schwarz bound on the sum of the two (turbulent,
++vertical uniform-box) covariances also holds — the isentropic horizontal block
++contributes variance to q′q′ only and no covariance — so
+ `|ρ| ≤ 1` by construction. The explicit clamp is a cheap safeguard against
+ (a) Float32 roundoff at the Cauchy-Schwarz boundary (which can produce
+ `|ρ| = 1 + O(ε)` and feed NaN into downstream `√(1 − ρ²)` in the bivariate
+@@ -322,17 +379,17 @@ Pipeline:
+     `ρ_turb` scalar as `ρ_turb · σ_T,turb · σ_q,turb` (not the gradient-direction
+     product), so the turbulent block carries a physical correlation independent of
+     the sign of `∂_z θ · ∂_z q`.
+- 3. Add the horizontal resolved-gradient (geometric) term to θ′θ′ (skipped when
+-    `sgs_variance_horizontal_scale_factor` is 0). For the diagnosed correlation,
+-    add the geometric cross `∇_h θ_li · ∇_h q_tot` with the same element filter.
+-    Not Richardson-weighted (consistent with the vertical uniform-box block).
++ 3. Add the horizontal resolved-gradient (geometric) term, the isentropic form
++    `|∇_h q_tot − r ∇_h θ_li|²` with the along-surface displacement bounded by the
++    cell (`isentropic_cell_cap`), to q′q′ only — no horizontal θ′θ′ and no
++    horizontal cross term (skipped when `sgs_variance_horizontal_scale_factor` is 0).
+  4. Add the resolved vertical-gradient (uniform-box) term
+     `c_g (c_Δz Δz)² (∂_z ψ)²` to both variances, and the exact cross
+-    `c_g (c_Δz Δz)² ∂_z θ · ∂_z q` to θ′q′ (skipped when
++    `c_g (c_Δz Δz)² ∂_z θ · ∂_z q` to θ′q′; the q′q′ and θ′q′ terms are
++    scaled by the across-surface share `1/(1 + (s Δx/Δz)²)` of the excursion
++    not sampled by step 3, θ′θ′ is not (skipped when
+     `sgs_variance_vertical_scale_factor` is 0; default `c_Δz = 1` with
+-    `c_g = 1/12` reproduces the uniform-box exact result). Not Ri-weighted —
+-    this is the piece that keeps σ² non-zero where the turbulent closure
+-    collapses.
++    `c_g = 1/12` reproduces the uniform-box exact result).
+  5. Transform θ→T using `compute_∂T_∂θ!`
+  6. Add the horizontal resolved-gradient term to q′q′ (skipped together with
+     step 3)
+@@ -414,27 +471,65 @@ function set_covariance_cache!(Y, p, thermo_params)
+     # ----------------------------------------------------------------------
+     # 2. Horizontal resolved-gradient (geometric) block.
+     #    `geo_h |∇_h ψ|²`: leading-order scale-similarity estimate from the
+-    #    resolved horizontal field. Not Richardson-weighted — like the
+-    #    vertical uniform-box block below, the resolved horizontal gradient
+-    #    is a physical feature of the mean profile, independent of whether
+-    #    the turbulent closure is active. q′q′ is in native q basis so adding
++    #    resolved horizontal field. q′q′ is in native q basis so adding
+     #    here (before the θ→T transform) is equivalent to adding after.
++    #    The block is the isentropic form: no horizontal θ′θ′ term, because
++    #    θ_li is constant along the surface the excursion follows, so the whole
++    #    geometric variance is carried by q′q′ as the gradient of q_tot ALONG
++    #    the θ_li surface,
++    #    |∇_θ q|² = |∇_h q − r ∇_h θ_li|², r = (∂q/∂z)/max(∂θ_li/∂z, θz_min)
++    #    (`isentropic_slope_ratio`): a horizontal excursion δ on a sloping
++    #    isentrope carries the parcel down/up by r-weighted amounts, so aligned
++    #    (warm = moist) gradients amplify and anti-aligned ones cancel the
++    #    saturation variance. The displacement along the surface is bounded by
++    #    the cell (`isentropic_cell_cap`, ℓ = min(Δx, Δz / slope)).
++    #    With the diagnosed T–q correlation this block adds nothing to T′q′
++    #    (no θ′ along the surface), so the correlation is carried by the
++    #    turbulent and vertical blocks. Scratch: `ᶜtemp_scalar_2` is free until
++    #    the θ→T transform below, `_3` (θ_li), `_5` (|∇q|²), `_6` (cross term).
+     # ----------------------------------------------------------------------
++    ᶜΔz = Fields.Δz_field(axes(Y.c))
++    ᶜpart = p.scratch.ᶜtemp_scalar_6  # across-surface share of the vertical excursion
+     if use_geometric
+         (; ᶜT, ᶜq_liq, ᶜq_ice) = p.precomputed
+         ᶜθ_li = p.scratch.ᶜtemp_scalar_3
+         @. ᶜθ_li = TD.liquid_ice_pottemp(
+             thermo_params, ᶜT, Y.c.ρ, ᶜq_tot_nonneg, ᶜq_liq, ᶜq_ice,
+         )
+-        ᶜinv = p.scratch.ᶜtemp_scalar_5                # reused for 2–3 invariants
+-        hgrad_invariant!(ᶜinv, ᶜθ_li, p)
+-        @. ᶜT′T′ += geo_h * ᶜinv
+-        hgrad_invariant!(ᶜinv, ᶜq_tot_nonneg, p)
+-        @. ᶜq′q′ += geo_h * ᶜinv
+-        if diag_corr
+-            hgrad_cross_invariant!(ᶜinv, ᶜθ_li, ᶜq_tot_nonneg, p)
+-            @. p.precomputed.ᶜT′q′ += geo_h * ᶜinv
+-        end
++        ᶜinv_q = p.scratch.ᶜtemp_scalar_5
++        ᶜinv_θ = p.scratch.ᶜtemp_scalar_2
++        ᶜinv_θq = p.scratch.ᶜtemp_scalar_6
++        hgrad_invariant!(ᶜinv_q, ᶜq_tot_nonneg, p)
++        hgrad_invariant!(ᶜinv_θ, ᶜθ_li, p)
++        hgrad_cross_invariant!(ᶜinv_θq, ᶜθ_li, ᶜq_tot_nonneg, p)
++        θz_min = CAP.sgs_variance_isentropic_min_dtheta_dz(p.params)
++        ᶜlg = Fields.local_geometry_field(Y.c)
++        @. ᶜinv_q = isentropic_gradient_invariant(
++            ᶜinv_q,
++            ᶜinv_θq,
++            ᶜinv_θ,
++            isentropic_slope_ratio(
++                projected_vector_data(C3, ᶜgradᵥ_q_tot, ᶜlg),
++                projected_vector_data(C3, ᶜgradᵥ_θ_liq_ice, ᶜlg),
++                θz_min,
++            ),
++        )
++        # Cell-geometry bound on the along-surface displacement
++        # (`ℓ ≤ Δx`, `ℓ ≤ Δz / slope`), kept in `ᶜpart` (over `ᶜinv_θq`, which
++        # is no longer needed) because the same factor is the across-surface
++        # share of the vertical excursion that the vertical block below may
++        # still sample.
++        @. ᶜpart = isentropic_cell_cap(
++            ᶜinv_θ,
++            projected_vector_data(C3, ᶜgradᵥ_θ_liq_ice, ᶜlg),
++            θz_min,
++            Δx_h,
++            ᶜΔz,
++        )
++        @. ᶜinv_q *= ᶜpart
++        @. ᶜq′q′ += geo_h * ᶜinv_q
++    else
++        @. ᶜpart = one(FT)
+     end
+ 
+     # ----------------------------------------------------------------------
+@@ -444,13 +539,20 @@ function set_covariance_cache!(Y, p, thermo_params)
+     #    so σ² stays non-zero in laminar cells / single columns. The cross
+     #    `c_g (c_Δz Δz)² ∂_z θ · ∂_z q` carries the geometrically-correct
+     #    ρ = sign(∂_z θ · ∂_z q) of the resolved vertical direction.
+-    #    Not Ri-weighted; `c_Δz = 0` disables.
++    #    `c_Δz = 0` disables. The q′q′ term is scaled by
++    #    `ᶜpart`, the share of the vertical excursion not already sampled
++    #    along the θ_li surface by the horizontal block (`isentropic_cell_cap`):
++    #    1 for flat surfaces, → 0 for steep ones, where the in-cell q excursion
++    #    is the along-surface one. The cross carries the same factor (the
++    #    block's bound holds, f² ≤ f); θ′θ′ keeps the full vertical sample
++    #    (no θ′ along the surface, and the T-variance the cloud fraction sees
++    #    is left as it was). The diagnosed correlation is clamped to [-1, 1].
+     # ----------------------------------------------------------------------
+     if use_vertical_grad
+-        ᶜΔz = Fields.Δz_field(axes(Y.c))
+         geo_v(Δz) = c_g * (c_Δz * Δz)^2                 # per-cell coefficient
+         @. ᶜq′q′ +=
+-            geo_v(ᶜΔz) * dot(
++            geo_v(ᶜΔz) * ᶜpart *
++            dot(
+                 Geometry.WVector(ᶜgradᵥ_q_tot),
+                 Geometry.WVector(ᶜgradᵥ_q_tot),
+             )
+@@ -461,7 +563,8 @@ function set_covariance_cache!(Y, p, thermo_params)
+             )
+         if diag_corr
+             @. p.precomputed.ᶜT′q′ +=
+-                geo_v(ᶜΔz) * dot(
++                geo_v(ᶜΔz) * ᶜpart *
++                dot(
+                     Geometry.WVector(ᶜgradᵥ_θ_liq_ice),
+                     Geometry.WVector(ᶜgradᵥ_q_tot),
+                 )
+diff --git a/src/parameters/Parameters.jl b/src/parameters/Parameters.jl
+index 5cb5ba509ea..cea4f5fc15f 100644
+--- a/src/parameters/Parameters.jl
++++ b/src/parameters/Parameters.jl
+@@ -270,6 +270,13 @@ not yet define.
+     SGS quadrature, in `[-1, 1]`. Used verbatim by `tq_correlation_model: constant`;
+     used as the turbulent-block cross `ρ_turb` (and the fallback where all variance
+     blocks vanish) by `tq_correlation_model: diagnosed` [-].
++  - `sgs_variance_isentropic_min_dtheta_dz`: Floor `θz_min` on the stratification in
++    the slope ratio `r = (∂q/∂z) / max(∂θ_li/∂z, θz_min)` of the isentropic geometric
++    variance term; keeps `r` finite and bounded by `|∂q/∂z| / θz_min` in neutral and
++    overturned layers, and enters the slope `s = |∇_h θ_li| / max(∂θ_li/∂z, θz_min)`
++    of the cell-geometry bound `ℓ² = Δx² / (1 + (s Δx / Δz)²)` on the along-surface
++    displacement (`isentropic_cell_cap`); must be positive (checked in
++    `get_sgs_quadrature`) [K m^-1].
+   - `cloud_fraction_steepness_scale`: Steepness scale `α` of the
+     cloud-fraction/condensate relationship; 1 for exact Gaussian or lognormal SGS
+     distributions [-].
+@@ -302,6 +309,7 @@ Base.@kwdef struct SGSQuadratureParameters{FT} <: ASQP
+     cloud_fraction_floor_release_abs_margin::FT
+     cloud_fraction_floor_release_sharpness::FT
+     cloud_fraction_floor_residual::FT
++    sgs_variance_isentropic_min_dtheta_dz::FT
+ end
+ 
+ """
+diff --git a/src/parameters/create_parameters.jl b/src/parameters/create_parameters.jl
+index 7acf9c8c424..94e18668a40 100644
+--- a/src/parameters/create_parameters.jl
++++ b/src/parameters/create_parameters.jl
+@@ -594,6 +594,9 @@ function SGSQuadratureParameters(
+         cloud_fraction_floor_release_abs_margin = FT(1),
+         cloud_fraction_floor_release_sharpness = FT(1),
+         cloud_fraction_floor_residual = FT(1),
++        # Isentropic geometric variance term: floor on ∂θ_li/∂z [K/m] in the
++        # slope ratio and in the cell-geometry bound.
++        sgs_variance_isentropic_min_dtheta_dz = FT(1e-3),
+     )
+     provisional_present = filter(collect(keys(provisional_defaults))) do name
+         haskey(toml_dict.data, string(name))
+diff --git a/test/parameter_tests.jl b/test/parameter_tests.jl
+index 4e5d1f1f112..f4d23722c4e 100644
+--- a/test/parameter_tests.jl
++++ b/test/parameter_tests.jl
+@@ -121,6 +121,7 @@ end
+         @test CAP.sgs_variance_max_rel_std(sq) == FT(0.5)
+         @test CAP.sgs_liquid_uniform_fraction(sq) == FT(1)
+         @test CAP.sgs_ice_uniform_fraction(sq) == FT(1)
++        @test CAP.sgs_variance_isentropic_min_dtheta_dz(sq) == FT(1e-3)
+     end
+     # A run toml overrides the defaults.
+     mktemp() do path, io
+diff --git a/test/parameterized_tendencies/microphysics/cloud_fraction.jl b/test/parameterized_tendencies/microphysics/cloud_fraction.jl
+index f0282b90711..3a07f119950 100644
+--- a/test/parameterized_tendencies/microphysics/cloud_fraction.jl
++++ b/test/parameterized_tendencies/microphysics/cloud_fraction.jl
+@@ -266,4 +266,56 @@ floor_nt(
+         end
+     end
+ 
++    @testset "`isentropic_slope_ratio`: plain ratio with a stratification floor" begin
++        for FT in (Float32, Float64)
++            @testset "FT = $FT" begin
++                r = CA.isentropic_slope_ratio
++                θz_min = FT(1e-3)
++                qz = FT(-2e-6)
++                @test r(qz, FT(4e-3), θz_min) == qz / FT(4e-3)          # stable: the true ratio
++                @test r(qz, θz_min, θz_min) == qz / θz_min               # at the floor
++                @test r(qz, FT(0), θz_min) == qz / θz_min                # neutral: floored, finite
++                @test r(qz, FT(-5e-3), θz_min) == qz / θz_min            # overturned: floored, same sign as q_z
++                @test sign(r(qz, FT(-5e-3), θz_min)) == sign(qz)
++                @test abs(r(qz, FT(1e-9), θz_min)) <= abs(qz) / θz_min
++                @test r(qz, FT(4e-3), θz_min) isa FT
++            end
++        end
++    end
++
++    @testset "`isentropic_cell_cap`: along-surface segment bounded by the cell" begin
++        for FT in (Float32, Float64)
++            @testset "FT = $FT" begin
++                cap = CA.isentropic_cell_cap
++                θz_min = FT(1e-3)
++                Δx = FT(2.5e5)
++                Δz = FT(500)
++                # flat surface: no horizontal θ contrast ⇒ full Δx scale
++                @test cap(FT(0), FT(4e-3), θz_min, Δx, Δz) === FT(1)
++                # slope s = |∇θ| / θ_z; s Δx / Δz = 1 ⇒ factor 1/2
++                inv_θ = (FT(4e-3) * Δz / Δx)^2
++                @test cap(inv_θ, FT(4e-3), θz_min, Δx, Δz) ≈ FT(0.5)
++                # steep limit (|∇θ| = 1e-4 K/m, s Δx / Δz = 12.5): factor → (Δz θ_z / (|∇θ| Δx))²
++                inv_θ = FT(1e-8)
++                x = sqrt(inv_θ) / FT(4e-3) * Δx / Δz
++                @test cap(inv_θ, FT(4e-3), θz_min, Δx, Δz) ≈ 1 / (1 + x^2)
++                @test cap(inv_θ, FT(4e-3), θz_min, Δx, Δz) < FT(0.01)
++                @test cap(inv_θ, FT(4e-3), θz_min, Δx, Δz) ≈ 1 / x^2 rtol = FT(0.01)
++                # weaker stratification ⇒ steeper surface ⇒ smaller factor; floored
++                @test cap(inv_θ, FT(2e-3), θz_min, Δx, Δz) <
++                      cap(inv_θ, FT(4e-3), θz_min, Δx, Δz)
++                @test cap(inv_θ, FT(0), θz_min, Δx, Δz) ==
++                      cap(inv_θ, FT(-1e-3), θz_min, Δx, Δz)
++                @test cap(inv_θ, FT(0), θz_min, Δx, Δz) ==
++                      cap(inv_θ, θz_min, θz_min, Δx, Δz)
++                # bounded in (0, 1], finite, type-stable
++                @test all(
++                    FT(0) < cap(FT(v), FT(3e-3), θz_min, Δx, Δz) <= FT(1) for
++                    v in (0, 1e-14, 1e-10, 1e-8, 1e-6)
++                )
++                @test cap(FT(1e-10), FT(3e-3), θz_min, Δx, Δz) isa FT
++            end
++        end
++    end
++
+ end
+
+exec
+/bin/zsh -lc 'find input/source -type f' in <workdir>/CliMA_ClimaAtmos.jl_4822
+ succeeded in 0ms:
+input/source/src__diagnostics__edmfx_diagnostics.jl
+input/source/src__ClimaAtmos.jl
+input/source/docs__src__api.md
+input/source/src__diagnostics__core_diagnostics.jl
+input/source/docs__src__first_simulation.md
+input/source/src__simulation__AtmosSimulations.jl
+input/source/src__diagnostics__Diagnostics.jl
+input/source/docs__src__prophet_closures.md
+input/source/test__test_helpers.jl
+input/source/test__runtests.jl
+input/source/Project.toml
+input/source/src__config__model_getters.jl
+input/source/test__parameter_tests.jl
+input/source/test__parameterized_tendencies__microphysics__cloud_fraction.jl
+input/source/src__parameters__create_parameters.jl
+input/source/cloud_fraction.jl
+input/source/config__default_configs__default_config.yml
+input/source/tree.json
+
+web search: 
+web search: https://raw.githubusercontent.com/CliMA/ClimaAtmos.jl/ba2bf1225fc48058d709853c065b1db21a412204/src/parameterized_tendencies/microphysics/cloud_fraction.jl
+exec
+/bin/zsh -lc "cat input/source/docs__src__api.md input/source/docs__src__first_simulation.md input/source/Project.toml; sed -n '290,680p' input/source/cloud_fraction.jl" in <workdir>/CliMA_ClimaAtmos.jl_4822
+ succeeded in 0ms:
+# API
+
+This page documents the types and functions a user constructs to define and run
+a simulation, organized the way a model is assembled: first the simulation and
+grid, then the `AtmosModel` component by component, then the numerics.
+
+Case definitions (initial conditions and forcing) live on the
+[Setups](setups.md) page; the YAML equivalents of these options are listed in
+[Configuration options](configuration_options.md).
+
+## Package
+
+```@docs
+ClimaAtmos
+```
+
+## Simulation
+
+```@docs
+ClimaAtmos.AtmosSimulation
+ClimaAtmos.AtmosSimulation(::ClimaAtmos.AtmosModel)
+ClimaAtmos.AtmosSimulation(::ClimaAtmos.AtmosConfig)
+ClimaAtmos.AtmosConfig
+ClimaAtmos.AtmosConfig(::String)
+ClimaAtmos.AtmosConfig(::AbstractDict)
+ClimaAtmos.solve_atmos!
+ClimaAtmos.get_simulation
+ClimaAtmos.AtmosSolveResults
+```
+
+## Presets
+
+```@docs
+ClimaAtmos.Presets.dry
+ClimaAtmos.Presets.equil_moist_0m
+ClimaAtmos.Presets.nonequil_moist_1m
+ClimaAtmos.Presets.prognostic_edmf
+ClimaAtmos.Presets.prognostic_edmf_1m
+ClimaAtmos.Presets.aquaplanet
+```
+
+## Grids
+
+```@docs
+ClimaAtmos.SphereGrid
+ClimaAtmos.ColumnGrid
+ClimaAtmos.BoxGrid
+ClimaAtmos.PlaneGrid
+```
+
+## Topography
+
+```@docs
+ClimaAtmos.AbstractTopography
+ClimaAtmos.NoTopography
+ClimaAtmos.EarthTopography
+ClimaAtmos.CosineTopography
+ClimaAtmos.AgnesiTopography
+ClimaAtmos.ScharTopography
+ClimaAtmos.DCMIP200Topography
+ClimaAtmos.Hughes2023Topography
+```
+
+Mesh warping determines how the vertical coordinate is deformed to follow the
+terrain:
+
+```@docs
+ClimaAtmos.MeshWarpType
+ClimaAtmos.LinearWarp
+ClimaAtmos.SLEVEWarp
+```
+
+## The atmosphere model
+
+`AtmosModel` holds the physics configuration, together with the grid it runs
+on, the parameters, and the case setup. Its physics components are grouped into
+the structs below; keyword arguments may be passed either to the group or
+directly to `AtmosModel`, which routes them to the right group.
+
+```@docs
+ClimaAtmos.AtmosModel
+ClimaAtmos.initial_state
+ClimaAtmos.AtmosWater
+ClimaAtmos.AtmosTurbconv
+ClimaAtmos.AtmosRadiation
+ClimaAtmos.AtmosSurface
+ClimaAtmos.AtmosSponge
+ClimaAtmos.AtmosGravityWave
+ClimaAtmos.AtmosChem
+ClimaAtmos.AtmosNumerics
+ClimaAtmos.AtmosNumerics()
+```
+
+### Water and microphysics
+
+```@docs
+ClimaAtmos.AbstractMicrophysicsModel
+ClimaAtmos.DryModel
+ClimaAtmos.EquilibriumMicrophysics0M
+ClimaAtmos.NonEquilibriumMicrophysics1M
+ClimaAtmos.NonEquilibriumMicrophysics2M
+ClimaAtmos.NonEquilibriumMicrophysics2MP3
+```
+
+Sedimentation and tracer positivity:
+
+```@docs
+ClimaAtmos.AbstractTerminalVelocityMode
+ClimaAtmos.DiagnosticTerminalVelocity
+ClimaAtmos.FixedTerminalVelocity
+ClimaAtmos.TracerNonnegativityMethod
+ClimaAtmos.TracerNonnegativityElementConstraint
+ClimaAtmos.TracerNonnegativityVaporConstraint
+ClimaAtmos.TracerNonnegativityVaporTendency
+ClimaAtmos.TracerNonnegativityVerticalWaterBorrowing
+```
+
+### Cloud fraction
+
+```@docs
+ClimaAtmos.AbstractCloudModel
+ClimaAtmos.GridScaleCloud
+ClimaAtmos.QuadratureCloud
+ClimaAtmos.MLCloud
+ClimaAtmos.AbstractSGSamplingType
+ClimaAtmos.SGSMean
+ClimaAtmos.SGSQuadrature
+ClimaAtmos.AbstractSGSDistribution
+ClimaAtmos.GridMeanSGS
+ClimaAtmos.GaussianSGS
+ClimaAtmos.LogNormalSGS
+ClimaAtmos.AbstractPhysicalPointTransform
+ClimaAtmos.GridMeanPhysicalPointTransform
+ClimaAtmos.GaussianPhysicalPointTransform
+ClimaAtmos.LogNormalPhysicalPointTransform
+ClimaAtmos.create_physical_transform
+ClimaAtmos.integrate_over_sgs
+```
+
+### Turbulence and convection (PROPHET)
+
+The turbulence and convection scheme: an eddy-diffusivity mass-flux scheme,
+named `EDMFX` in the code. See
+[PROPHET: Overview and Equations](prophet.md).
+
+```@docs
+ClimaAtmos.AbstractEDMF
+ClimaAtmos.EDOnlyEDMFX
+ClimaAtmos.PrognosticEDMFX
+ClimaAtmos.PrognosticEDMFX{FT}()
+ClimaAtmos.EDMFXModel
+ClimaAtmos.EDMFXModel()
+```
+
+Entrainment and detrainment closures:
+
+```@docs
+ClimaAtmos.AbstractEntrainmentModel
+ClimaAtmos.PiGroupsEntrainment
+ClimaAtmos.InvZEntrainment
+ClimaAtmos.AbstractDetrainmentModel
+ClimaAtmos.BuoyancyVelocityDetrainment
+```
+
+Buoyancy gradients, mixing-length blending, and tendency selection:
+
+```@docs
+ClimaAtmos.AbstractEnvBuoyGradClosure
+ClimaAtmos.BuoyGradMean
+ClimaAtmos.AbstractScaleBlendingMethod
+ClimaAtmos.SmoothMinimumBlending
+ClimaAtmos.HardMinimumBlending
+ClimaAtmos.AbstractTendencyModel
+ClimaAtmos.UseAllTendency
+ClimaAtmos.NoGridScaleTendency
+ClimaAtmos.NoSubgridScaleTendency
+```
+
+Closure parameters. The fields of these sets, and the ClimaParams names they come
+from, are listed in [PROPHET: Closures](prophet_closures.md#Parameters):
+
+```@docs
+ClimaAtmos.Parameters.AbstractTurbulenceConvectionParameters
+ClimaAtmos.Parameters.TurbulenceConvectionParameters
+ClimaAtmos.Parameters.AbstractSGSQuadratureParameters
+ClimaAtmos.Parameters.SGSQuadratureParameters
+```
+
+### Radiation
+
+See the [Radiation](radiation.md) page for what each of these does, and
+[Running with Radiation](radiation_howto.md) for how to configure them.
+
+The RRTMGP modes, selected by the `rad` configuration key:
+
+```@docs
+ClimaAtmos.RRTMGPInterface.AbstractRRTMGPMode
+ClimaAtmos.RRTMGPInterface.GrayRadiation
+ClimaAtmos.RRTMGPInterface.ClearSkyRadiation
+ClimaAtmos.RRTMGPInterface.AllSkyRadiation
+ClimaAtmos.RRTMGPInterface.AllSkyRadiationWithClearSkyDiagnostics
+ClimaAtmos.RRTMGPInterface.rrtmgp_solver
+```
+
+Cloud properties seen by the radiation:
+
+```@docs
+ClimaAtmos.AbstractCloudInRadiation
+ClimaAtmos.InteractiveCloudInRadiation
+ClimaAtmos.PrescribedCloudInRadiation
+```
+
+Idealized radiation for single-column cases:
+
+```@docs
+ClimaAtmos.RadiationDYCOMS
+ClimaAtmos.RadiationISDAC
+ClimaAtmos.RadiationTRMM_LBA
+```
+
+Insolation at the top of the atmosphere:
+
+```@docs
+ClimaAtmos.AbstractInsolation
+ClimaAtmos.IdealizedInsolation
+ClimaAtmos.TimeVaryingInsolation
+ClimaAtmos.RCEMIPIIInsolation
+ClimaAtmos.ExternalTVInsolation
+ClimaAtmos.Larcform1Insolation
+```
+
+### Surface
+
+See the [Surface Conditions](surface_conditions.md) page for a guide to
+choosing these.
+
+```@docs
+ClimaAtmos.SurfaceConditions.SurfaceParameterization
+ClimaAtmos.SurfaceConditions.MoninObukhov
+ClimaAtmos.SurfaceConditions.ExchangeCoefficients
+ClimaAtmos.SurfaceConditions.HeatFluxes
+ClimaAtmos.SurfaceConditions.θAndQFluxes
+ClimaAtmos.SurfaceConditions.DefaultMoninObukhov
+ClimaAtmos.SurfaceConditions.DefaultExchangeCoefficients
+ClimaAtmos.SurfaceConditions.SurfaceTemperature
+ClimaAtmos.SurfaceConditions.AnalyticTemperature
+ClimaAtmos.SurfaceConditions.SlabOceanTemperature
+ClimaAtmos.SurfaceConditions.ExternalTemperature
+ClimaAtmos.SurfaceConditions.CoupledTemperature
+ClimaAtmos.SurfaceConditions.SurfaceBoundaryOverrides
+```
+
+Surface albedo:
+
+```@docs
+ClimaAtmos.SurfaceAlbedoModel
+ClimaAtmos.ConstantAlbedo
+ClimaAtmos.RegressionFunctionAlbedo
+ClimaAtmos.CouplerAlbedo
+```
+
+### Diffusion and sponges
+
+```@docs
+ClimaAtmos.AbstractVerticalDiffusion
+ClimaAtmos.VerticalDiffusion
+ClimaAtmos.DecayWithHeightDiffusion
+ClimaAtmos.EddyViscosityModel
+ClimaAtmos.SmagorinskyLilly
+ClimaAtmos.AnisotropicMinimumDissipation
+ClimaAtmos.ConstantHorizontalDiffusion
+ClimaAtmos.SpongeModel
+ClimaAtmos.RayleighSponge
+ClimaAtmos.RayleighSponge(::Any)
+ClimaAtmos.ViscousSponge
+ClimaAtmos.ViscousSponge(::Any)
+```
+
+### Gravity-wave drag
+
+```@docs
+ClimaAtmos.AbstractGravityWave
+ClimaAtmos.NonOrographicGravityWave
+ClimaAtmos.OrographicGravityWave
+ClimaAtmos.FullOrographicGravityWave
+```
+
+### Forcings
+
+The forcing formulations are described in
+[Forcings and Idealized Cases](forcings.md); the terms for externally driven
+single-column cases are documented on the
+[Column Datasets](column_datasets_reference.md) page.
+
+```@docs
+ClimaAtmos.AbstractForcing
+ClimaAtmos.LargeScaleSubsidence
+ClimaAtmos.LargeScaleAdvection
+ClimaAtmos.HeldSuarezForcing
+ClimaAtmos.ISDACForcing
+ClimaAtmos.PrescribedFlow
+ClimaAtmos.ShipwayHill2012VelocityProfile
+```
+
+### Chemistry
+
+```@docs
+ClimaAtmos.AbstractChemistryModel
+ClimaAtmos.GasPhaseChem
+```
+
+### COSP and CloudSat
+
+```@docs
+ClimaAtmos.COSPModel
+ClimaAtmos.COSP.COSPCloudSatOptics.cloudsat_gas_attenuation!
+ClimaAtmos.COSP.COSPCloudSatOptics.cloudsat_grid_mean_sizes!
+ClimaAtmos.COSP.COSPCloudSatOptics.cloudsat_optics_subcolumn!
+ClimaAtmos.COSP.COSPCloudSatReflectivity.cloudsat_gas_path_attenuation!
+ClimaAtmos.COSP.COSPCloudSatReflectivity.cloudsat_reflectivity_subcolumn!
+ClimaAtmos.COSP.COSPCloudSatCFAD.accumulate_cloudsat_cfad!
+```
+
+## Numerics
+
+```@docs
+ClimaAtmos.AbstractTimesteppingMode
+ClimaAtmos.Explicit
+ClimaAtmos.Implicit
+ClimaAtmos.Hyperdiffusion
+ClimaAtmos.QuasiMonotoneLimiter
+```
+
+### Discrete operators
+
+Short names for the ClimaCore operators used throughout the tendencies. Several
+docstrings cover a group of related operators. See
+[Discretization and Operators](discretization.md) for the symbols these
+correspond to in the equations, and for the reasoning behind the strong-, weak-,
+and split-form choices.
+
+Horizontal spectral-element operators:
+
+```@docs
+ClimaAtmos.divₕ
+```
+
+Vertical operators from faces to centers:
+
+```@docs
+ClimaAtmos.ᶜinterp
+ClimaAtmos.ᶜadvdivᵥ
+ClimaAtmos.ᶜprecipdivᵥ
+ClimaAtmos.ᶜdiffdivᵥ
+```
+
+Vertical operators from centers to faces:
+
+```@docs
+ClimaAtmos.ᶠinterp
+ClimaAtmos.ᶠwinterp
+ClimaAtmos.ᶠgradᵥ
+ClimaAtmos.ᶠcurlᵥ
+ClimaAtmos.ᶠdiffdivᵥ_u₃
+```
+
+Biased and upwinded reconstructions:
+
+```@docs
+ClimaAtmos.ᶠbottom_bias
+ClimaAtmos.ᶠupwind1
+ClimaAtmos.ᶠupwind3
+ClimaAtmos.ᶠlin_vanleer
+```
+
+Matrix forms, used to assemble the Jacobian:
+
+```@docs
+ClimaAtmos.ᶜinterp_matrix
+```
+
+### Jacobian and the implicit solver
+
+See the [Implicit Solver](implicit_solver.md) page for the algorithms.
+
+```@docs
+ClimaAtmos.Jacobian
+ClimaAtmos.JacobianAlgorithm
+ClimaAtmos.ManualSparseJacobian
+ClimaAtmos.AutoDenseJacobian
+ClimaAtmos.AutoSparseJacobian
+ClimaAtmos.AutoSparseJacobian()
+ClimaAtmos.AutoSparseJacobian(::Any)
+```
+
+## Diagnostics
+
+```@docs
+ClimaAtmos.DiagnosticsConfig
+```
+
+## Surface-condition internals
+
+```@docs
+ClimaAtmos.SurfaceConditions.update_surface_conditions!
+ClimaAtmos.SurfaceConditions.surface_state_to_conditions
+ClimaAtmos.SurfaceConditions.atmos_surface_conditions
+```
+
+## Column dataset formats
+
+Data access for single-column (SCM) forcing files: the generic
+[`ColumnDataset`](@ref ClimaAtmos.ColumnDatasets.ColumnDataset) handle and format
+interface, the in-memory source, the native `ClimaColumn` reader/writer, and the
+ARM VARANAL and GCM cfsite converters. See the
+[Column Datasets](@ref "Column Datasets") page for usage and
+[Adding a Column Dataset](@ref) for the extension interface.
+
+### Opening and reading
+
+```@docs
+ClimaAtmos.ColumnDatasets.AbstractColumnData
+ClimaAtmos.ColumnDatasets.ColumnDataset
+ClimaAtmos.ColumnDatasets.InMemoryColumnData
+ClimaAtmos.ColumnDatasets.open_dataset
+ClimaAtmos.ColumnDatasets.has_variable
+ClimaAtmos.ColumnDatasets.read_profile
+ClimaAtmos.ColumnDatasets.read_series
+ClimaAtmos.ColumnDatasets.read_initial_profiles
+ClimaAtmos.ColumnDatasets.read_surface_series
+ClimaAtmos.ColumnDatasets.height_profile
+ClimaAtmos.ColumnDatasets.site_location
+```
+
+### Time coordinates and interpolation
+
+```@docs
+ClimaAtmos.ColumnDatasets.dates
+ClimaAtmos.ColumnDatasets.file_time_span
+ClimaAtmos.ColumnDatasets.simulation_times
+ClimaAtmos.ColumnDatasets.time_index_closest
+ClimaAtmos.ColumnDatasets.wraps_periodically
+ClimaAtmos.ColumnDatasets.column_timevaryinginputs
+ClimaAtmos.ColumnDatasets.surface_timevaryinginputs
+ClimaAtmos.ColumnDatasets.time_interpolation_method
+ClimaAtmos.ColumnDatasets.periodic_calendar_method
+ClimaAtmos.ColumnDatasets.extrapolation_bc
+ClimaAtmos.ColumnDatasets.preprocess
+```
+
+### Canonical variables and validation
+
+```@docs
+ClimaAtmos.ColumnDatasets.CANONICAL_COLUMN_VARS
+ClimaAtmos.ColumnDatasets.CANONICAL_SURFACE_VARS
+ClimaAtmos.ColumnDatasets.CANONICAL_IC_VARS
+ClimaAtmos.ColumnDatasets.missing_forcing_variables
+ClimaAtmos.ColumnDatasets.require_forcing_variables
+ClimaAtmos.ColumnDatasets.validate
+```
+
+### Format interface
+
+```@docs
+ClimaAtmos.ColumnDatasets.AbstractColumnFormat
+ClimaAtmos.ColumnDatasets.format_name
+ClimaAtmos.ColumnDatasets.format_variable_name
+```
+
+### Formats
+
+```@docs
+ClimaAtmos.ColumnDatasets.ClimaColumnFiles.ClimaColumnFile
+ClimaAtmos.ColumnDatasets.ClimaColumnFiles.CANONICAL_UNITS
+ClimaAtmos.ColumnDatasets.ClimaColumnFiles.is_conforming
+ClimaAtmos.ColumnDatasets.ClimaColumnFiles.write_column_forcing_file
+ClimaAtmos.ColumnDatasets.VaranalFiles.to_climacolumn
+ClimaAtmos.ColumnDatasets.GCMColumnData.read_cfsite
+```
+
+## Modules
+
+```@docs
+ClimaAtmos.ClimaAtmos
+ClimaAtmos.Parameters
+ClimaAtmos.Diagnostics
+ClimaAtmos.RRTMGPInterface
+ClimaAtmos.AtmosArtifacts
+ClimaAtmos.ColumnDatasets
+ClimaAtmos.ColumnDatasets.ClimaColumnFiles
+ClimaAtmos.ColumnDatasets.VaranalFiles
+ClimaAtmos.ColumnDatasets.GCMColumnData
+```
+
+## Internals
+
+```@docs
+ClimaAtmos.parallel_lu_factorize!
+ClimaAtmos.parallel_lu_solve!
+```
+# Your First Simulation
+
+This page walks through building, running, and inspecting a simulation. To
+configure each component in turn, see
+[Scripting Simulations](scripting_simulations.md); to run from a YAML file
+instead, see [Creating Custom Configurations](configuration.md), and for how
+the two interfaces relate, see [Script vs Config Interface](interfaces.md).
+
+## Minimal example
+
+The simplest ClimaAtmos simulation uses all defaults. It solves the dry
+compressible equations (with hyperdiffusion and surface fluxes) on a global
+cubed-sphere grid, starting from a hydrostatically balanced, slightly perturbed
+state with a vertically decaying temperature profile:
+
+```@example first_sim
+using Logging # hide
+Logging.disable_logging(Logging.Info) # hide
+import ClimaAtmos as CA
+
+model = CA.AtmosModel(CA.SphereGrid(Float32))
+simulation = CA.AtmosSimulation(model; t_end = "1days")
+nothing # hide
+```
+
+Construction has two steps: `AtmosModel(grid; ...)` defines the physical
+system -- it holds the grid, the parameters, and the case setup -- and
+`AtmosSimulation(model; ...)` defines how to run that system: the timestep, the
+duration, the callbacks, and the output.
+
+`t_end` accepts a number of seconds or a duration string (`secs`, `mins`,
+`hours`, `days`, `weeks`), as does the timestep `dt`. See
+[`AtmosModel`](@ref ClimaAtmos.AtmosModel) and
+[`AtmosSimulation`](@ref ClimaAtmos.AtmosSimulation) for the full list of
+keyword arguments and their defaults.
+
+The first construction and solve in a session compile a large amount of code
+and can take several minutes; later calls are fast.
+
+## Inspecting the state
+
+Constructing an `AtmosSimulation` sets everything up but does not advance it in
+time. Even before running, the initial state is available through the
+integrator:
+
+!!! note
+
+    `Y` is the state vector: `Y.c` holds the cell-center variables (such as
+    the density `ρ` and the total energy `ρe_tot`) and `Y.f` the cell-face
+    variables (such as the vertical velocity `u₃`). The `integrator` is the
+    ODE integrator, from ClimaTimeSteppers, that advances the state in time.
+    See the [Glossary](@ref) for these and other recurring terms.
+
+```@example first_sim
+Y = simulation.integrator.u
+
+# Center (cell-center) variables
+propertynames(Y.c)  # (:ρ, :uₕ, :ρe_tot) for this dry default
+
+# Face (cell-interface) variables
+propertynames(Y.f)  # e.g., (:u₃,)
+```
+
+## Running a case end to end
+
+The default global simulation is slow to integrate on a laptop. A
+[setup](setups.md) supplies a case: its initial state, its boundary conditions,
+and its forcings. Here that is BOMEX, a shallow-cumulus column, paired with
+moist physics from a model preset. `solve_atmos!` integrates the simulation
+forward to `t_end`, and the integrator time confirms where the run stopped:
+
+```@example first_sim
+grid = CA.ColumnGrid(Float32; z_elem = 60, z_max = 3000.0, z_stretch = false)
+params = CA.ClimaAtmosParameters(Float32)
+model = CA.AtmosModel(
+    grid;
+    params,
+    setup = CA.Setups.Bomex(; thermo_params = params.thermodynamics_params),
+    defaults = CA.Presets.equil_moist_0m(),
+)
+simulation = CA.AtmosSimulation(
+    model; dt = 10, t_end = "10mins", output_dir = mktempdir(),
+)
+CA.solve_atmos!(simulation)
+simulation.integrator.t
+```
+
+(This page runs during the documentation build, so it writes to a temporary
+directory; drop `output_dir` to get the default location described below.)
+
+The setup sets the initial state and the case forcings, while the
+parameterizations come from the rest of the model, so the two have to be chosen
+together. A setup can require prognostic variables that only some physics
+provide. BOMEX with the default dry model would have no moisture, which is why
+`equil_moist_0m` appears above. Model presets provide reasonable physics
+defaults for simulations scientists commonly run. The setup and your own keyword
+arguments override them. The one above enables moist physics but no
+turbulence-convection scheme. Pass `defaults = CA.Presets.prognostic_edmf(Float32)` instead to add convective transport, or run
+the corresponding YAML case config for the full published setup. See the
+[Presets](api.md#Presets) section of the API for the full list.
+
+## Where output goes
+
+Output is written to `simulation.output_dir`. The base directory defaults to
+`output/<job_id>` under the directory Julia was started in (just `<job_id>`
+when the `CI` environment variable is set); with the default `job_id` of
+`atmos_sim`, that is `output/atmos_sim`. Each run writes to a numbered
+subdirectory of the base directory — `simulation.output_dir` is that
+subdirectory, such as `output/atmos_sim/output_0000` — and
+`output/atmos_sim/output_active` links to the most recent one. Two formats
+appear there:
+
+  - **NetCDF** (`.nc`) files hold the diagnostics: derived (and often
+    interpolated) output variables such as temperature or precipitation. See
+    [Computing and saving diagnostics](@ref) for how to configure them.
+  - **HDF5** (`.hdf5`) files hold full-resolution model-state checkpoints,
+    written when `checkpoint_frequency` is set. These are the files a
+    simulation reads to [restart](@ref "Restarting and Checkpointing").
+
+[Loading and Visualizing Output](visualizing_output.md) covers reading the
+NetCDF files with ClimaAnalysis.
+
+## Next steps
+
+  - [Scripting Simulations](@ref): configure the grid, model, setup, and
+    diagnostics from a script, and step the integrator interactively
+  - [Script vs Config Interface](@ref): the same runs configured from YAML files
+  - [Running Single-Column Cases](@ref): BOMEX, DYCOMS, RICO, and more
+  - [Computing and saving diagnostics](@ref): configure output variables and formats
+  - [Glossary](@ref): the state vector `Y`, the cache `p`, and other recurring symbols
+name = "ClimaAtmos"
+uuid = "b2c96348-7fb7-4fe0-8da9-78d88439e717"
+authors = ["Climate Modeling Alliance"]
+version = "0.42.14"
+
+[deps]
+Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+AtmosphericProfilesLibrary = "86bc3604-9858-485a-bdbe-831ec50de11d"
+ClimaComms = "3a4d1b5c-c61d-41fd-a00a-5873ba7a1b0d"
+ClimaCore = "d414da3d-4745-48bb-8d80-42e94e092884"
+ClimaDiagnostics = "1ecacbb8-0713-4841-9a07-eb5aa8a2d53f"
+ClimaInitialConditions = "a7be033f-8c2c-4c2d-9045-a1e5e881f8d2"
+ClimaInterpolations = "dd0f122e-fa3b-47f3-bcf0-93bbc60d885e"
+ClimaParams = "5c42b081-d73a-476f-9059-fd94b934656c"
+ClimaTimeSteppers = "595c0a79-7f3d-439a-bc5a-b232dc3bde79"
+ClimaUtilities = "b3f4f4ca-9299-4f7f-bd9b-81e1242a7513"
+CloudMicrophysics = "6a9e3e04-43cd-43ba-94b9-e8782df3c71b"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+Insolation = "e98cc03f-d57e-4e3c-b70c-8d51efe9e0d8"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+LazyArtifacts = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
+LazyBroadcast = "9dccce8e-a116-406d-9fcc-a88ed4f510c8"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+NCDatasets = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
+NVTX = "5da4648a-3479-48b8-97b9-01cb529c0a1f"
+NullBroadcasts = "0d71be07-595a-4f89-9529-4065a4ab43a6"
+RRTMGP = "a01a1ee8-cea4-48fc-987c-fc7878d79da1"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+SparseMatrixColorings = "0a514795-09f3-496d-8182-132a7b665d35"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+SurfaceFluxes = "49b00bb7-8bd4-4f2b-b78c-51cd0450215f"
+Thermodynamics = "b60c26fb-14c3-4610-9d3e-2d17fe7ff00c"
+UnrolledUtilities = "0fe1646c-419e-43be-ac14-22321958931b"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+
+[weakdeps]
+Musica = "d3d182ee-e566-4962-9279-3a9916be1802"
+
+[extensions]
+ClimaAtmosMusica = "Musica"
+
+[compat]
+Adapt = "4.1"
+Aqua = "0.8.9 - 0.8.16, 0.8.18"
+ArgParse = "1"
+Artifacts = "1"
+AtmosphericProfilesLibrary = "0.1.8"
+ClimaComms = "0.6.12"
+ClimaCore = "1.0.3"
+ClimaDiagnostics = "0.3.11"
+ClimaInitialConditions = "0.1"
+ClimaInterpolations = "0.1.1"
+CloudMicrophysics = "0.43, 0.44"
+ClimaParams = "1.3"
+ClimaTimeSteppers = "0.10.4, 1"
+ClimaUtilities = "0.1.33"
+Dates = "1"
+Distributions = "0.25.87"
+Downloads = "1"
+Flux = "0.16.7"
+ForwardDiff = "1.0.1"
+Insolation = "1.1"
+Interpolations = "0.15.1, 0.16"
+IntervalSets = "0.7.2"
+JLD2 = "0.6.3"
+LazyArtifacts = "1"
+LazyBroadcast = "1"
+LinearAlgebra = "1"
+Logging = "1"
+Musica = "0.15, 0.16"
+NCDatasets = "0.14.2"
+NVTX = "0.3, 1"
+NullBroadcasts = "0.1"
+OrderedCollections = "1.6"
+Pkg = "1"
+PrettyTables = "3"
+RRTMGP = "1"
+Random = "1"
+SafeTestsets = "0.1"
+SparseMatrixColorings = "0.4.20"
+StaticArrays = "1.9.8"
+Statistics = "1"
+SurfaceFluxes = "0.15.1, 1"
+Test = "1"
+Thermodynamics = "1.2"
+UnrolledUtilities = "0.1.11"
+YAML = "0.4"
+julia = "1.10"
+
+[extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+Musica = "d3d182ee-e566-4962-9279-3a9916be1802"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Aqua", "Distributions", "Downloads", "IntervalSets", "Musica", "OrderedCollections", "Pkg", "PrettyTables", "SafeTestsets", "Test"]
+that node-position bias while conserving each element's WJ-weighted integral of the invariant.
+One weighted DSS then makes the result continuous across elements. On a space that
+needs no DSS (single column) the restriction is a no-op and the nodal invariant is used.
+"""
+function hgrad_invariant!(ᶜinv, ᶜψ, p)
+    @. ᶜinv = lumpedₕ(norm_sqr(gradₕ(ᶜψ)))
+    buf = p.scratch.ᶜscalar_dss_buffer
+    buf === nothing || Spaces.weighted_dss!(ᶜinv, buf)
+    return nothing
+end
+
+"""
+    hgrad_cross_invariant!(ᶜinv, ᶜψ1, ᶜψ2, p)
+
+Write the horizontal-gradient cross invariant `∇_h ψ1 · ∇_h ψ2` into `ᶜinv`, with the
+same gradient estimate and element filter as `hgrad_invariant!`: the nodal
+cross invariant, replaced within each element by its lumped GLL{2} restriction, then one
+weighted DSS (skipped on a space that needs no DSS).
+"""
+function hgrad_cross_invariant!(ᶜinv, ᶜψ1, ᶜψ2, p)
+    @. ᶜinv = lumpedₕ(dot(Geometry.Contravariant12Vector(gradₕ(ᶜψ1)), gradₕ(ᶜψ2)))
+    buf = p.scratch.ᶜscalar_dss_buffer
+    buf === nothing || Spaces.weighted_dss!(ᶜinv, buf)
+    return nothing
+end
+
+"""
+    sgs_correlation_Tq(T′T′, q′q′, T′q′, fallback)
+
+Diagnosed SGS T–q correlation `clamp(T′q′ / √(T′T′ q′q′), -1, 1)`, or
+`fallback` where the product of the variances is at the round-off floor.
+
+In exact arithmetic each variance block satisfies its own Cauchy-Schwarz
+inequality and the Cauchy-Schwarz bound on the sum of the two (turbulent,
+vertical uniform-box) covariances also holds — the isentropic horizontal block
+contributes variance to q′q′ only and no covariance — so
+`|ρ| ≤ 1` by construction. The explicit clamp is a cheap safeguard against
+(a) Float32 roundoff at the Cauchy-Schwarz boundary (which can produce
+`|ρ| = 1 + O(ε)` and feed NaN into downstream `√(1 − ρ²)` in the bivariate
+quadrature) and (b) a user-supplied `Tq_correlation_coefficient` outside
+`[-1, 1]` (which violates the turbulent-block CS before we even sum).
+"""
+@inline function sgs_correlation_Tq(T′T′, q′q′, T′q′, fallback)
+    FT = typeof(T′T′)
+    v = max(T′T′, zero(FT)) * max(q′q′, zero(FT))
+    return ifelse(
+        v > eps(FT)^2,
+        clamp(T′q′ / sqrt(max(v, eps(FT)^2)), -one(FT), one(FT)),
+        fallback,
+    )
+end
+
+"""
+    set_tq_correlation!(p, correlation_model)
+
+Fill `p.precomputed.ᶜcorr_Tq` with the SGS T–q correlation the quadrature samples.
+`ConstantTqCorrelation`: the prescribed `Tq_correlation_coefficient`.
+`DiagnosedTqCorrelation`: `T′q′ / √(T′T′ q′q′)` from the gradient covariance
+accumulated in `p.precomputed.ᶜT′q′` by `set_covariance_cache!` (see
+`sgs_correlation_Tq`); the fallback where the variances vanish is the
+prescribed value. `ᶜT′T′` and `ᶜq′q′` must already be in the T basis and
+bounded. The covariance diagnostic is formed lazily from `ᶜcorr_Tq` and the
+variances (`compute_covariance_diagnostics`).
+"""
+function set_tq_correlation!(p, ::ConstantTqCorrelation)
+    (; ᶜcorr_Tq) = p.precomputed
+    corr = correlation_Tq(p.params)
+    @. ᶜcorr_Tq = corr
+    return nothing
+end
+function set_tq_correlation!(p, ::DiagnosedTqCorrelation)
+    (; ᶜT′T′, ᶜq′q′, ᶜT′q′, ᶜcorr_Tq) = p.precomputed
+    fallback = correlation_Tq(p.params)
+    @. ᶜcorr_Tq = sgs_correlation_Tq(ᶜT′T′, ᶜq′q′, ᶜT′q′, fallback)
+    return nothing
+end
+
+"""
+    set_covariance_cache!(Y, p, thermo_params)
+
+Materializes T-based SGS covariances into cached fields for use by downstream
+computations (SGS quadrature, cloud fraction). Populates
+`p.precomputed.(ᶜT′T′, ᶜq′q′, ᶜcorr_Tq)` (and `ᶜT′q′` for the diagnosed correlation).
+
+Pipeline:
+
+ 1. Compute mixing length via `materialized_mixing_length!`
+ 2. Materialize θ-based turbulent covariances from gradients (`2 c l_mix² |∇_z ψ|²`).
+    For the diagnosed T–q correlation the turbulent cross is set from the prescribed
+    `ρ_turb` scalar as `ρ_turb · σ_T,turb · σ_q,turb` (not the gradient-direction
+    product), so the turbulent block carries a physical correlation independent of
+    the sign of `∂_z θ · ∂_z q`.
+ 3. Add the horizontal resolved-gradient (geometric) term, the isentropic form
+    `|∇_h q_tot − r ∇_h θ_li|²` with the along-surface displacement bounded by the
+    cell (`isentropic_cell_cap`), to q′q′ only — no horizontal θ′θ′ and no
+    horizontal cross term (skipped when `sgs_variance_horizontal_scale_factor` is 0).
+ 4. Add the resolved vertical-gradient (uniform-box) term
+    `c_g (c_Δz Δz)² (∂_z ψ)²` to both variances, and the exact cross
+    `c_g (c_Δz Δz)² ∂_z θ · ∂_z q` to θ′q′; the q′q′ and θ′q′ terms are
+    scaled by the across-surface share `1/(1 + (s Δx/Δz)²)` of the excursion
+    not sampled by step 3, θ′θ′ is not (skipped when
+    `sgs_variance_vertical_scale_factor` is 0; default `c_Δz = 1` with
+    `c_g = 1/12` reproduces the uniform-box exact result).
+ 5. Transform θ→T using `compute_∂T_∂θ!`
+ 6. Add the horizontal resolved-gradient term to q′q′ (skipped together with
+    step 3)
+ 7. Apply the closure-validity bound `σ_q ≤ sgs_variance_max_rel_std * q_tot`
+ 8. Set the sampled T–q correlation (`set_tq_correlation!`; for the diagnosed
+    model the covariance is first rescaled with the bound so the correlation is
+    invariant under it)
+
+Neither resolved-gradient block (horizontal or vertical) is Richardson-weighted
+— both represent in-cell variability of the resolved mean field and are
+independent of the turbulent closure's state. The turbulent block carries the
+prescribed `correlation_Tq` for its cross-covariance; the resolved horizontal
+and vertical blocks carry the geometrically-correct gradient-direction
+correlation.
+"""
+function set_covariance_cache!(Y, p, thermo_params)
+    # Covariance fields are only allocated when the configuration needs them.
+    # No-op otherwise (e.g. EquilMoist + 0M + GridScaleCloud).
+    uses_covariances(p.atmos) || return nothing
+
+    FT = eltype(p.params)
+    diag_corr = p.atmos.tq_correlation_model isa DiagnosedTqCorrelation
+    (;
+        ᶜT′T′,
+        ᶜq′q′,
+        ᶜgradᵥ_q_tot,
+        ᶜgradᵥ_θ_liq_ice,
+        ᶜq_tot_nonneg,
+    ) = p.precomputed
+
+    # Resolved-gradient (geometric) variance coefficients. `c_g` is the shared
+    # uniform-box prefactor; `c_Δx` / `c_Δz` scale the grid lengths and act as
+    # on/off switches (0 disables the corresponding term).
+    c_g = CAP.sgs_variance_geometric_coeff(p.params)
+    c_Δx = CAP.sgs_variance_horizontal_scale_factor(p.params)
+    c_Δz = CAP.sgs_variance_vertical_scale_factor(p.params)
+    use_geometric = !iszero(c_Δx)
+    use_vertical_grad = !iszero(c_Δz)
+    geo_h = if use_geometric
+        Δx_h = FT(
+            Spaces.node_horizontal_length_scale(
+                Spaces.horizontal_space(axes(Y.c)),
+            ),
+        )
+        c_g * (c_Δx * Δx_h)^2
+    else
+        zero(FT)
+    end
+
+    ᶜl_mix = materialized_mixing_length!(Y, p)
+    coeff = CAP.diagnostic_covariance_coeff(p.params)
+    cov_from_grad(C, L, ∇Φ, ∇Ψ) = 2 * C * L^2 * dot(∇Φ, ∇Ψ)
+
+    # ----------------------------------------------------------------------
+    # 1. Turbulent block (θ basis).
+    #    The cross uses the *prescribed* `correlation_Tq` scalar `ρ_turb`,
+    #    not the gradient-direction product `cov_from_grad(c, L, ∇θ, ∇q)`,
+    #    which would pin |ρ_turb,eff| = 1 with sign tied to
+    #    `sign(∂_z θ · ∂_z q)` and flip across every gradient sign change
+    #    (giving ρ = −1 in the stable BL where ∂_z θ > 0, ∂_z q < 0, though
+    #    observed T–q correlation there is positive). The σ_T, σ_q amplitudes
+    #    still carry the l_mix² · |∇_z ψ|² scaling via the turbulent variances.
+    # ----------------------------------------------------------------------
+    @. ᶜq′q′ = cov_from_grad(
+        coeff, ᶜl_mix,
+        Geometry.WVector(ᶜgradᵥ_q_tot),
+        Geometry.WVector(ᶜgradᵥ_q_tot),
+    )
+    @. ᶜT′T′ = cov_from_grad(  # holds θ′θ′ until the ∂T/∂θ transform below.
+        coeff, ᶜl_mix,
+        Geometry.WVector(ᶜgradᵥ_θ_liq_ice),
+        Geometry.WVector(ᶜgradᵥ_θ_liq_ice),
+    )
+    if diag_corr
+        ρ_turb = FT(correlation_Tq(p.params))
+        @. p.precomputed.ᶜT′q′ = ρ_turb * sqrt(ᶜT′T′ * ᶜq′q′)
+    end
+
+    # ----------------------------------------------------------------------
+    # 2. Horizontal resolved-gradient (geometric) block.
+    #    `geo_h |∇_h ψ|²`: leading-order scale-similarity estimate from the
+    #    resolved horizontal field. q′q′ is in native q basis so adding
+    #    here (before the θ→T transform) is equivalent to adding after.
+    #    The block is the isentropic form: no horizontal θ′θ′ term, because
+    #    θ_li is constant along the surface the excursion follows, so the whole
+    #    geometric variance is carried by q′q′ as the gradient of q_tot ALONG
+    #    the θ_li surface,
+    #    |∇_θ q|² = |∇_h q − r ∇_h θ_li|², r = (∂q/∂z)/max(∂θ_li/∂z, θz_min)
+    #    (`isentropic_slope_ratio`): a horizontal excursion δ on a sloping
+    #    isentrope carries the parcel down/up by r-weighted amounts, so aligned
+    #    (warm = moist) gradients amplify and anti-aligned ones cancel the
+    #    saturation variance. The displacement along the surface is bounded by
+    #    the cell (`isentropic_cell_cap`, ℓ = min(Δx, Δz / slope)).
+    #    With the diagnosed T–q correlation this block adds nothing to T′q′
+    #    (no θ′ along the surface), so the correlation is carried by the
+    #    turbulent and vertical blocks. Scratch: `ᶜtemp_scalar_2` is free until
+    #    the θ→T transform below, `_3` (θ_li), `_5` (|∇q|²), `_6` (cross term).
+    # ----------------------------------------------------------------------
+    ᶜΔz = Fields.Δz_field(axes(Y.c))
+    ᶜpart = p.scratch.ᶜtemp_scalar_6  # across-surface share of the vertical excursion
+    if use_geometric
+        (; ᶜT, ᶜq_liq, ᶜq_ice) = p.precomputed
+        ᶜθ_li = p.scratch.ᶜtemp_scalar_3
+        @. ᶜθ_li = TD.liquid_ice_pottemp(
+            thermo_params, ᶜT, Y.c.ρ, ᶜq_tot_nonneg, ᶜq_liq, ᶜq_ice,
+        )
+        ᶜinv_q = p.scratch.ᶜtemp_scalar_5
+        ᶜinv_θ = p.scratch.ᶜtemp_scalar_2
+        ᶜinv_θq = p.scratch.ᶜtemp_scalar_6
+        hgrad_invariant!(ᶜinv_q, ᶜq_tot_nonneg, p)
+        hgrad_invariant!(ᶜinv_θ, ᶜθ_li, p)
+        hgrad_cross_invariant!(ᶜinv_θq, ᶜθ_li, ᶜq_tot_nonneg, p)
+        θz_min = CAP.sgs_variance_isentropic_min_dtheta_dz(p.params)
+        ᶜlg = Fields.local_geometry_field(Y.c)
+        @. ᶜinv_q = isentropic_gradient_invariant(
+            ᶜinv_q,
+            ᶜinv_θq,
+            ᶜinv_θ,
+            isentropic_slope_ratio(
+                projected_vector_data(C3, ᶜgradᵥ_q_tot, ᶜlg),
+                projected_vector_data(C3, ᶜgradᵥ_θ_liq_ice, ᶜlg),
+                θz_min,
+            ),
+        )
+        # Cell-geometry bound on the along-surface displacement
+        # (`ℓ ≤ Δx`, `ℓ ≤ Δz / slope`), kept in `ᶜpart` (over `ᶜinv_θq`, which
+        # is no longer needed) because the same factor is the across-surface
+        # share of the vertical excursion that the vertical block below may
+        # still sample.
+        @. ᶜpart = isentropic_cell_cap(
+            ᶜinv_θ,
+            projected_vector_data(C3, ᶜgradᵥ_θ_liq_ice, ᶜlg),
+            θz_min,
+            Δx_h,
+            ᶜΔz,
+        )
+        @. ᶜinv_q *= ᶜpart
+        @. ᶜq′q′ += geo_h * ᶜinv_q
+    else
+        @. ᶜpart = one(FT)
+    end
+
+    # ----------------------------------------------------------------------
+    # 3. Resolved vertical-gradient (uniform-box) block.
+    #    `c_g (c_Δz Δz)² (∂_z ψ)²` — exact for an in-cell linear profile
+    #    with the defaults `c_g = 1/12`, `c_Δz = 1`. Independent of l_mix,
+    #    so σ² stays non-zero in laminar cells / single columns. The cross
+    #    `c_g (c_Δz Δz)² ∂_z θ · ∂_z q` carries the geometrically-correct
+    #    ρ = sign(∂_z θ · ∂_z q) of the resolved vertical direction.
+    #    `c_Δz = 0` disables. The q′q′ term is scaled by
+    #    `ᶜpart`, the share of the vertical excursion not already sampled
+    #    along the θ_li surface by the horizontal block (`isentropic_cell_cap`):
+    #    1 for flat surfaces, → 0 for steep ones, where the in-cell q excursion
+    #    is the along-surface one. The cross carries the same factor (the
+    #    block's bound holds, f² ≤ f); θ′θ′ keeps the full vertical sample
+    #    (no θ′ along the surface, and the T-variance the cloud fraction sees
+    #    is left as it was). The diagnosed correlation is clamped to [-1, 1].
+    # ----------------------------------------------------------------------
+    if use_vertical_grad
+        geo_v(Δz) = c_g * (c_Δz * Δz)^2                 # per-cell coefficient
+        @. ᶜq′q′ +=
+            geo_v(ᶜΔz) * ᶜpart *
+            dot(
+                Geometry.WVector(ᶜgradᵥ_q_tot),
+                Geometry.WVector(ᶜgradᵥ_q_tot),
+            )
+        @. ᶜT′T′ +=
+            geo_v(ᶜΔz) * dot(
+                Geometry.WVector(ᶜgradᵥ_θ_liq_ice),
+                Geometry.WVector(ᶜgradᵥ_θ_liq_ice),
+            )
+        if diag_corr
+            @. p.precomputed.ᶜT′q′ +=
+                geo_v(ᶜΔz) * ᶜpart *
+                dot(
+                    Geometry.WVector(ᶜgradᵥ_θ_liq_ice),
+                    Geometry.WVector(ᶜgradᵥ_q_tot),
+                )
+        end
+    end
+
+    # ----------------------------------------------------------------------
+    # 4. θ → T basis via the thermodynamic Jacobian ∂T/∂θ. q is unaffected.
+    # ----------------------------------------------------------------------
+    ᶜ∂T_∂θ = p.scratch.ᶜtemp_scalar_2
+    compute_∂T_∂θ!(ᶜ∂T_∂θ, Y, p, thermo_params)
+    @. ᶜT′T′ = ᶜ∂T_∂θ^2 * ᶜT′T′
+    if diag_corr
+        @. p.precomputed.ᶜT′q′ = ᶜ∂T_∂θ * p.precomputed.ᶜT′q′
+    end
+
+    # ----------------------------------------------------------------------
+    # 5. Closure-validity bound `σ_q ≤ sgs_variance_max_rel_std · q_tot`
+    #    (default 0.5). A wider Gaussian puts a quadrature node at negative
+    #    total water; the clamped quadrature then carries more total water
+    #    than the grid mean holds, and condensing it can drive the grid-mean
+    #    vapour negative. For the diagnosed path we rescale T′q′ by the same
+    #    factor as σ_q so the diagnosed correlation is invariant under the
+    #    bound.
+    # ----------------------------------------------------------------------
+    r_max = CAP.sgs_variance_max_rel_std(p.params)
+    if diag_corr
+        @. p.precomputed.ᶜT′q′ *= sqrt(min(
+            one(FT),
+            (r_max * ᶜq_tot_nonneg)^2 / max(ᶜq′q′, eps(FT)^2),
+        ))
+    end
+    @. ᶜq′q′ = min(ᶜq′q′, (r_max * ᶜq_tot_nonneg)^2)
+
+    # ----------------------------------------------------------------------
+    # 6. Fill `ᶜcorr_Tq` with the correlation the quadrature samples.
+    # ----------------------------------------------------------------------
+    set_tq_correlation!(p, p.atmos.tq_correlation_model)
+    return nothing
+end
+
+
+# ============================================================================
+# SGS Moments — pre-pass quadrature
+# ============================================================================
+#
+# A Gauss-Hermite pass over the SGS PDF computes σ_S via `_sgs_saturation_moments`,
+# which drives the truncated-Gaussian cloud-fraction and λ_lagrange closures.
+#
+# The saturation variable is ALWAYS defined as the linear excess
+#
+#     S = q_tot − q_sat
+#
+# regardless of whether the SGS distribution of (T, q_tot) is Gaussian or
+# lognormal.  The distribution type (GaussianSGS / LogNormalSGS) controls only
+# how the quadrature points (T̂, q̂_tot) are sampled from the joint SGS PDF —
+# it does not change the definition of S.  This ensures consistency with the
+# Lagrange-multiplier evaluator, which always uses the centred linear excess
+# S′ = q_tot_hat − q_sat_hat − μ_S.
+#
+# (A lognormal closure for S = log(q_tot/q_sat) has no clean closed-form
+# inversion for the Lagrange multiplier, so the linear S is used universally.)
+
+"""
+    SGSVarianceEvaluator(tps, ρ, mu_S)
+
+GPU-safe functor returning `(S(ξ) − μ_S)²` at each quadrature point, where
+S = q_tot_hat − q_sat_hat is the linear saturation excess and `μ_S` is the
+linearized SGS mean of S (see `_sgs_saturation_moments`). Used to
+accumulate σ_S² = E[(S − μ_S)²] in one quadrature pass; avoids catastrophic
+cancellation in `E[S²] − (E[S])²` in Float32 when Var[S] ≪ (E[S])².
+"""
+struct SGSVarianceEvaluator{TPS, FT}
+    tps::TPS
+    ρ::FT
+    mu_S::FT
+end
+
+@inline function (eval::SGSVarianceEvaluator)(T_hat, q_tot_hat)
+    q_sat_hat = TD.q_vap_saturation(eval.tps, T_hat, eval.ρ)
+    s = q_tot_hat - q_sat_hat
+    return (s - eval.mu_S)^2
+end
+
+"""
+    SGSExcessEvaluator(tps, ρ, mu_S)
+
+GPU-safe functor returning the centred saturation excess
+`S′ = q_tot_hat − q_sat(T_hat, ρ) − μ_S` at each quadrature point. This is the
+quantity from which the `Microphysics1MEvaluator` reconstructs condensate. It is
+used with `quadrature_point_values` to materialize the sampled S′ distribution for
+the discrete Lagrange-multiplier fit in `_compute_sgs_moments`.
+"""
+struct SGSExcessEvaluator{TPS, FT}
+    tps::TPS
+    ρ::FT
+    mu_S::FT
+end
+
+@inline (eval::SGSExcessEvaluator)(T_hat, q_tot_hat) =
+    q_tot_hat - TD.q_vap_saturation(eval.tps, T_hat, eval.ρ) - eval.mu_S
+
+
+"""
+    _sgs_saturation_moments(thp, ρ, T_mean, q_tot_mean,
+                            sgs_quad, T′T′, q′q′, corr_Tq)
+
+Compute μ_S and σ_S of the linear saturation excess S = q_tot − q_sat over
+the SGS PDF.
+
+The mean is set analytically to the linearized value
+
+    μ_S = q_tot_mean − q_sat(T_mean, ρ),
+
+**Inspecting public diagnostics**
+exec
+/bin/zsh -lc "rg -n 'variance|covariance|corr_Tq|T′T′|q′q′|compute_∂T|isentropic_min|diagnostic_covariance_coeff' input/source/src__diagnostics__* input/source/test__parameterized* input/source/cloud_fraction.jl input/source/src__config__model_getters.jl input/source/src__parameters__create_parameters.jl; cat input/source/test__test_helpers.jl; rg -n 'ClimaCore =|ClimaParams =|CloudMicrophysics =|Thermodynamics =|ClimaTimeSteppers =' input/source/Project.toml" in <workdir>/CliMA_ClimaAtmos.jl_4822
+ succeeded in 0ms:
+input/source/src__diagnostics__core_diagnostics.jl:1165:# Covariances (3d)
+input/source/src__diagnostics__core_diagnostics.jl:1167:function compute_covariance_diagnostics(_, cache, _, type)
+input/source/src__diagnostics__core_diagnostics.jl:1168:    (; ᶜT′T′, ᶜq′q′, ᶜcorr_Tq) = cache.precomputed
+input/source/src__diagnostics__core_diagnostics.jl:1170:        return ᶜq′q′
+input/source/src__diagnostics__core_diagnostics.jl:1172:        return ᶜT′T′
+input/source/src__diagnostics__core_diagnostics.jl:1174:        # covariance consistent with the correlation the quadrature samples
+input/source/src__diagnostics__core_diagnostics.jl:1176:        return @. lazy(ᶜcorr_Tq * sqrt(max(0, ᶜT′T′)) * sqrt(max(0, ᶜq′q′)))
+input/source/src__diagnostics__core_diagnostics.jl:1178:        error("Unknown variance type")
+input/source/src__diagnostics__core_diagnostics.jl:1182:compute_env_q_tot_variance(state, cache, time) =
+input/source/src__diagnostics__core_diagnostics.jl:1183:    compute_covariance_diagnostics(state, cache, time, :qt_qt)
+input/source/src__diagnostics__core_diagnostics.jl:1184:compute_env_temperature_variance(state, cache, time) =
+input/source/src__diagnostics__core_diagnostics.jl:1185:    compute_covariance_diagnostics(state, cache, time, :T_T)
+input/source/src__diagnostics__core_diagnostics.jl:1186:compute_env_q_tot_temperature_covariance(state, cache, time) =
+input/source/src__diagnostics__core_diagnostics.jl:1187:    compute_covariance_diagnostics(state, cache, time, :T_qt)
+input/source/src__diagnostics__core_diagnostics.jl:1190:    # the sampled correlation lives in the cache only when SGS covariances are used;
+input/source/src__diagnostics__core_diagnostics.jl:1192:    hasproperty(cache.precomputed, :ᶜcorr_Tq) && return cache.precomputed.ᶜcorr_Tq
+input/source/src__diagnostics__core_diagnostics.jl:1198:add_diagnostic_variable!(short_name = "env_q_tot_variance", units = "kg^2 kg^-2",
+input/source/src__diagnostics__core_diagnostics.jl:1200:    compute = compute_env_q_tot_variance,
+input/source/src__diagnostics__core_diagnostics.jl:1204:    short_name = "env_temperature_variance", units = "K^2",
+input/source/src__diagnostics__core_diagnostics.jl:1206:    compute = compute_env_temperature_variance,
+input/source/src__diagnostics__core_diagnostics.jl:1210:    short_name = "env_q_tot_temperature_covariance",
+input/source/src__diagnostics__core_diagnostics.jl:1211:    long_name = "Environment Covariance of Total Specific Humidity and Temperature",
+input/source/src__diagnostics__core_diagnostics.jl:1213:    compute = compute_env_q_tot_temperature_covariance,
+input/source/cloud_fraction.jl:5:    set_covariance_cache_and_cloud_fraction!(Y, p)
+input/source/cloud_fraction.jl:7:Update the covariance cache and cloud fraction in a way that is consistent with
+input/source/cloud_fraction.jl:11:depends on the covariance cache, whose mixing length depends on the buoyancy
+input/source/cloud_fraction.jl:29:gradients since the covariances represent sub-grid fluctuations within the
+input/source/cloud_fraction.jl:32:function set_covariance_cache_and_cloud_fraction!(Y, p)
+input/source/cloud_fraction.jl:48:    # on the covariance cache through the mixing length. For reproducible restart,
+input/source/cloud_fraction.jl:56:    # gradient and covariance cache, then recompute cloud fraction.
+input/source/cloud_fraction.jl:69:        # Cache SGS covariances (no-op for dry/0M/GridScaleCloud configs). The vertical
+input/source/cloud_fraction.jl:72:        set_covariance_cache!(Y, p, thermo_params)
+input/source/cloud_fraction.jl:84:    # (`set_covariance_cache!` and the QuadratureCloud `set_cloud_fraction!` write them).
+input/source/cloud_fraction.jl:103:    # Recompute buoyancy gradient and covariance cache with the final cloud fraction.
+input/source/cloud_fraction.jl:110:    set_covariance_cache!(Y, p, thermo_params)
+input/source/cloud_fraction.jl:113:    # microphysics SGS moments (σ_S, λ_lagrange) using the final covariance.
+input/source/cloud_fraction.jl:130:Called from `set_covariance_cache_and_cloud_fraction!`.
+input/source/cloud_fraction.jl:151:    compute_∂T_∂θ!(dest, Y, p, thermo_params)
+input/source/cloud_fraction.jl:156:(see `set_covariance_cache!`).
+input/source/cloud_fraction.jl:158:function compute_∂T_∂θ!(dest, Y, p, thermo_params)
+input/source/cloud_fraction.jl:179:    uses_covariances(atmos)
+input/source/cloud_fraction.jl:181:Whether SGS (co)variances of `(T, q_tot)` are needed by the configuration:
+input/source/cloud_fraction.jl:185:covariance-cache no-op guard (`set_covariance_cache!`) and the
+input/source/cloud_fraction.jl:187:`ᶜl_mix` is materialized inside the covariance/cloud-fraction iteration and
+input/source/cloud_fraction.jl:192:uses_covariances(atmos) =
+input/source/cloud_fraction.jl:203:reused by TKE dissipation, the covariance closure, and diagnostics); every
+input/source/cloud_fraction.jl:209:recomputing the closure for each covariance and keeps GPU kernel parameters
+input/source/cloud_fraction.jl:241:left for the `q′q′` part of the vertical uniform-box block: the along-surface
+input/source/cloud_fraction.jl:243:`Δz² − (s ℓ)² = Δz² / (1 + (s Δx / Δz)²)`, so the vertical `q′q′` term is scaled
+input/source/cloud_fraction.jl:244:by it (`set_covariance_cache!`). Flat surfaces keep both blocks in full; steep
+input/source/cloud_fraction.jl:251:# TODO: θ and q variances are not treated consistently.
+input/source/cloud_fraction.jl:265:geometric variance term). The floor `θz_min` (`sgs_variance_isentropic_min_dtheta_dz`)
+input/source/cloud_fraction.jl:317:    sgs_correlation_Tq(T′T′, q′q′, T′q′, fallback)
+input/source/cloud_fraction.jl:319:Diagnosed SGS T–q correlation `clamp(T′q′ / √(T′T′ q′q′), -1, 1)`, or
+input/source/cloud_fraction.jl:320:`fallback` where the product of the variances is at the round-off floor.
+input/source/cloud_fraction.jl:322:In exact arithmetic each variance block satisfies its own Cauchy-Schwarz
+input/source/cloud_fraction.jl:324:vertical uniform-box) covariances also holds — the isentropic horizontal block
+input/source/cloud_fraction.jl:325:contributes variance to q′q′ only and no covariance — so
+input/source/cloud_fraction.jl:332:@inline function sgs_correlation_Tq(T′T′, q′q′, T′q′, fallback)
+input/source/cloud_fraction.jl:333:    FT = typeof(T′T′)
+input/source/cloud_fraction.jl:334:    v = max(T′T′, zero(FT)) * max(q′q′, zero(FT))
+input/source/cloud_fraction.jl:345:Fill `p.precomputed.ᶜcorr_Tq` with the SGS T–q correlation the quadrature samples.
+input/source/cloud_fraction.jl:347:`DiagnosedTqCorrelation`: `T′q′ / √(T′T′ q′q′)` from the gradient covariance
+input/source/cloud_fraction.jl:348:accumulated in `p.precomputed.ᶜT′q′` by `set_covariance_cache!` (see
+input/source/cloud_fraction.jl:349:`sgs_correlation_Tq`); the fallback where the variances vanish is the
+input/source/cloud_fraction.jl:350:prescribed value. `ᶜT′T′` and `ᶜq′q′` must already be in the T basis and
+input/source/cloud_fraction.jl:351:bounded. The covariance diagnostic is formed lazily from `ᶜcorr_Tq` and the
+input/source/cloud_fraction.jl:352:variances (`compute_covariance_diagnostics`).
+input/source/cloud_fraction.jl:355:    (; ᶜcorr_Tq) = p.precomputed
+input/source/cloud_fraction.jl:357:    @. ᶜcorr_Tq = corr
+input/source/cloud_fraction.jl:361:    (; ᶜT′T′, ᶜq′q′, ᶜT′q′, ᶜcorr_Tq) = p.precomputed
+input/source/cloud_fraction.jl:363:    @. ᶜcorr_Tq = sgs_correlation_Tq(ᶜT′T′, ᶜq′q′, ᶜT′q′, fallback)
+input/source/cloud_fraction.jl:368:    set_covariance_cache!(Y, p, thermo_params)
+input/source/cloud_fraction.jl:370:Materializes T-based SGS covariances into cached fields for use by downstream
+input/source/cloud_fraction.jl:372:`p.precomputed.(ᶜT′T′, ᶜq′q′, ᶜcorr_Tq)` (and `ᶜT′q′` for the diagnosed correlation).
+input/source/cloud_fraction.jl:377: 2. Materialize θ-based turbulent covariances from gradients (`2 c l_mix² |∇_z ψ|²`).
+input/source/cloud_fraction.jl:384:    cell (`isentropic_cell_cap`), to q′q′ only — no horizontal θ′θ′ and no
+input/source/cloud_fraction.jl:385:    horizontal cross term (skipped when `sgs_variance_horizontal_scale_factor` is 0).
+input/source/cloud_fraction.jl:387:    `c_g (c_Δz Δz)² (∂_z ψ)²` to both variances, and the exact cross
+input/source/cloud_fraction.jl:388:    `c_g (c_Δz Δz)² ∂_z θ · ∂_z q` to θ′q′; the q′q′ and θ′q′ terms are
+input/source/cloud_fraction.jl:391:    `sgs_variance_vertical_scale_factor` is 0; default `c_Δz = 1` with
+input/source/cloud_fraction.jl:393: 5. Transform θ→T using `compute_∂T_∂θ!`
+input/source/cloud_fraction.jl:394: 6. Add the horizontal resolved-gradient term to q′q′ (skipped together with
+input/source/cloud_fraction.jl:396: 7. Apply the closure-validity bound `σ_q ≤ sgs_variance_max_rel_std * q_tot`
+input/source/cloud_fraction.jl:398:    model the covariance is first rescaled with the bound so the correlation is
+input/source/cloud_fraction.jl:404:prescribed `correlation_Tq` for its cross-covariance; the resolved horizontal
+input/source/cloud_fraction.jl:408:function set_covariance_cache!(Y, p, thermo_params)
+input/source/cloud_fraction.jl:409:    # Covariance fields are only allocated when the configuration needs them.
+input/source/cloud_fraction.jl:411:    uses_covariances(p.atmos) || return nothing
+input/source/cloud_fraction.jl:416:        ᶜT′T′,
+input/source/cloud_fraction.jl:417:        ᶜq′q′,
+input/source/cloud_fraction.jl:423:    # Resolved-gradient (geometric) variance coefficients. `c_g` is the shared
+input/source/cloud_fraction.jl:426:    c_g = CAP.sgs_variance_geometric_coeff(p.params)
+input/source/cloud_fraction.jl:427:    c_Δx = CAP.sgs_variance_horizontal_scale_factor(p.params)
+input/source/cloud_fraction.jl:428:    c_Δz = CAP.sgs_variance_vertical_scale_factor(p.params)
+input/source/cloud_fraction.jl:443:    coeff = CAP.diagnostic_covariance_coeff(p.params)
+input/source/cloud_fraction.jl:454:    #    still carry the l_mix² · |∇_z ψ|² scaling via the turbulent variances.
+input/source/cloud_fraction.jl:456:    @. ᶜq′q′ = cov_from_grad(
+input/source/cloud_fraction.jl:461:    @. ᶜT′T′ = cov_from_grad(  # holds θ′θ′ until the ∂T/∂θ transform below.
+input/source/cloud_fraction.jl:468:        @. p.precomputed.ᶜT′q′ = ρ_turb * sqrt(ᶜT′T′ * ᶜq′q′)
+input/source/cloud_fraction.jl:474:    #    resolved horizontal field. q′q′ is in native q basis so adding
+input/source/cloud_fraction.jl:478:    #    geometric variance is carried by q′q′ as the gradient of q_tot ALONG
+input/source/cloud_fraction.jl:484:    #    saturation variance. The displacement along the surface is bounded by
+input/source/cloud_fraction.jl:505:        θz_min = CAP.sgs_variance_isentropic_min_dtheta_dz(p.params)
+input/source/cloud_fraction.jl:530:        @. ᶜq′q′ += geo_h * ᶜinv_q
+input/source/cloud_fraction.jl:542:    #    `c_Δz = 0` disables. The q′q′ term is scaled by
+input/source/cloud_fraction.jl:548:    #    (no θ′ along the surface, and the T-variance the cloud fraction sees
+input/source/cloud_fraction.jl:553:        @. ᶜq′q′ +=
+input/source/cloud_fraction.jl:559:        @. ᶜT′T′ +=
+input/source/cloud_fraction.jl:578:    compute_∂T_∂θ!(ᶜ∂T_∂θ, Y, p, thermo_params)
+input/source/cloud_fraction.jl:579:    @. ᶜT′T′ = ᶜ∂T_∂θ^2 * ᶜT′T′
+input/source/cloud_fraction.jl:585:    # 5. Closure-validity bound `σ_q ≤ sgs_variance_max_rel_std · q_tot`
+input/source/cloud_fraction.jl:593:    r_max = CAP.sgs_variance_max_rel_std(p.params)
+input/source/cloud_fraction.jl:597:            (r_max * ᶜq_tot_nonneg)^2 / max(ᶜq′q′, eps(FT)^2),
+input/source/cloud_fraction.jl:600:    @. ᶜq′q′ = min(ᶜq′q′, (r_max * ᶜq_tot_nonneg)^2)
+input/source/cloud_fraction.jl:603:    # 6. Fill `ᶜcorr_Tq` with the correlation the quadrature samples.
+input/source/cloud_fraction.jl:673:                            sgs_quad, T′T′, q′q′, corr_Tq)
+input/source/cloud_fraction.jl:695:    sgs_quad, T′T′, q′q′, corr_Tq,
+input/source/cloud_fraction.jl:702:        evaluator, sgs_quad_eff, q_tot_mean, T_mean, q′q′, T′T′, corr_Tq,
+input/source/cloud_fraction.jl:724:# where α = `sgs_variance_fidelity` controls how much of the SGS variance is
+input/source/cloud_fraction.jl:728:# the normalised problem well-conditioned for tiny variances).
+input/source/cloud_fraction.jl:746:# For the *cloud fraction* we use an augmented variance with a fixed
+input/source/cloud_fraction.jl:774:    sgs_variance_fidelity(cf_steepness_coeff)
+input/source/cloud_fraction.jl:776:Return the variance fidelity parameter `α = 1 / cf_steepness_coeff`, where
+input/source/cloud_fraction.jl:779:`α` controls how much of the SGS saturation variance enters the local
+input/source/cloud_fraction.jl:789:With the default `cf_steepness_coeff = 1` this gives `α = 1` (full variance
+input/source/cloud_fraction.jl:798:    or other physical controls on subgrid variance propagation.
+input/source/cloud_fraction.jl:800:sgs_variance_fidelity(cf_steepness_coeff::FT) where {FT} = one(FT) / cf_steepness_coeff
+input/source/cloud_fraction.jl:869:variance ∝ q_sat, `ε_rel ~ 1 − RH_crit`; Quaas, 2012,
+input/source/cloud_fraction.jl:950:        sgs_quad, T′T′, q′q′, corr_Tq, α, floor,
+input/source/cloud_fraction.jl:967:    T′T′,
+input/source/cloud_fraction.jl:968:    q′q′,
+input/source/cloud_fraction.jl:969:    corr_Tq,
+input/source/cloud_fraction.jl:974:        thermo_params, ρ, T, q_tot, sgs_quad, T′T′, q′q′, corr_Tq,
+input/source/cloud_fraction.jl:1066:    _compute_sgs_moments(thp, ρ, T, q_tot, q_c, sgs_quad, T′T′, q′q′, corr_Tq, α)
+input/source/cloud_fraction.jl:1088:    sgs_quad, T′T′, q′q′, corr_Tq, α,
+input/source/cloud_fraction.jl:1096:        build_physical_transform(sgs_quad, q_tot, T, q′q′, T′T′, corr_Tq)
+input/source/cloud_fraction.jl:1123:`ᶜtemp_scalar_7`, which `set_covariance_cache_and_cloud_fraction!` reserves for
+input/source/cloud_fraction.jl:1144:    α = sgs_variance_fidelity(CAP.cloud_fraction_steepness_scale(p.params))
+input/source/cloud_fraction.jl:1146:    (; ᶜT′T′, ᶜq′q′, ᶜcorr_Tq, ᶜsgs_moments, ᶜcloud_fraction) = p.precomputed
+input/source/cloud_fraction.jl:1150:    # the iterates that `set_covariance_cache_and_cloud_fraction!` keeps in
+input/source/cloud_fraction.jl:1162:        ᶜq_lcl, ᶜq_icl, ᶜq_lcl_cf, ᶜq_icl_cf, ᶜT′T′, ᶜq′q′, ᶜcorr_Tq,
+input/source/cloud_fraction.jl:1172:    ᶜT′T′,
+input/source/cloud_fraction.jl:1173:    ᶜq′q′,
+input/source/cloud_fraction.jl:1174:    ᶜcorr_Tq
+input/source/cloud_fraction.jl:1179:            $(sgs_quad), ᶜT′T′, ᶜq′q′, ᶜcorr_Tq, α_ft,
+input/source/cloud_fraction.jl:1184:        # truncated-Gaussian closure for the augmented variance. This overwrites
+input/source/cloud_fraction.jl:1282:    # the Picard step of `set_covariance_cache_and_cloud_fraction!`, so it may
+input/source/cloud_fraction.jl:1295:    α = sgs_variance_fidelity(CAP.cloud_fraction_steepness_scale(p.params))
+input/source/cloud_fraction.jl:1298:    (; ᶜT′T′, ᶜq′q′, ᶜcorr_Tq) = p.precomputed
+input/source/cloud_fraction.jl:1310:        ᶜT′T′,
+input/source/cloud_fraction.jl:1311:        ᶜq′q′,
+input/source/cloud_fraction.jl:1312:        ᶜcorr_Tq,
+input/source/cloud_fraction.jl:1313:    ) do ᶜcloud_fraction, ᶜT_mean, ᶜρ_env, ᶜq_mean, ᶜq_lcl, ᶜq_icl, ᶜT′T′, ᶜq′q′, ᶜcorr_Tq
+input/source/cloud_fraction.jl:1322:            ᶜT′T′,
+input/source/cloud_fraction.jl:1323:            ᶜq′q′,
+input/source/cloud_fraction.jl:1324:            ᶜcorr_Tq,
+input/source/cloud_fraction.jl:1341:    # Get environment state, condensate, and covariances
+input/source/cloud_fraction.jl:1391:Compute environment state, condensate means, and variances for cloud fraction.
+input/source/cloud_fraction.jl:1397:Tuple: `(ᶜρ_env, ᶜT_mean, ᶜq_mean, ᶜθ_mean, ᶜq_lcl, ᶜq_icl, ᶜT′T′, ᶜq′q′)`
+input/source/cloud_fraction.jl:1445:    # Get T-based variances from cache
+input/source/cloud_fraction.jl:1446:    (; ᶜT′T′, ᶜq′q′) = p.precomputed
+input/source/cloud_fraction.jl:1448:    return ᶜρ_env, ᶜT_mean, ᶜq_mean, ᶜθ_mean, ᶜq_lcl, ᶜq_icl, ᶜT′T′, ᶜq′q′
+input/source/src__parameters__create_parameters.jl:541:Build the SGS covariance, quadrature and cloud-fraction parameter set.
+input/source/src__parameters__create_parameters.jl:566:        :diagnostic_covariance_coeff => :diagnostic_covariance_coeff,
+input/source/src__parameters__create_parameters.jl:568:        :sgs_variance_geometric_coeff => :sgs_variance_geometric_coeff,
+input/source/src__parameters__create_parameters.jl:569:        :sgs_variance_horizontal_scale_factor =>
+input/source/src__parameters__create_parameters.jl:570:            :sgs_variance_horizontal_scale_factor,
+input/source/src__parameters__create_parameters.jl:571:        :sgs_variance_vertical_scale_factor =>
+input/source/src__parameters__create_parameters.jl:572:            :sgs_variance_vertical_scale_factor,
+input/source/src__parameters__create_parameters.jl:573:        :sgs_variance_max_rel_std => :sgs_variance_max_rel_std,
+input/source/src__parameters__create_parameters.jl:597:        # Isentropic geometric variance term: floor on ∂θ_li/∂z [K/m] in the
+input/source/src__parameters__create_parameters.jl:599:        sgs_variance_isentropic_min_dtheta_dz = FT(1e-3),
+### BoilerPlate Code
+using IntervalSets
+
+import ClimaComms
+import ClimaCore:
+    ClimaCore,
+    Domains,
+    Geometry,
+    Grids,
+    Fields,
+    Operators,
+    Meshes,
+    Spaces,
+    Quadratures,
+    Topologies,
+    Hypsography
+
+### Unit Test Helpers
+# If wrappers for general operations are required in unit tests
+# (e.g. construct spaces, construct simulations from configs,
+# specialised test functions with multiple uses, define them here.)
+
+function generate_test_simulation(config)
+    simulation = CA.get_simulation(config)
+    (; integrator) = simulation
+    Y = integrator.u
+    p = integrator.p
+    return (; Y = Y, p = p, params = p.params, simulation = simulation)
+end
+
+function periodic_line_mesh(; x_max, x_elem)
+    domain = Domains.IntervalDomain(
+        Geometry.XPoint(zero(x_max)),
+        Geometry.XPoint(x_max);
+        periodic = true,
+    )
+    return Meshes.IntervalMesh(domain; nelems = x_elem)
+end
+
+function periodic_rectangle_mesh(; x_max, y_max, x_elem, y_elem)
+    x_domain = Domains.IntervalDomain(
+        Geometry.XPoint(zero(x_max)),
+        Geometry.XPoint(x_max);
+        periodic = true,
+    )
+    y_domain = Domains.IntervalDomain(
+        Geometry.YPoint(zero(y_max)),
+        Geometry.YPoint(y_max);
+        periodic = true,
+    )
+    domain = Domains.RectangleDomain(x_domain, y_domain)
+    return Meshes.RectilinearMesh(domain, x_elem, y_elem)
+end
+
+"""
+    make_horizontal_space(mesh, quad, comms_ctx::ClimaComms.SingletonCommsContext, bubble)
+
+Create a horizontal spectral element space from a mesh and quadrature.
+
+For 1D meshes, creates a `SpectralElementSpace1D`.
+For 2D meshes, creates a `SpectralElementSpace2D` with optional bubble correction.
+
+# Arguments
+
+  - `mesh`: The horizontal mesh (1D or 2D)
+  - `quad`: The quadrature style
+  - `comms_ctx`: Communications context (must be `SingletonCommsContext` for 1D meshes)
+  - `bubble`: Enable bubble correction for 2D spaces
+
+# Returns
+
+  - A horizontal spectral element space
+"""
+function make_horizontal_space(
+    mesh,
+    quad,
+    comms_ctx::ClimaComms.SingletonCommsContext,
+    bubble,
+)
+    space = if mesh isa Meshes.AbstractMesh1D
+        topology = Topologies.IntervalTopology(comms_ctx, mesh)
+        Spaces.SpectralElementSpace1D(topology, quad)
+    elseif mesh isa Meshes.AbstractMesh2D
+        topology = Topologies.Topology2D(
+            comms_ctx,
+            mesh,
+            Topologies.spacefillingcurve(mesh),
+        )
+        Spaces.SpectralElementSpace2D(topology, quad; enable_bubble = bubble)
+    end
+    return space
+end
+
+"""
+    make_horizontal_space(mesh, quad, comms_ctx, bubble)
+
+Create a horizontal spectral element space from a mesh and quadrature (distributed version).
+
+For distributed contexts, only 2D meshes are supported.
+
+# Arguments
+
+  - `mesh`: The horizontal mesh (must be 2D for distributed contexts)
+  - `quad`: The quadrature style
+  - `comms_ctx`: Communications context (distributed)
+  - `bubble`: Enable bubble correction
+
+# Returns
+
+  - A horizontal spectral element space
+
+# Throws
+
+  - `ErrorException` if a 1D mesh is provided (distributed mode doesn't support 1D spaces)
+"""
+function make_horizontal_space(mesh, quad, comms_ctx, bubble)
+    if mesh isa Meshes.AbstractMesh1D
+        error("Distributed mode does not work with 1D horizontal spaces.")
+    elseif mesh isa Meshes.AbstractMesh2D
+        topology = Topologies.Topology2D(
+            comms_ctx,
+            mesh,
+            Topologies.spacefillingcurve(mesh),
+        )
+        space = Spaces.SpectralElementSpace2D(
+            topology,
+            quad;
+            enable_bubble = bubble,
+        )
+    end
+    return space
+end
+
+function get_spherical_spaces(; FT = Float32)
+    context = ClimaComms.SingletonCommsContext()
+    radius = FT(10π)
+    ne = 4
+    Nq = 4
+    domain = Domains.SphereDomain(radius)
+    mesh = Meshes.EquiangularCubedSphere(domain, ne)
+    topology = Topologies.Topology2D(context, mesh)
+    quad = Quadratures.GLL{Nq}()
+    enable_bubble = false
+    no_bubble_space =
+        Spaces.SpectralElementSpace2D(topology, quad; enable_bubble)
+
+    # Now check constructor with bubble enabled
+    enable_bubble = true
+    bubble_space = Spaces.SpectralElementSpace2D(topology, quad; enable_bubble)
+
+    lat = Fields.coordinate_field(bubble_space).lat
+    long = Fields.coordinate_field(bubble_space).long
+    coords = Fields.coordinate_field(bubble_space)
+    return (;
+        bubble_space = bubble_space,
+        no_bubble_space = no_bubble_space,
+        lat = lat,
+        long = long,
+        coords = coords,
+        FT = FT,
+    )
+end
+
+"""
+    get_spherical_extruded_spaces(; FT = Float32)
+
+Create 3D extruded spherical spaces (center and face) for testing.
+Returns center_space, face_space, and domain parameters (radius, z_max).
+"""
+function get_spherical_extruded_spaces(; FT = Float32)
+    device = ClimaComms.CPUSingleThreaded()
+    context = ClimaComms.SingletonCommsContext(device)
+
+    # Horizontal: cubed sphere
+    radius = FT(6.371e6)  # Earth radius
+    ne = 4  # elements per cube face edge
+    Nq = 4  # polynomial degree + 1
+    domain = Domains.SphereDomain(radius)
+    mesh = Meshes.EquiangularCubedSphere(domain, ne)
+    topology = Topologies.Topology2D(context, mesh, Topologies.spacefillingcurve(mesh))
+    quad = Quadratures.GLL{Nq}()
+    h_space = Spaces.SpectralElementSpace2D(topology, quad; enable_bubble = true)
+    horz_grid = Spaces.grid(h_space)
+
+    # Vertical: finite difference
+    z_max = FT(30000)  # 30 km top
+    velem = 10
+    vertdomain = Domains.IntervalDomain(
+        Geometry.ZPoint{FT}(0),
+        Geometry.ZPoint{FT}(z_max);
+        boundary_names = (:bottom, :top),
+    )
+    vertmesh = Meshes.IntervalMesh(vertdomain, nelems = velem)
+    vert_topology = Topologies.IntervalTopology(context, vertmesh)
+    vert_grid = Grids.FiniteDifferenceGrid(vert_topology)
+
+    # Extruded grid
+    grid = Grids.ExtrudedFiniteDifferenceGrid(horz_grid, vert_grid)
+    cent_space = Spaces.CenterExtrudedFiniteDifferenceSpace(grid)
+    face_space = Spaces.FaceExtrudedFiniteDifferenceSpace(grid)
+
+    return (;
+        cent_space = cent_space,
+        face_space = face_space,
+        radius = radius,
+        z_max = z_max,
+        FT = FT,
+    )
+end
+
+"""
+    get_spherical_extruded_spaces_with_topography(; FT = Float64)
+
+Create 3D extruded spherical spaces with a Gaussian mountain for testing.
+Returns center_space, face_space, and domain parameters (radius, z_max).
+The mountain is centered at (lat=0, lon=0) with height 2000m and lataeral
+decay scale 10°.
+"""
+function get_spherical_extruded_spaces_with_topography(; FT = Float64)
+    context = ClimaComms.SingletonCommsContext()
+
+    # Horizontal: coarse cubed sphere
+    radius = FT(6.371e6)
+    ne = 4
+    Nq = 4
+    domain = Domains.SphereDomain(radius)
+    mesh = Meshes.EquiangularCubedSphere(domain, ne)
+    topology = Topologies.Topology2D(context, mesh, Topologies.spacefillingcurve(mesh))
+    quad = Quadratures.GLL{Nq}()
+    h_space = Spaces.SpectralElementSpace2D(topology, quad)
+    horz_grid = Spaces.grid(h_space)
+
+    # Vertical: finite difference
+    z_max = FT(30e3)
+    vertdomain = Domains.IntervalDomain(
+        Geometry.ZPoint{FT}(0),
+        Geometry.ZPoint{FT}(z_max);
+        boundary_names = (:bottom, :top),
+    )
+    vertmesh = Meshes.IntervalMesh(vertdomain, nelems = 10)
+    vert_topology = Topologies.IntervalTopology(context, vertmesh)
+    vert_grid = Grids.FiniteDifferenceGrid(vert_topology)
+
+    # Topography: Gaussian mountain
+    z_surface = Fields.Field(Geometry.ZPoint{FT}, h_space)
+    coords = Fields.coordinate_field(h_space)
+    @. z_surface = Geometry.ZPoint(
+        FT(2000) * exp(-(coords.lat^2 + coords.long^2) / (2 * FT(10)^2)),
+    )
+
+    # Warped grid
+    grid = Grids.ExtrudedFiniteDifferenceGrid(
+        horz_grid,
+        vert_grid,
+        Hypsography.LinearAdaption(z_surface),
+    )
+    cent_space = Spaces.CenterExtrudedFiniteDifferenceSpace(grid)
+    face_space = Spaces.FaceExtrudedFiniteDifferenceSpace(grid)
+
+    return (;
+        cent_space = cent_space,
+        face_space = face_space,
+        radius = radius,
+        z_max = z_max,
+        FT = FT,
+    )
+end
+
+function get_cartesian_spaces(; FT = Float32)
+    xlim = (FT(0), FT(π))
+    zlim = (FT(0), FT(π))
+    helem = 5
+    velem = 10
+    npoly = 5
+    stretch = Meshes.Uniform()
+    device = ClimaComms.CPUSingleThreaded()
+    comms_context = ClimaComms.SingletonCommsContext(device)
+    # Horizontal Grid Construction
+    quad = Quadratures.GLL{npoly + 1}()
+    horzdomain = Domains.RectangleDomain(
+        Geometry.XPoint{FT}(xlim[1]) .. Geometry.XPoint{FT}(xlim[2]),
+        Geometry.YPoint{FT}(xlim[1]) .. Geometry.YPoint{FT}(xlim[2]),
+        x1periodic = true,
+        x2periodic = true,
+    )
+    # Assume same number of elems (helem) in (x,y) directions
+    horzmesh = Meshes.RectilinearMesh(horzdomain, helem, helem)
+    horz_topology = Topologies.Topology2D(
+        comms_context,
+        horzmesh,
+        Topologies.spacefillingcurve(horzmesh),
+    )
+    h_space =
+        Spaces.SpectralElementSpace2D(horz_topology, quad, enable_bubble = true)
+
+    horz_grid = Spaces.grid(h_space)
+
+    # Vertical Grid Construction
+    vertdomain = Domains.IntervalDomain(
+        Geometry.ZPoint{FT}(zlim[1]),
+        Geometry.ZPoint{FT}(zlim[2]);
+        boundary_names = (:bottom, :top),
+    )
+    vertmesh = Meshes.IntervalMesh(vertdomain, stretch, nelems = velem)
+    vert_topology = Topologies.IntervalTopology(
+        ClimaComms.SingletonCommsContext(device),
+        vertmesh,
+    )
+    vert_grid = Grids.FiniteDifferenceGrid(vert_topology)
+    grid = Grids.ExtrudedFiniteDifferenceGrid(horz_grid, vert_grid)
+    cent_space = Spaces.CenterExtrudedFiniteDifferenceSpace(grid)
+    face_space = Spaces.FaceExtrudedFiniteDifferenceSpace(grid)
+    return (
+        helem = helem,
+        cent_space = cent_space,
+        face_space = face_space,
+        xlim = xlim,
+        zlim = zlim,
+        velem = velem,
+        npoly = npoly,
+        quad = quad,
+    )
+end
+
+function get_coords(cent_space, face_space)
+    ccoords = Fields.coordinate_field(cent_space)
+    fcoords = Fields.coordinate_field(face_space)
+    return ccoords, fcoords
+end
+
+"""
+    taylor_green_ic(coords)
+
+Return (u, v, w) velocity components for the Taylor-Green vortex initial condition.
+The Taylor-Green vortex is an exact solution to the incompressible Navier-Stokes equations
+that provides a smooth, analytical test case for verifying numerical schemes.
+
+Currently returns zero for the w component (2D flow in x-y plane).
+"""
+function taylor_green_ic(coords)
+    u = @. sin(coords.x) * cos(coords.y) * cos(coords.z)
+    v = @. -cos(coords.x) * sin(coords.y) * cos(coords.z)
+    w = @. zero(coords.x)  # 2D Taylor-Green has no vertical velocity
+    return u, v, w
+end
+
+"""
+    get_cartesian_test_velocities(cent_space, face_space)
+
+Generate staggered velocity fields for testing on Cartesian geometry.
+Returns horizontal velocity `uₕ` (Covariant12Vector at centers) and vertical velocity `uᵥ`
+(Covariant3Vector at faces) based on the Taylor-Green vortex profile.
+"""
+function get_cartesian_test_velocities(cent_space, face_space)
+    ccoords, fcoords = get_coords(cent_space, face_space)
+
+    # Get velocity components from Taylor-Green vortex
+    u, v, w = taylor_green_ic(ccoords)
+    ᶠu, ᶠv, ᶠw = taylor_green_ic(fcoords)
+
+    # Assemble UVW vectors
+    UVW = Geometry.UVWVector
+    ᶜu = @. UVW(Geometry.UVector(u)) + UVW(Geometry.VVector(v)) +
+            UVW(Geometry.WVector(w))
+    ᶠu =
+        @. UVW(Geometry.UVector(ᶠu)) + UVW(Geometry.VVector(ᶠv)) +
+           UVW(Geometry.WVector(ᶠw))
+
+    # Extract covariant components for staggered grid tests
+    uₕ = @. Geometry.Covariant12Vector(ᶜu)
+    uᵥ = @. Geometry.Covariant3Vector(ᶠu)
+
+    return uₕ, uᵥ
+end
+
+"""
+    get_spherical_test_velocities(cent_space, face_space, z_max; U₀ = 10, W₀ = 1)
+
+Generate staggered velocity fields for testing on spherical geometry.
+Uses separable velocity components with:
+
+  - Horizontal: zonal wind uₕ = U₀ cos(lat)
+  - Vertical: w = W₀ sin(πz/z_max)
+
+Returns:
+
+  - `uₕ`: horizontal velocity (Covariant12Vector at centers)
+  - `uᵥ`: vertical velocity (Covariant3Vector at faces)
+  - `ᶠu_C123`: full velocity (Covariant123Vector at faces) for strain rate tests
+"""
+function get_spherical_test_velocities(cent_space, face_space, z_max; U₀ = 10, W₀ = 1)
+    FT = eltype(z_max)
+    ccoords = Fields.coordinate_field(cent_space)
+    fcoords = Fields.coordinate_field(face_space)
+    c_lg = Fields.local_geometry_field(cent_space)
+    f_lg = Fields.local_geometry_field(face_space)
+
+    # Horizontal: zonal wind at cell centers
+    # We project the physical vector onto any local geometry to handle topography
+    lat_rad = @. deg2rad(ccoords.lat)
+    uₕ_mag = @. FT(U₀) * cos(lat_rad)
+    uₕ = @. Geometry.Covariant12Vector(Geometry.UVVector(uₕ_mag, zero(uₕ_mag)), c_lg)
+
+    # Vertical: at cell faces
+    ᶠz = fcoords.z
+    ᶠw_mag = @. FT(W₀) * sin(FT(π) * ᶠz / z_max)
+    uᵥ = @. Geometry.Covariant3Vector(Geometry.WVector(ᶠw_mag), f_lg)
+
+    # Full 3D velocity on faces as Covariant123Vector (for strain rate tests)
+    ᶠu_C123 = @. Geometry.Covariant123Vector(
+        Geometry.UVWVector(zero(ᶠw_mag), zero(ᶠw_mag), ᶠw_mag),
+        f_lg,
+    )
+
+    return uₕ, uᵥ, ᶠu_C123
+end
+
+
+"""
+    create_mock_era5_datasets(temporary_dir, start_date, FT; hours = 24, num_lat = 17, num_lon = 17, num_pressure = 37, base_date = "20000101")
+
+Create mock 24 hour ERA5 datasets for testing forcing file generation. Returns paths to the created files. num points set for smoothing
+up to 4 points in each direction (e.g. smoothing over a 2°x2° box).
+
+All datasets use the same time reference (base_date) to avoid concatenation issues.
+"""
+function create_mock_era5_datasets(
+    temporary_dir,
+    start_date,
+    FT;
+    hours = 24,
+    num_lat = 17,
+    num_lon = 17,
+    num_pressure = 37,
+    base_date = "20000101",
+)
+    params = CA.ClimaAtmosParameters(FT)
+    column_data_path = joinpath(
+        temporary_dir,
+        "forcing_and_cloud_hourly_profiles_$(start_date).nc",
+    )
+    accum_data_path = joinpath(temporary_dir, "hourly_accum_$(start_date).nc")
+    inst_data_path = joinpath(temporary_dir, "hourly_inst_$(start_date).nc")
+
+    # Calculate hours since base_date for this start_date
+    base_datetime = Dates.DateTime(base_date, "yyyymmdd")
+    start_datetime = Dates.DateTime(start_date, "yyyymmdd")
+    hours_offset = Dates.value(Dates.Hour(start_datetime - base_datetime))
+
+    # Create column dataset (4D: lon, lat, pressure, time)
+    tvforcing = NCDataset(column_data_path, "c")
+    defDim(tvforcing, "valid_time", hours)
+    defDim(tvforcing, "pressure_level", num_pressure)
+    defDim(tvforcing, "latitude", num_lat)
+    defDim(tvforcing, "longitude", num_lon)
+
+    # define coordinate variables
+    defVar(tvforcing, "latitude", FT, ("latitude",))
+    defVar(tvforcing, "longitude", FT, ("longitude",))
+    defVar(tvforcing, "pressure_level", FT, ("pressure_level",))
+    defVar(tvforcing, "valid_time", FT, ("valid_time",))
+    # Use consistent time reference for all datasets
+    tvforcing["valid_time"].attrib["units"] = "hours since $(base_date[1:4])-$(base_date[5:6])-$(base_date[7:8]) 00:00:00"
+    tvforcing["valid_time"].attrib["calendar"] = "standard"
+
+    # fill coordinate variables
+    lat_step = 4.0 / (num_lat - 1)
+    lon_step = 4.0 / (num_lon - 1)
+    tvforcing["latitude"][:] = collect(-2.0:lat_step:2.0)
+    tvforcing["longitude"][:] = collect(-2.0:lon_step:2.0)
+    tvforcing["pressure_level"][:] =
+        10 .^ (range(1, stop = 3, length = num_pressure))
+    # Time values are hours since base_date, not since this file's date
+    tvforcing["valid_time"][:] =
+        collect(hours_offset:(hours_offset + hours - 1))
+
+    # define the forcing variables
+    full_dims = ("longitude", "latitude", "pressure_level", "valid_time")
+    defVar(tvforcing, "u", FT, full_dims)
+    defVar(tvforcing, "v", FT, full_dims)
+    defVar(tvforcing, "w", FT, full_dims)
+    defVar(tvforcing, "t", FT, full_dims)
+    defVar(tvforcing, "q", FT, full_dims)
+    defVar(tvforcing, "z", FT, full_dims)
+    defVar(tvforcing, "clwc", FT, full_dims)
+    defVar(tvforcing, "ciwc", FT, full_dims)
+
+    # fill the variables with uniform ones
+    tvforcing["u"][:, :, :, :] .= ones(FT, size(tvforcing["u"]))
+    tvforcing["v"][:, :, :, :] .= ones(FT, size(tvforcing["v"]))
+    tvforcing["w"][:, :, :, :] .= ones(FT, size(tvforcing["w"]))
+    tvforcing["clwc"][:, :, :, :] .= zeros(FT, size(tvforcing["clwc"]))
+    tvforcing["ciwc"][:, :, :, :] .= zeros(FT, size(tvforcing["ciwc"]))
+
+    # Build full (lon, lat, level, time) arrays in memory, then write them.
+    # A broadcasting RHS (e.g. a (1, 1, level, 1) profile) is not reliably
+    # written through a CFVariable view: it silently leaves most columns
+    # unfilled, so the site column ends up with a constant/garbage profile.
+    geopotential_profile = geopotential_from_pressure(
+        tvforcing["pressure_level"][:] .* 100;
+        R_d = CA.Parameters.R_d(params),
+    )
+    g = CA.Parameters.grav(params)
+    z_full = zeros(FT, num_lon, num_lat, num_pressure, hours)
+    z_full .= reshape(geopotential_profile, 1, 1, num_pressure, 1)
+    tvforcing["z"][:, :, :, :] .= z_full
+    tvforcing["t"][:, :, :, :] .= temperature_from_geopotential(z_full; g)
+    tvforcing["q"][:, :, :, :] .= shum_from_geopotential(z_full; g)
+    close(tvforcing)
+
+    # Create accumulated dataset (3D: lon, lat, time)
+    tv_accum = NCDataset(accum_data_path, "c")
+    defDim(tv_accum, "valid_time", hours)
+    defDim(tv_accum, "latitude", num_lat)
+    defDim(tv_accum, "longitude", num_lon)
+    defVar(tv_accum, "latitude", FT, ("latitude",))
+    defVar(tv_accum, "longitude", FT, ("longitude",))
+    defVar(tv_accum, "valid_time", FT, ("valid_time",))
+    # Use consistent time reference for all datasets
+    tv_accum["valid_time"].attrib["units"] = "hours since $(base_date[1:4])-$(base_date[5:6])-$(base_date[7:8]) 00:00:00"
+    tv_accum["valid_time"].attrib["calendar"] = "standard"
+
+    tv_accum["latitude"][:] = collect(-2.0:lat_step:2.0)
+    tv_accum["longitude"][:] = collect(-2.0:lon_step:2.0)
+    # Time values are hours since base_date, not since this file's date
+    tv_accum["valid_time"][:] = collect(hours_offset:(hours_offset + hours - 1))
+
+    defVar(tv_accum, "slhf", FT, ("longitude", "latitude", "valid_time"))
+    defVar(tv_accum, "sshf", FT, ("longitude", "latitude", "valid_time"))
+    tv_accum["slhf"][:, :, :] .= ones(FT, size(tv_accum["slhf"]))
+    tv_accum["sshf"][:, :, :] .= ones(FT, size(tv_accum["sshf"]))
+    close(tv_accum)
+
+    # Create instantaneous dataset (3D: lon, lat, time)
+    tv_inst = NCDataset(inst_data_path, "c")
+    defDim(tv_inst, "valid_time", hours)
+    defDim(tv_inst, "latitude", num_lat)
+    defDim(tv_inst, "longitude", num_lon)
+    defVar(tv_inst, "latitude", FT, ("latitude",))
+    defVar(tv_inst, "longitude", FT, ("longitude",))
+    defVar(tv_inst, "valid_time", FT, ("valid_time",))
+    # Use consistent time reference for all datasets
+    tv_inst["valid_time"].attrib["units"] = "hours since $(base_date[1:4])-$(base_date[5:6])-$(base_date[7:8]) 00:00:00"
+    tv_inst["valid_time"].attrib["calendar"] = "standard"
+
+    tv_inst["latitude"][:] = collect(-2.0:lat_step:2.0)
+    tv_inst["longitude"][:] = collect(-2.0:lon_step:2.0)
+    # Time values are hours since base_date, not since this file's date
+    tv_inst["valid_time"][:] = collect(hours_offset:(hours_offset + hours - 1))
+
+    defVar(tv_inst, "skt", FT, ("longitude", "latitude", "valid_time"))
+    tv_inst["skt"][:, :, :] .= ones(FT, size(tv_inst["skt"]))
+    close(tv_inst)
+
+    return column_data_path, accum_data_path, inst_data_path
+end
+
+"""
+    geopotential_from_pressure(pressure_levels; R_d = 287.05, sp = 101325, T_avg = 250)
+
+Convert pressure levels to geopotential levels using the hypsometric equation.
+R_d is the gas constant for dry air, sp is the surface pressure in Pa, and T_avg is the average temperature in the troposphere in K.
+"""
+function geopotential_from_pressure(
+    pressure_levels;
+    R_d = 287.05,
+    sp = 101325,
+    T_avg = 250,
+)
+    return R_d .* T_avg .* log.(sp ./ pressure_levels)
+end
+
+"""
+    temperature_from_geopotential(geopotential_levels; Γ = 0.0065, T_surf = 300, T_min = 200, g = 9.81)
+
+Produce a typical temperature profile from geopotential levels.
+Γ is the lapse rate in K/m, T_surf is the surface temperature in K, and T_min is the minimum temperature in K, which simulates the tropopause.
+"""
+function temperature_from_geopotential(
+    geopotential_levels;
+    Γ = 0.0065,
+    T_surf = 300,
+    T_min = 200,
+    g = 9.81,
+)
+    return max.(T_min, T_surf .- Γ .* geopotential_levels ./ g)
+end
+
+"""
+    shum_from_geopotential(geopotential_levels; q0 = 0.02, shum_scale_height = 2e3, g = 9.81)
+
+Produce a typical specific humidity profile from geopotential levels.
+q0 is the specific humidity at the surface and shum_scale_height is the scale height in geopotential coordinates.
+The default values are a 2% mixing ratio at the surface and a 2km scale height.
+"""
+function shum_from_geopotential(
+    geopotential_levels;
+    q0 = 0.02,
+    shum_scale_height = 2e3,
+    g = 9.81,
+)
+    return q0 .* exp.(.-geopotential_levels ./ (shum_scale_height * g))
+end
+
+"""
+    monotonic_decreasing(A, dim)
+
+Check if an array is monotonically decreasing along a given dimension.
+"""
+function monotonic_decreasing(A, dim)
+    all_diffs = mapslices(x -> diff(x), A; dims = dim)
+    return all(all_diffs .<= 0)
+end
+
+"""
+    monotonic_increasing(A, dim)
+
+Check if an array is monotonically increasing along a given dimension.
+"""
+function monotonic_increasing(A, dim)
+    all_diffs = mapslices(x -> diff(x), A, dims = dim)
+    return all(all_diffs .>= 0)
+end
+12:ClimaCore = "d414da3d-4745-48bb-8d80-42e94e092884"
+16:ClimaParams = "5c42b081-d73a-476f-9059-fd94b934656c"
+17:ClimaTimeSteppers = "595c0a79-7f3d-439a-bc5a-b232dc3bde79"
+19:CloudMicrophysics = "6a9e3e04-43cd-43ba-94b9-e8782df3c71b"
+39:Thermodynamics = "b60c26fb-14c3-4610-9d3e-2d17fe7ff00c"
+56:ClimaCore = "1.0.3"
+60:CloudMicrophysics = "0.43, 0.44"
+61:ClimaParams = "1.3"
+62:ClimaTimeSteppers = "0.10.4, 1"
+92:Thermodynamics = "1.2"
+
+codex
+已确认核心改动还包括用同一个几何因子缩减垂直水汽方差和协方差。我会重点约束等熵面上的水汽梯度、协方差的可实现性，以及水平项强度趋零时的连续性；最后一项从源码上存在疑点，会明确标为待验证推测。
+exec
+/bin/zsh -lc "sed -n '151,177p' input/source/cloud_fraction.jl; sed -n '1,45p' input/source/test__parameterized_tendencies__microphysics__cloud_fraction.jl; rg -n 'sgs_correlation|gradient_invariant|covariance|@testset' input/source/test__parameterized_tendencies__microphysics__cloud_fraction.jl; sed -n '1180,1235p' input/source/src__diagnostics__core_diagnostics.jl; rg -n 'initial_state|integrator.p|set_precomputed|DiagnosticsConfig' input/source/src__simulation__AtmosSimulations.jl input/source/src__ClimaAtmos.jl" in <workdir>/CliMA_ClimaAtmos.jl_4822
+ succeeded in 0ms:
+    compute_∂T_∂θ!(dest, Y, p, thermo_params)
+
+Materialize the θ→T Jacobian (∂T/∂θ_li) into `dest`.
+
+Always uses grid-mean variables, consistent with the gradient computation
+(see `set_covariance_cache!`).
+"""
+function compute_∂T_∂θ!(dest, Y, p, thermo_params)
+    (; ᶜT) = p.precomputed
+    ᶜρ = Y.c.ρ
+    if p.atmos.microphysics_model isa Union{DryModel, EquilibriumMicrophysics0M}
+        (; ᶜq_liq, ᶜq_ice, ᶜq_tot_nonneg) = p.precomputed
+        ᶜq_tot = ᶜq_tot_nonneg
+    else
+        ᶜq_liq = @. lazy(specific(Y.c.ρq_lcl, Y.c.ρ))
+        ᶜq_ice = @. lazy(specific(Y.c.ρq_icl, Y.c.ρ))
+        ᶜq_tot = @. lazy(specific(Y.c.ρq_tot, Y.c.ρ))
+    end
+    ᶜθ_li = @. lazy(
+        TD.liquid_ice_pottemp(thermo_params, ᶜT, ᶜρ, ᶜq_tot, ᶜq_liq, ᶜq_ice),
+    )
+    @. dest = ∂T_∂θ_li(
+        thermo_params, ᶜT, ᶜθ_li, ᶜq_liq, ᶜq_ice, ᶜq_tot, ᶜρ,
+    )
+    return dest
+end
+
+#=
+Unit tests for cloud_fraction.jl
+
+Tests cover:
+1. `_compute_cloud_fraction(q_c, mu_S, sigma_S, q_sat, α, floor)` -
+   truncated-Gaussian CF closure with the smooth non-equilibrium floor
+   `σ_S_floor² = (D·ε_rel·q_sat)² + σ_abs²`, where the release factor
+
+       w = √((margin·α)²·(σ_S² + σ_abs²) + (abs_margin·ε_rel·q_sat)²),
+       x = max(μ_S, 0)/w,
+       D = residual + (1 − residual)·(1 + x²)^(−sharpness/2)
+
+   releases the relative floor only where the subdomain mean is saturated
+   by a margin relative to the equilibrium PDF width (overcast limit); for
+   μ_S ≤ 0 the floor is fully active for any shape-parameter values.
+=#
+
+using Test
+using ClimaAtmos
+import ClimaAtmos as CA
+
+floor_nt(
+    ::Type{FT};
+    ε_rel = FT(0.02),
+    σ_abs = FT(1e-7),
+    margin = FT(1),
+    abs_margin = FT(0),
+    sharpness = FT(1),
+    residual = FT(0),
+) where {FT} = (; ε_rel, σ_abs, margin, abs_margin, sharpness, residual)
+
+@testset "Cloud Fraction" begin
+    @testset "`_compute_cloud_fraction`" begin
+        for FT in (Float32, Float64)
+            @testset "FT = $FT" begin
+                α = FT(1)
+                floor = floor_nt(FT)
+                # Subsaturated mean: μ_S ≤ 0 ⇒ D = 1, floor fully active
+                # (constant-floor behavior).
+                μ_sub = FT(-1e-3)
+
+                @testset "No condensate → zero cloud fraction" begin
+                    cf = CA._compute_cloud_fraction(
+                        FT(0), μ_sub, FT(1e-4), FT(5e-5), α, floor,
+                    )
+32:@testset "Cloud Fraction" begin
+33:    @testset "`_compute_cloud_fraction`" begin
+35:            @testset "FT = $FT" begin
+42:                @testset "No condensate → zero cloud fraction" begin
+49:                @testset "Condensate present, nonzero sigma → cf > 0" begin
+56:                @testset "Zero sigma, large condensate → cf ≈ 1" begin
+65:                @testset "Large condensate, small sigma → cf ≈ 1" begin
+72:                @testset "Type stability" begin
+79:                @testset "CF monotone in σ_S at fixed q_c" begin
+90:                @testset "Large σ_S, small q_c → cf approaching 0" begin
+97:                @testset "Tiny q_c with tiny σ_S → cf stays bounded (smooth floor)" begin
+113:                @testset "Overcast limit: saturated margin releases the floor → cf ≈ 1" begin
+127:                @testset "CF monotone in μ_S at fixed q_c (release grows with margin)" begin
+138:                @testset "μ_S ≤ 0 keeps the constant floor for any shape parameters" begin
+155:                @testset "Release continuous across μ_S = 0" begin
+169:                @testset "margin delays the release" begin
+181:                @testset "abs_margin guards against tiny-σ_S release" begin
+190:                @testset "sharpness steepens the transition" begin
+204:                @testset "residual = 1 recovers the constant floor" begin
+224:                @testset "ε_rel = 0 → guard keeps result finite" begin
+238:    @testset "`_compute_z` inversion accuracy" begin
+245:            @testset "FT = $FT" begin
+269:    @testset "`isentropic_slope_ratio`: plain ratio with a stratification floor" begin
+271:            @testset "FT = $FT" begin
+286:    @testset "`isentropic_cell_cap`: along-surface segment bounded by the cell" begin
+288:            @testset "FT = $FT" begin
+end
+
+compute_env_q_tot_variance(state, cache, time) =
+    compute_covariance_diagnostics(state, cache, time, :qt_qt)
+compute_env_temperature_variance(state, cache, time) =
+    compute_covariance_diagnostics(state, cache, time, :T_T)
+compute_env_q_tot_temperature_covariance(state, cache, time) =
+    compute_covariance_diagnostics(state, cache, time, :T_qt)
+
+function compute_env_q_tot_temperature_correlation(_, cache, _)
+    # the sampled correlation lives in the cache only when SGS covariances are used;
+    # otherwise report the prescribed constant
+    hasproperty(cache.precomputed, :ᶜcorr_Tq) && return cache.precomputed.ᶜcorr_Tq
+    corr = CAP.Tq_correlation_coefficient(cache.params)
+    (; ᶜtemp_scalar) = cache.scratch
+    return @. lazy(one(ᶜtemp_scalar) * corr)
+end
+
+add_diagnostic_variable!(short_name = "env_q_tot_variance", units = "kg^2 kg^-2",
+    long_name = "Environment Variance of Total Specific Humidity",
+    compute = compute_env_q_tot_variance,
+)
+
+add_diagnostic_variable!(
+    short_name = "env_temperature_variance", units = "K^2",
+    long_name = "Environment Variance of Temperature",
+    compute = compute_env_temperature_variance,
+)
+
+add_diagnostic_variable!(
+    short_name = "env_q_tot_temperature_covariance",
+    long_name = "Environment Covariance of Total Specific Humidity and Temperature",
+    units = "kg K kg^-1",
+    compute = compute_env_q_tot_temperature_covariance,
+)
+
+add_diagnostic_variable!(
+    short_name = "env_q_tot_temperature_correlation",
+    long_name = "Environment Correlation of Total Specific Humidity and Temperature",
+    units = "1",
+    compute = compute_env_q_tot_temperature_correlation,
+)
+
+###
+# Passive gas tracer A (3d)
+###
+compute_q_gas_A(state, cache, time) =
+    compute_q_gas_A(state, cache, time, cache.atmos.chemistry_model)
+compute_q_gas_A(_, _, _, chemistry_model) =
+    error_diagnostic_variable("q_gas_A", chemistry_model)
+
+compute_q_gas_A(state, _, _, ::GasPhaseChem) =
+    @. lazy(specific(state.c.ρq_gas_A, state.c.ρ))
+
+add_diagnostic_variable!(
+    short_name = "q_gas_A",
+input/source/src__simulation__AtmosSimulations.jl:59:    diagnostics_config::CAD.DiagnosticsConfig,
+input/source/src__simulation__AtmosSimulations.jl:254:  - `diagnostics = DiagnosticsConfig()`: Which diagnostics to produce and how to write
+input/source/src__simulation__AtmosSimulations.jl:255:    them. See [`DiagnosticsConfig`](@ref).
+input/source/src__simulation__AtmosSimulations.jl:335:    diagnostics = CAD.DiagnosticsConfig(),
+input/source/src__simulation__AtmosSimulations.jl:388:        Y = @timed_log verbose "Initialized state" initial_state(model)
+input/source/src__ClimaAtmos.jl:189:import .Diagnostics: DiagnosticsConfig
+
+exec
+/bin/zsh -lc "cat > spec.md <<'EOF'
+## CliMA/ClimaAtmos.jl#4822 Compute horizontal gradient along isentropes in SGS variance
+
+- What changed (1–3 sentences, naming files and formulas):
+  "'`src/parameterized_tendencies/microphysics/cloud_fraction.jl` replaces independent horizontal temperature/moisture gradient variances and their cross term with a moisture-only contribution `H = c_g c_x² Δx² f |b − (v/d)a|²`, where `d = max(u, θ_min)` and `f = [1 + |a|² Δx²/(d² Δz²)]⁻¹`. It also multiplies the vertical moisture variance and θ–q covariance by `f`, leaving vertical θ variance unchanged; `src/parameters/{Parameters,create_parameters}.jl` introduces the provisional floor `θ_min = 10⁻³ K m⁻¹`, with documentation/configuration descriptions and scalar tests updated. The horizontal term is off by default (`c_x = 0`), in which case the implementation sets `f = 1` for the vertical block.
+
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+
+  Use local Cartesian physical coordinates with `z` increasing upward, `θ = θ_li` in K, and `q = q_tot` as specific humidity in kg/kg. Define horizontal vectors `a = ∇_h θ`, `b = ∇_h q`, vertical derivatives `u = ∂z θ`, `v = ∂z q`, grid lengths `Δx, Δz > 0`, nonnegative dimensionless coefficients `c_g, c_x, c_z`, positive floor `θ_min`, `d = max(u, θ_min)`, `r = v/d`, `s² = |a|²/d²`, and `ℓ² = Δx² f`. Statements about exact isentropes require `u ≥ θ_min`; below the floor the library uses an explicitly regularized stable-slope model, not the true isentrope of an overturned layer. All covariance identities below refer to the closure'"'s θ basis before its scalar θ→T transform, unless specified otherwise.
+
+  **I1 — Primary: moisture contrast follows the isentrope and does not create θ fluctuations.** For an affine local field with "'`u ≥ θ_min`, a horizontal displacement `δx` has `δz = −a·δx/u` on the θ surface. Consequently `δθ = 0`, `δq = (b − (v/u)a)·δx`. For the modeled horizontal displacement covariance `E[δx δxᵀ] = c_g c_x² ℓ² I`, require
+  
+  `V_q,h = c_g c_x² ℓ² |b − (v/u)a|² ≥ 0`, `V_θ,h = 0`, `C_θq,h = 0`.
+  
+  In particular, for `q = Aθ + B` with constant A and B, `b = Aa`, `v = Au`, so `V_q,h = 0`, including either sign of A. Orthogonal rotation of both horizontal vectors must leave `V_q,h` unchanged. Below the floor check the declared regularized formula and `|r| ≤ |v|/θ_min`, not exact isentropic cancellation. A negative vertical moisture gradient changes whether aligned horizontal gradients amplify or cancel; the sign is determined by `r`, not by alignment alone.
+
+  **I2 — Secondary: cell-limited excursions yield realizable covariance blocks.** For finite inputs in the range below,
+  
+  `0 < f ≤ 1`, `0 < ℓ² ≤ Δx²`, `s²ℓ² ≤ Δz²`, and `s²ℓ² + fΔz² = Δz²`.
+  
+  The vertical block, with `G = c_g(c_z Δz)²`, must be
+  
+  `Σ_v = G [[u², fuv], [fuv, fv²]]`,
+  
+  with nonnegative diagonal entries and `det Σ_v = G² u²v² f(1−f) ≥ 0`. Adding the horizontal block `diag(0,H)` and any positive-semidefinite turbulent block must preserve positive semidefiniteness: `C_θq² ≤ V_θ V_q`. For `b = 0` and `c_x = c_z = 1`, the shared-excursion identity gives the particularly useful moisture budget `H + Gfv² = c_g Δz²v²`, independent of surface slope, including the floored-slope regime. For `a = 0`, `f = 1` and the vertical block reduces to the ordinary affine uniform-box covariance (with `c_g = 1/12`, `c_z = 1`).
+  
+  The library'"'s scalar Jacobian "'`J = ∂T/∂θ` gives `V_T = J² V_θ`, `C_Tq = J C_θq`; this congruence transform must preserve the covariance inequality. If the moisture bound is active, `k = min(1, r_max q/sqrt(V_q))`, then away from numerical floors the intended scaling is `V_q → k²V_q`, `C_Tq → k C_Tq`, preserving correlation for `k > 0`. This is a realizability check on the implemented closure, not a claim that a full moist thermodynamic Jacobian has no q dependence.
+
+  **I3 — Primary: continuously removing horizontal stirring must recover the vertical-only closure.** Hold state, grid, positive `c_z`, and all other parameters fixed; let the horizontal length multiplier `c_x = ε → 0⁺`. In a laminar affine cell with inactive moisture limiter, require
+  
+  `lim[ε→0⁺] V_q(ε) = V_q(0)`, `lim[ε→0⁺] C_θq(ε) = C_θq(0)`.
+  
+  The physical requirement is that an arbitrarily small along-surface sampling amplitude cannot remove a finite vertical moisture excursion. This is a proposed closure consistency invariant, not an assertion that the PR promises an exact uniform physical-cell PDF for every sloped field. A revealing case is `b = 0`, `v ≠ 0`, `u > θ_min`, `sΔx/Δz = 1`: with turbulence absent, the off value is `c_g c_z² Δz²v²`. Any finite jump as ε tends to zero violates the proposed invariant even if all variances remain nonnegative.
+
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+
+  I1 follows from the total differential `dθ = a·dx + u dz = 0` and the variance of a linear functional of a zero-mean displacement. I2 uses `Var(Z) = Δz²/12` for a centered uniform coordinate, covariance positive semidefiniteness/Cauchy–Schwarz, and the PR'"'s chosen smooth cell-cap partition; the smooth partition and its application to the vertical block are modeling assumptions, not universal conservation laws. I3 follows from continuous vanishing of the amplitude of one sampling contribution while the independent vertical variance remains enabled. Units provide an additional consistency check: H and V_q are (kg/kg)², V_θ is K², and C_θq is K·kg/kg.
+
+  Source locations at the supplied merge SHA: [closure implementation](https://github.com/CliMA/ClimaAtmos.jl/blob/ba2bf1225fc48058d709853c065b1db21a412204/src/parameterized_tendencies/microphysics/cloud_fraction.jl), [closure documentation](https://github.com/CliMA/ClimaAtmos.jl/blob/ba2bf1225fc48058d709853c065b1db21a412204/docs/src/prophet_closures.md), [registered covariance diagnostics](https://github.com/CliMA/ClimaAtmos.jl/blob/ba2bf1225fc48058d709853c065b1db21a412204/src/diagnostics/core_diagnostics.jl), and [public API documentation](https://github.com/CliMA/ClimaAtmos.jl/blob/ba2bf1225fc48058d709853c065b1db21a412204/docs/src/api.md). These were inspected through the supplied "'`input/source` copies and `input/pr.diff`; attempts to retrieve two raw GitHub files returned cache misses, so their remote contents were not independently reverified. No discussion, comments, issues, forks, or other audit track were accessed. No external literature is needed for these narrow identities.
+
+- Common operating domain (range of each input, with the basis):
+
+  Mathematical domain: finite `a,b ∈ R²`, `u,v ∈ R`, `θ_min > 0`, `Δx,Δz > 0`, `c_g,c_x,c_z ≥ 0`, `q ≥ 0`, and turbulent correlation in `[−1,1]`. Construct scalar norm/cross inputs from actual vectors, ensuring `(a·b)² ≤ |a|²|b|²`; unrelated random scalar invariants need not represent physical gradients.
+
+  Proposed spot-check envelope: `θ_min = 10⁻³ K/m`; `u ∈ [10⁻³, 2×10⁻²] K/m` for the actual-isentrope tests, plus `u ∈ [−10⁻²,10⁻³] K/m` for regularization; `|a| ∈ [0,10⁻⁴] K/m`, `|b| ∈ [0,10⁻⁷] m⁻¹`, `v ∈ [−2×10⁻⁶,2×10⁻⁶] m⁻¹`; `Δx ∈ [10³,2.5×10⁵] m`, `Δz ∈ [50,1000] m`. Include exact zeros and signed/rotated gradients. Use `c_g = 1/12`, `c_z ∈ {0,1}`, `c_x ∈ {0,1}` plus the small-positive sweep in I3; set the turbulent diagnostic covariance coefficient to zero for isolation.
+
+  These are proposed small-perturbation test ranges, not published validity limits. The floor and box prefactor are library defaults; `u = 4×10⁻³`, `v = −2×10⁻⁶`, `Δx = 2.5×10⁵`, `Δz = 500` are anchored in the PR'"'s scalar tests. Choose mean "'`q ∈ [10⁻³,2×10⁻²]`, θ roughly 280–320 K, positive density, and unsaturated liquid/ice-free thermodynamic states; retain only combinations whose whole test patch stays physically admissible and whose predicted `sqrt(V_q) < 0.25q` for tests intended to avoid the default `0.5q` limiter. Test the limiter separately. Use flat Cartesian geometry initially to avoid mixing physical vertical gradients with terrain-following components.
+
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+
+  Public integration route: construct `CA.AtmosModel` with `CA.BoxGrid`, a moist preset and `CA.QuadratureCloud`/SGS quadrature enabled, or equivalent `CA.AtmosConfig` options; select `tq_correlation_model = "diagnosed"` and supply parameter overrides through the normal parameter/TOML configuration. Use a manufactured initial-state setup via the documented `CA.initial_state` extension point, then `CA.AtmosSimulation(model; ...)`. Read the initialized state `simulation.integrator.u` and cache `simulation.integrator.p`; evaluate the registered instantaneous diagnostic variables `env_q_tot_variance`, `env_temperature_variance`, `env_q_tot_temperature_covariance`, and `env_q_tot_temperature_correlation` through `CA.DiagnosticsConfig` or their registered compute callbacks. Inspect initial-time values, not values after evolving a possibly unbalanced manufactured atmosphere. Construction and the closure initialization are enough; no long simulation is required.
+
+  The module-qualified scalar functions `CA.isentropic_slope_ratio(v,u,θ_min)`, `CA.isentropic_gradient_invariant(dot(b,b),dot(a,b),dot(a,a),r)`, and `CA.isentropic_cell_cap(dot(a,a),u,θ_min,Δx,Δz)` are directly callable in the merged package and used by its tests, but are not listed as stable public APIs in `docs/src/api.md`. Use them for localization, not as a substitute for the public simulation/diagnostic check. Similarly `CA.set_covariance_cache!` is an internal integration hook; a passing standalone scalar check does not establish correct cache assembly.
+
+  For I1, disable turbulence and the vertical geometric block, and compare the moisture diagnostic with the analytic H, temperature variance and covariance with zero. Include `q = Aθ+B`, `b = 0`, `v = 0`, and independently rotated `(a,b)`; calculate the oracle as a vector residual squared, rather than duplicating the expanded scalar polynomial. Use affine fields on interior elements with constant u,v, avoiding top/bottom derivative boundaries and periodic seams. The library applies lumped horizontal restriction and weighted DSS to the three gradient invariants separately; constant-gradient interior patches avoid a mismatch between a pointwise oracle and these filters. Nonuniform-field tests must apply the same filter to the analytic norm/cross fields before combining them with the local r.
+
+  For I2, compare all three diagnostics with the analytic matrix after J and any limiter scaling. A convenient main test sets `c_x = c_z = 1` and `b = 0`, checking the exact moisture budget above over many surface slopes. Also isolate the horizontal block with `c_z = 0`. The public covariance diagnostic is reconstructed from a clamped correlation, so its determinant being nonnegative alone is weak evidence: compare its actual value with the analytic covariance; where internal cache inspection is allowed, also inspect `p.precomputed.ᶜT′q′` before correlation clamping. Restrict exact correlation comparisons to variance products comfortably above the code'"'s "'`eps(FT)²` fallback threshold; below it require finite bounded outputs and the documented fallback, not the analytic correlation ratio.
+
+  For I3, use `u = 0.004 K/m`, `Δx = 250000 m`, `Δz = 500 m`, `|a| = 8×10⁻⁶ K/m`, `b = 0`, `v = −2×10⁻⁶ m⁻¹`, `q = 0.01`, `c_g = 1/12`, `c_z = 1`. These give `f = 1/2` and vertical-only `V_q(0) = 8.333333…×10⁻⁸`. Sweep `c_x = 1, 10⁻¹, 10⁻², 10⁻³, 10⁻⁴`, and exactly zero; require differences from the zero case to tend to zero. Static inspection predicts instead `V_q(ε) = V_q(0)(1+ε²)/2` for positive ε, and covariance `C_θq(ε) = C_θq(0)/2`, producing a finite jump. These numbers are analytic predictions, not executed results.
+
+  Tolerances: for scalar identities use `64 eps(FT)` times a characteristic sum-of-magnitudes scale; for cancellation of the expanded invariant use absolute tolerance `64 eps(FT)(|b|+|r||a|)²`, not relative error against zero. For covariance determinants use an allowance proportional to `eps(FT)(V_T V_q + C_Tq²)`. For manufactured-field integration start with normalized tolerances `10⁻⁸` (Float64) and `10⁻³` (Float32), accounting for differentiation of large background θ and filtering, and check convergence under grid refinement if necessary; do not enlarge tolerances to conceal an O(1) discrepancy. For the I3 jump, Float64 and a tolerance `10⁻⁶ V_q(0)` readily separate it from roundoff. No finite differences are needed for the invariant oracle: use analytic affine gradients and the closure'"'s thermodynamic J. If a public workflow forces time stepping before diagnostics, reduce the step repeatedly and extrapolate to the initial-time limit rather than attributing physical evolution to the closure.
+
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+
+  I1: **partial**. "'`test/parameterized_tendencies/microphysics/cloud_fraction.jl` adds `isentropic_slope_ratio` assertions for the stable ratio, floor, neutral/overturned behavior, sign, boundedness, and Float32/Float64 type. It does not add tests of `isentropic_gradient_invariant`, affine isentropic cancellation, or the moisture-only assembled horizontal covariance.
+
+  I2: **partial**. The same file adds `isentropic_cell_cap` checks for a flat surface returning one, an aspect-ratio case returning one half, a steep-slope approximation, monotonicity with stratification, floor equivalence, positivity/boundedness, and type. It does not test the assembled vertical covariance determinant, total moisture excursion budget, or public diagnostics. `test/parameter_tests.jl` checks the floor default equals `FT(1e-3)`.
+
+  I3: **no**. The supplied PR tests do not vary the horizontal scale factor towards zero with the vertical block enabled. The reproducibility reference-counter bump is not an assertion of a physical invariant. These coverage statements concern the supplied changed tests, not an exhaustive claim about uninspected repository tests.
+
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+
+  I1: **satisfies**, expected for stable affine fields within roundoff, because the implementation uses exactly the projected gradient and omits horizontal θ variance/cross terms; filtering and full integration remain unverified. I2: **satisfies**, expected on the stated domain, because the cap and matrix algebra imply the inequalities, although that alone does not validate the physical choice to partition θ and q differently. I3: **may not satisfy**: `f` is independent of nonzero `c_x` but changes to one at exactly zero, suggesting a finite loss of vertical moisture variance/covariance for arbitrarily weak horizontal sampling; this is a source-based hypothesis requiring the numerical check, not a reported test failure.
+
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+
+  Merge SHA `ba2bf1225fc48058d709853c065b1db21a412204`; Julia, package version 0.42.14 in supplied `Project.toml`, Julia compatibility `1.10`. Relevant dependency compatibility entries: ClimaCore `1.0.3`, ClimaParams `1.3`, Thermodynamics `1.2`, CloudMicrophysics `0.43, 0.44`, ClimaTimeSteppers `0.10.4, 1`, plus ClimaComms, ClimaDiagnostics and the normal project dependencies. These are compatibility constraints, not a verified resolved environment. Estimated setup difficulty **medium** for CPU scalar checks, **high** for a correctly initialized manufactured simulation and instantaneous diagnostic harness. No installation, compilation, execution, or clone was performed for this specification.
+
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+
+  Yes. I1 is an identity for vectors in R² and affine functions on R³; expanding a squared norm proves positivity and cancellation. I2 is rational algebra after replacing s² by `|a|²/d²`, followed by a 2×2 positive-semidefinite matrix argument and congruence/scaling; positivity of d and the grid lengths discharges denominator conditions. I3 is a one-sided real limit of a piecewise rational expression and can be proved or refuted independently of atmospheric dynamics. The main obstacles are bridging these real-valued propositions to floating-point code, modeling max/clamp/fallback boundaries, proving the horizontal filter preserves the required Gram-matrix properties, and connecting physical gradients, thermodynamic initialization and the public diagnostics to the abstract affine-field assumptions. Proving these algebraic invariants cannot by itself establish empirical adequacy of the isentropic closure in neutral or overturned layers.
+EOF
+wc -l spec.md' in <workdir>/CliMA_ClimaAtmos.jl_4822
+ succeeded in 0ms:
+      80 spec.md
+
+codex
+已完成并写入 [spec.md](spec.md)。
+
+文档按模板列出三个不变量：等熵面水汽梯度关系、受网格尺度约束的协方差可实现性，以及水平项强度趋零时恢复垂直闭合的连续性；包含检查入口、数值容差、现有测试覆盖和 Lean 形式化可行性。连续性问题明确标记为源码推测，未作为已验证结论。
+
+未安装、编译或运行代码，未访问另一条审计轨道。
+tokens used
+54,747
+已完成并写入 [spec.md](spec.md)。
+
+文档按模板列出三个不变量：等熵面水汽梯度关系、受网格尺度约束的协方差可实现性，以及水平项强度趋零时恢复垂直闭合的连续性；包含检查入口、数值容差、现有测试覆盖和 Lean 形式化可行性。连续性问题明确标记为源码推测，未作为已验证结论。
+
+未安装、编译或运行代码，未访问另一条审计轨道。

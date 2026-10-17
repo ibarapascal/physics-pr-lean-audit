@@ -1,0 +1,73 @@
+⚠ [8924/8924] Built PhysAudit.ClimaAtmos4637 (10s)
+warning: PhysAudit/ClimaAtmos4637.lean:77:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:77:6: Unused tactic linter: `(rw [mul_div_assoc', mul_div_cancel_left₀ _ hg]; ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:171:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:172:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:170:19: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:171:6: Unused tactic linter: `(field_simp; ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:172:6: Unused tactic linter: `(rw [mul_div_assoc', mul_div_cancel_left₀ _ hi'])` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:212:6: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:211:19: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:212:6: Unused tactic linter: `(field_simp; ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:228:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/ClimaAtmos4637.lean:232:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4637.lean:318:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:318:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:323:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:323:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:332:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:332:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:342:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:342:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:351:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:351:33: Unused tactic linter: `ring` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:479:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/ClimaAtmos4637.lean:480:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4637.lean:487:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/ClimaAtmos4637.lean:487:8: Unused tactic linter: `(rw [mul_div_assoc, mul_div_assoc, mul_div_cancel_right₀ _ hA, mul_div_cancel_right₀ _ hρ];
+  ring1)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Build completed successfully (8924 jobs).

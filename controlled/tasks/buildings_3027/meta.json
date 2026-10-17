@@ -1,0 +1,146 @@
+{
+  "library": "lbl-srg/modelica-buildings",
+  "candidate": "#3027 → PR #3049",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/lbl-srg/modelica-buildings/issues/3027",
+  "request_note": "issue 正文原样，图片以 [image omitted] 代替；之后的讨论全部删去",
+  "pre_change_sha": "dff251c2a154412386ce4dab02a1631766b4ad23",
+  "pre_change_note": "PR #3049 squash 合并提交 df7415eb 的父提交（#3065 也称 dff251c2a1 为改动前版本）",
+  "historical_wrong_sha": "df7415ebeb3ab0ca09d476dccef9e3143b6fe1d0",
+  "historical_wrong_note": "HexElementLatent 去掉 heaConVapCoi（潜热不再进入盘管金属节点），水侧 Q1 只等于显热，潜热部分不平衡（issue #3065）",
+  "final_correct_sha": "b9f105345d5a411be57784797ea0ae711cd62837",
+  "final_correct_note": "PR #3073 合并：还原 df7415eb 对 HexElementLatent 的改动，并把 PR 新增验证模型的进风湿度从过饱和改为 RH 99.5%；还原后在完全饱和进风下仍有约 17 W（≈1% 设计热流）的残余显热，#3065 作者认为属建模近似、非缺陷",
+  "invariant": "湿盘管（WetCoilCounterFlow / WetCoilDiscretized / HexElementLatent）稳态能量守恒：水侧得热 Q1_flow 与空气侧总得热（显热+潜热）Q2_flow 之和为 0，即盘管既不产生也不销毁能量；判定配置按端口焓流实现：m1*(h1_out-h1_in) + m2*(h2_out-h2_in) + (凝结水带走的焓流，库内约定) = 0。适用于 SteadyState 或常输入 t→∞",
+  "convention_dispute": false,
+  "convention_note": "潜热记在盘管表面还是记在空气容积是建模选择，但无论哪种，稳态下水侧与空气侧总热流必须相反；#3065 的『Q1 应为 Q2 的相反数』即此性质",
+  "regression_examples": [
+    {
+      "model": "Buildings.Fluid.HeatExchangers.BaseClasses.Examples.HexElementLatent",
+      "path": "Buildings/Fluid/HeatExchangers/BaseClasses/Examples/HexElementLatent.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.BaseClasses.Examples.HexElementLatentLoop",
+      "path": "Buildings/Fluid/HeatExchangers/BaseClasses/Examples/HexElementLatentLoop.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilCounterFlowMassFlow",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilCounterFlowMassFlow.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilCounterFlowPControl",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilCounterFlowPControl.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilDiscretizedMassFlow",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilDiscretizedMassFlow.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Examples.WetCoilDiscretizedPControl",
+      "path": "Buildings/Fluid/HeatExchangers/Examples/WetCoilDiscretizedPControl.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilDiscretizedInitialization",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilDiscretizedInitialization.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilDiscretizedInitializationPerfectGases",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilDiscretizedInitializationPerfectGases.mo"
+    },
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilEffectivenessNTUCounterFlow",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilEffectivenessNTUCounterFlow.mo",
+      "note": "#3065 即在此模型发现能量不平衡"
+    }
+  ],
+  "regression_pr_added_tests": [
+    {
+      "model": "Buildings.Fluid.HeatExchangers.Validation.WetCoilCounterFlowLowWaterFlowRate",
+      "path": "Buildings/Fluid/HeatExchangers/Validation/WetCoilCounterFlowLowWaterFlowRate.mo",
+      "version_sha": "df7415ebeb3ab0ca09d476dccef9e3143b6fe1d0",
+      "note": "由 PR #3043（并入 issue 分支）随 #3049 进入 master；该版本进风 X={0.01,0.99} 在 12°C 下过饱和，#3073 改为 0.0086。(i) 按 PR 版本跑；不在任务包内"
+    }
+  ],
+  "regression_note": "以上 9 个模型的参考结果均被 #3049 改动过（Resources/ReferenceResults/Dymola），取改动前版本作参照；HeatExchangers 包外无模型使用 WetCoilCounterFlow/WetCoilDiscretized（dff251c2a1 全树 grep）",
+  "sampling_domain": {
+    "note": "出处均为 dff251c2a1；另加物理约束 进风相对湿度 ≤ 1（我方选择，非库内出处）",
+    "variables": {
+      "T_water_in_K": {
+        "range": [
+          278.15,
+          293.15
+        ],
+        "source": [
+          "Buildings/Fluid/HeatExchangers/Validation/WetCoilEffectivenessNTUCounterFlow.mo:12-13 42°F",
+          "Buildings/Fluid/HeatExchangers/Examples/WetCoilCounterFlowPControl.mo:7 5°C",
+          "Buildings/Fluid/HeatExchangers/Examples/BaseClasses/WetCoilDiscretized.mo:57-58 5→20°C"
+        ]
+      },
+      "T_air_in_K": {
+        "range": [
+          278.15,
+          303.15
+        ],
+        "source": [
+          "Buildings/Fluid/HeatExchangers/BaseClasses/Examples/HexElementLatent.mo:33 TDb=278.15、:73 TDb1=303.15",
+          "Validation/WetCoilEffectivenessNTUCounterFlow.mo:14-15 80°F",
+          "Examples/WetCoilCounterFlowPControl.mo:9 30°C"
+        ]
+      },
+      "X_w_air_in": {
+        "range": [
+          0.0035,
+          0.02
+        ],
+        "source": [
+          "Validation/WetCoilEffectivenessNTUCounterFlow.mo:172 w_a2 表 0.0035383–0.01765",
+          "Examples/WetCoilCounterFlowPControl.mo:26 X={0.02,0.98}",
+          "Examples/BaseClasses/EffectivenessNTUMassFlow.mo:45 relHum=0.8"
+        ]
+      },
+      "m1_rel_water": {
+        "range": [
+          0.01,
+          1.0
+        ],
+        "source": [
+          "Examples/BaseClasses/EffectivenessNTUMassFlow.mo:55-56 mWatGai 表 1→0.01"
+        ]
+      },
+      "m2_rel_air": {
+        "range": [
+          -1.0,
+          1.0
+        ],
+        "source": [
+          "Examples/BaseClasses/EffectivenessNTUMassFlow.mo:60-61 mAirGai 表 1→-1→0"
+        ]
+      },
+      "nominal_sizing": {
+        "sets": [
+          "UA_nominal=4748, m1=3.78, m2=2.646 (Validation/WetCoilEffectivenessNTUCounterFlow.mo:24-28)",
+          "m1=0.1, UA 按 PControl.mo:11-14,77",
+          "m1=m2=5, UA=9999 (BaseClasses/Examples/HexElementLatent.mo:63-65)"
+        ]
+      },
+      "energyDynamics": {
+        "value": "SteadyState 或常输入积分至稳态"
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Buildings/Fluid/HeatExchangers（删去 DXCoils、CoolingTowers、ActiveBeams、RadiantSlabs、Radiators；package.order 未改）",
+    "Buildings/Fluid/MixingVolumes",
+    "Buildings/Fluid/Interfaces",
+    "Buildings/Fluid/BaseClasses",
+    "Buildings/Fluid/Types.mo",
+    "Buildings/Fluid/Sources",
+    "Buildings/Fluid/Sensors",
+    "Buildings/HeatTransfer/Sources",
+    "Buildings/Utilities/Psychrometrics",
+    "Buildings/Media"
+  ],
+  "snapshot_excluded": "Buildings/Resources、包外其余目录",
+  "training_cutoff_side": "截止前（2022）",
+  "snapshot_bytes": 1916852,
+  "regression_count": 10
+}

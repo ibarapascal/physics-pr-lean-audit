@@ -1,0 +1,12 @@
+# PhysAudit: Lean transcriptions of merged, AI-attributed physics-equation changes, with proofs of library-level
+# invariants over the stated domains or counterexamples (depends only on Mathlib v4.34.1).
+name = "physaudit"
+defaultTargets = ["PhysAudit"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.34.1"
+
+[[lean_lib]]
+name = "PhysAudit"

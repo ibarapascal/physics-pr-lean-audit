@@ -1,0 +1,312 @@
+diff --git a/CHANGELOG.rst b/CHANGELOG.rst
+index 03ddf83579..fddb11cf9b 100644
+--- a/CHANGELOG.rst
++++ b/CHANGELOG.rst
+@@ -3,6 +3,9 @@ Change Log
+ 
+ [upcoming release] - 2026-..-..
+ -------------------------------
++- [ADDED] zigzag earthing transformer vector groups (`ZNyn`, `ZNd`, `ZNy`, `ZN`) in the zero-sequence short-circuit model. Per the YNzn zero-sequence model (IEC / transformer references), the zigzag winding completely decouples the primary and secondary zero sequences, presenting a low-impedance shunt-to-ground at its terminal: the HV-winding leakage portion (`si0_hv_partial`) in series with the neutral earthing impedance `3·(rn_ohm + j·xn_ohm)` at the star point. An earthed-wye secondary (`ZNyn`) gets its own decoupled zero-sequence path to ground (LV leakage portion + zero-sequence magnetising); a delta / unearthed secondary (`ZNd`/`ZNy`) has none. Enables single-phase earth-fault studies on delta-fed systems earthed via a zigzag transformer.
++- [ADDED] `rn_ohm` (resistive neutral earthing impedance) for two-winding transformers; the neutral earthing impedance `(rn_ohm + j*xn_ohm)` is now applied as `3*Z_N` to the zero sequence of all earthed-star vector groups in the short-circuit calculation (previously `xn_ohm` was only considered for power station unit transformers, and only as a reactance). Enables modelling neutral earthing resistors (NER/NGR) for single-phase earth-fault studies.
++- [FIXED] gen for 3ph load flow, so load flow is run without errors.
+ - [ADDED] hardening of from_json function witha white list
+ - [FIXED] (Log)SplineCharacteristic now have their own de-/serializer
+ - [ADDED] HELMpy as an additional solver
+diff --git a/pandapower/create/trafo_create.py b/pandapower/create/trafo_create.py
+index 21ab2b1fbf..215640c340 100644
+--- a/pandapower/create/trafo_create.py
++++ b/pandapower/create/trafo_create.py
+@@ -49,6 +49,7 @@ def create_transformer(
+     pt_percent: float = nan,
+     oltc: bool = False,
+     xn_ohm: float = nan,
++    rn_ohm: float = nan,
+     tap2_pos: int | float = nan,
+     **kwargs,
+ ) -> Int:
+@@ -89,7 +90,8 @@ def create_transformer(
+             net.trafo_characteristic_table
+         tap_changer_type: specifies the phase shifter type ("Ratio", "Symmetrical", "Ideal", "Tabular", None: no tap
+             changer)
+-        xn_ohm: impedance of the grounding reactor (Z_N) for short circuit calculation
++        xn_ohm: reactance of the neutral earthing impedance (Z_N) for short circuit calculation
++        rn_ohm: resistance of the neutral earthing impedance (Z_N, e.g. a neutral earthing resistor) for short circuit calculation
+         tap2_pos: current tap position of the second tap changer of the transformer. Defaults to the medium position
+             (tap2_neutral)
+ 
+@@ -188,6 +190,7 @@ def create_transformer(
+     _set_value_if_not_nan(net, index, pt_percent, "pt_percent", "trafo")
+     _set_value_if_not_nan(net, index, oltc, "oltc", "trafo", dtype=bool_, default_val=False)
+     _set_value_if_not_nan(net, index, xn_ohm, "xn_ohm", "trafo")
++    _set_value_if_not_nan(net, index, rn_ohm, "rn_ohm", "trafo")
+ 
+     return index
+ 
+@@ -210,6 +213,7 @@ def create_transformers(
+     pt_percent: float | Iterable[float] = nan,
+     oltc: bool | Iterable[bool] = False,
+     xn_ohm: float | Iterable[float] = nan,
++    rn_ohm: float | Iterable[float] = nan,
+     tap2_pos: int | Iterable[int] | float = nan,
+     **kwargs,
+ ) -> npt.NDArray[Int]:
+@@ -237,7 +241,8 @@ def create_transformers(
+         id_characteristic_table: id of the SplineCharacteristic, default None
+         pt_percent: default nan
+         oltc: default False
+-        xn_ohm: impedance of the grounding reactor (Z_N) for short circuit calculation, default nan
++        xn_ohm: reactance of the neutral earthing impedance (Z_N) for short circuit calculation, default nan
++        rn_ohm: resistance of the neutral earthing impedance (Z_N, e.g. a neutral earthing resistor) for short circuit calculation, default nan
+         tap2_pos: current tap position of the second tap changer ot the transformer. Defaults to the medium position
+             (tap2_neutral), default nan
+ 
+@@ -266,7 +271,7 @@ def create_transformers(
+         net=net, hv_buses=hv_buses, lv_buses=lv_buses, name=name, tap_pos=tap_pos, in_service=in_service, index=index,
+         max_loading_percent=max_loading_percent, parallel=parallel, df=df, tap_changer_type=tap_changer_type,
+         tap_dependency_table=tap_dependency_table, id_characteristic_table=id_characteristic_table,
+-        pt_percent=pt_percent, oltc=oltc, xn_ohm=xn_ohm, tap2_pos=tap2_pos, std_type=std_type,
++        pt_percent=pt_percent, oltc=oltc, xn_ohm=xn_ohm, rn_ohm=rn_ohm, tap2_pos=tap2_pos, std_type=std_type,
+         **params
+     )
+ 
+@@ -308,6 +313,7 @@ def create_transformer_from_parameters(
+     oltc: bool = False,
+     tap_dependency_table: bool = False,
+     xn_ohm: float = nan,
++    rn_ohm: float = nan,
+     tap2_side: HVLVType | None = None,
+     tap2_neutral: int | float = nan,
+     tap2_max: int | float = nan,
+@@ -366,7 +372,8 @@ def create_transformer_from_parameters(
+             net.trafo_characteristic_table
+         pt_percent: (short circuit only)
+         oltc: (short circuit only)
+-        xn_ohm: impedance of the grounding reactor (Z_N) for short circuit calculation
++        xn_ohm: reactance of the neutral earthing impedance (Z_N) for short circuit calculation
++        rn_ohm: resistance of the neutral earthing impedance (Z_N, e.g. a neutral earthing resistor) for short circuit calculation
+         tap2_side: position of the second tap changer ("hv", "lv")
+         tap2_pos: current tap position of the second tap changer of the transformer. Defaults to the medium position
+             (tap2_neutral)
+@@ -499,6 +506,7 @@ def create_transformer_from_parameters(
+     _set_value_if_not_nan(net, index, pt_percent, "pt_percent", "trafo")
+     _set_value_if_not_nan(net, index, oltc, "oltc", "trafo", dtype=bool_, default_val=False)
+     _set_value_if_not_nan(net, index, xn_ohm, "xn_ohm", "trafo")
++    _set_value_if_not_nan(net, index, rn_ohm, "rn_ohm", "trafo")
+ 
+     return index
+ 
+@@ -540,6 +548,7 @@ def create_transformers_from_parameters(  # index missing ?
+     oltc: bool | Iterable[bool] = False,
+     tap_dependency_table: bool | Iterable[bool] = False,
+     xn_ohm: float | Iterable[float] = nan,
++    rn_ohm: float | Iterable[float] = nan,
+     tap2_side: HVLVType | Iterable[str] | None = None,
+     tap2_neutral: int | Iterable[int] | float = nan,
+     tap2_max: int | Iterable[int] | float = nan,
+@@ -598,7 +607,8 @@ def create_transformers_from_parameters(  # index missing ?
+             net.trafo_characteristic_table
+         pt_percent: (short circuit only)
+         oltc: (short circuit only)
+-        xn_ohm: impedance of the grounding reactor (Z_N) for short circuit calculation
++        xn_ohm: reactance of the neutral earthing impedance (Z_N) for short circuit calculation
++        rn_ohm: resistance of the neutral earthing impedance (Z_N, e.g. a neutral earthing resistor) for short circuit calculation
+         tap2_side: position of the second tap changer ("hv", "lv")
+         tap2_pos: current tap position of the second tap changer of the transformer. Defaults to the medium position
+             (tap2_neutral)
+@@ -670,6 +680,7 @@ def create_transformers_from_parameters(  # index missing ?
+     _add_to_entries_if_not_nan(net, "trafo", entries, index, "oltc", oltc, bool_, False)
+     _add_to_entries_if_not_nan(net, "trafo", entries, index, "pt_percent", pt_percent)
+     _add_to_entries_if_not_nan(net, "trafo", entries, index, "xn_ohm", xn_ohm)
++    _add_to_entries_if_not_nan(net, "trafo", entries, index, "rn_ohm", rn_ohm)
+ 
+     _add_to_entries_if_not_nan(net, "trafo", entries, index, "tap2_side", tap2_side, dtype=str)
+     _add_to_entries_if_not_nan(net, "trafo", entries, index, "tap2_neutral", tap2_neutral)
+diff --git a/pandapower/pd2ppc_zero.py b/pandapower/pd2ppc_zero.py
+index cf4438b3b2..b4e40301cb 100644
+--- a/pandapower/pd2ppc_zero.py
++++ b/pandapower/pd2ppc_zero.py
+@@ -280,7 +280,13 @@ def _add_trafo_sc_impedance_zero(net, ppc, trafo_df=None, k_st=None):
+         # z0_k = (r_sc + x_sc * 1j) / parallel * vn_trafo_hv / vn_bus_hv
+         # z0_k = (r_sc + x_sc * 1j) / parallel * tap_hv
+         z0_k = (r_sc + x_sc * 1j) / parallel
+-        z_n_ohm = trafos["xn_ohm"].fillna(0).values
++        xn_ohm = trafos["xn_ohm"].fillna(0).values
++        # Neutral earthing impedance Z_N (e.g. an earthing transformer star point
++        # grounded through a neutral earthing resistor/reactor). xn_ohm carries
++        # the reactance, rn_ohm the resistance.
++        rn_ohm = (trafos["rn_ohm"].fillna(0).values
++                   if "rn_ohm" in trafos.columns else np.zeros_like(xn_ohm))
++        zn_ohm = rn_ohm + 1j * xn_ohm
+         k_st_tr = trafos["k_st"].fillna(1).values
+ 
+         if mode == "sc":  # or trafo_model == "pi":
+@@ -298,9 +304,30 @@ def _add_trafo_sc_impedance_zero(net, ppc, trafo_df=None, k_st=None):
+                 * (np.square(vn_trafo_hv) / sn_trafo_mva)
+                 / parallel
+             )
+-            z0_k_psu = (z_othv * k_st_tr + 3j * z_n_ohm) / ((vn_bus_hv**2) / net.sn_mva)
++            z0_k_psu = (z_othv * k_st_tr + 3 * zn_ohm) / ((vn_bus_hv**2) / net.sn_mva)
+             z0_k = np.where(power_station_unit, z0_k_psu, z0_k)
+ 
++        # Neutral earthing impedance for ordinary earthed-star transformers (not
++        # only power-station units): the single-phase earth-fault return current
++        # sees 3*Z_N, so add it in series with the zero-sequence impedance. The
++        # neutral sits on the earthed-star winding, so Z_N is referred to the
++        # per-unit base via that winding's bus voltage. Added after the IEC
++        # transformer correction factor kt (the NER is not part of the
++        # transformer impedance and must not be scaled by kt).
++        _earthed_hv = ("ynd", "yny", "ynyn", "znyn", "znd", "zny", "zd")
++        _zigzag = ("znyn", "znd", "zny", "zd")
++        zn_pu = np.zeros(len(trafos), dtype=np.complex128)
++        if np.any(np.abs(zn_ohm) > 0) and vector_group.lower() in (
++                "dyn", "ynd", "yyn", "ynyn", "yny", "yzn",
++                "znyn", "znd", "zny", "zd"):
++            vn_earth = vn_bus_hv if vector_group.lower() in _earthed_hv else vn_bus_lv
++            zn_pu = 3 * zn_ohm / ((vn_earth ** 2) / net.sn_mva)
++            # Ordinary earthed-star groups: add 3*Z_N in series with z0_k here.
++            # Zigzag groups place 3*Z_N at the star-point node in their own branch
++            # below (so z0_k stays the bare leakage for the si0 split).
++            if vector_group.lower() not in _zigzag:
++                z0_k = np.where(power_station_unit, z0_k, z0_k + zn_pu)
++
+         y0_k = 1 / z0_k  # adding admittance for "pi" model
+         # y0_k = 1 / (z0_k * k_st_tr + 3j * z_n_ohm)  # adding admittance for "pi" model
+ 
+@@ -399,6 +426,34 @@ def _add_trafo_sc_impedance_zero(net, ppc, trafo_df=None, k_st=None):
+             y = (YAB_AN + YBN).astype(complex)
+             y_asym = (1.1547) * y * in_service.values * ppc["baseMVA"] * 2
+ 
++        elif vector_group.lower() in ("znyn", "znd", "zny", "zd"):
++            # Zigzag earthing transformer. The zigzag (ZN) winding presents a low
++            # zero-sequence impedance as a SHUNT to ground at its (HV-side)
++            # terminal, and -- per the IEC / PowerFactory transformer reference --
++            # "a zig-zag winding completely decouples the primary and secondary
++            # sides of the zero sequence system". So the HV and LV zero sequences
++            # are INDEPENDENT shunts-to-ground; the series HV-LV branch stays open
++            # (positive/negative sequence still couple via the normal model).
++            # Per the YNzn T-model (PF TechRef Fig 8.3, J&P App.5): the HV zigzag
++            # shunt = the HV-WINDING leakage portion (si0_hv_partial) in series
++            # with 3*Z_N at the star-point node -- NOT the full HV+LV leakage.
++            z0_leak = z0_k          # for zigzag groups z0_k is the bare leakage
++            z0_hv = si0_hv_partial * z0_leak + zn_pu
++            ys_hv = (ppc["baseMVA"] * in_service.values / z0_hv).astype(complex)
++            np.add.at(ppc["bus"][:, GS], hv_buses_ppc, ys_hv.real)
++            np.add.at(ppc["bus"][:, BS], hv_buses_ppc, ys_hv.imag)
++            # An earthed-wye secondary (ZNyn) has its OWN zero-sequence path to
++            # ground = LV leakage + zero-sequence magnetising impedance (the
++            # primary being decoupled). A delta / unearthed-wye secondary (ZNd /
++            # ZNy) has no LV zero-sequence path.
++            if vector_group.lower() == "znyn":
++                z0_lv = z0_mag + (1.0 - si0_hv_partial) * z0_leak
++                ys_lv = (ppc["baseMVA"] * in_service.values / z0_lv).astype(complex)
++                np.add.at(ppc["bus"][:, GS], lv_buses_ppc, ys_lv.real)
++                np.add.at(ppc["bus"][:, BS], lv_buses_ppc, ys_lv.imag)
++            y_sym = np.zeros(len(trafos), dtype=np.complex128)
++            y_asym = np.zeros(len(trafos), dtype=np.complex128)
++
+         elif vector_group[-1].isdigit():
+             raise ValueError(
+                 "Unknown transformer vector group %s - "
+diff --git a/pandapower/test/shortcircuit/test_1ph.py b/pandapower/test/shortcircuit/test_1ph.py
+index 1a5e85b57a..856720e19f 100644
+--- a/pandapower/test/shortcircuit/test_1ph.py
++++ b/pandapower/test/shortcircuit/test_1ph.py
+@@ -499,5 +499,98 @@ def test_sc_1ph_impedance():
+     assert np.allclose(net.res_bus_sc.xk_ohm, [13.2439445, 137.5549268], rtol=0, atol=1e-5)
+ 
+ 
++@pytest.mark.parametrize("inverse_y", (True, False))
++def test_trafo_neutral_earthing_impedance(inverse_y):
++    # A neutral earthing impedance (e.g. a neutral earthing resistor/reactor on
++    # the star point of an earthed-wye / earthing transformer) must add 3*Z_N in
++    # series to the zero-sequence impedance for the single-phase-to-ground fault
++    # (IEC 60909). rn_ohm carries the resistance, xn_ohm the reactance of Z_N.
++    # Verified directly on the zero-sequence Thevenin impedance reported at the
++    # earthed LV bus (res_bus_sc.rk0_ohm / xk0_ohm).
++    def build(rn_ohm=0.0, xn_ohm=0.0):
++        net = create_empty_network(sn_mva=1.0)
++        b_hv = create_bus(net, vn_kv=20.0)
++        b_lv = create_bus(net, vn_kv=0.4)
++        create_ext_grid(net, b_hv, s_sc_max_mva=1000.0, s_sc_min_mva=1000.0,
++                        rx_max=0.1, rx_min=0.1, x0x_max=1.0, x0x_min=1.0,
++                        r0x0_max=0.1, r0x0_min=0.1)
++        create_transformer_from_parameters(
++            net, b_hv, b_lv, sn_mva=0.63, vn_hv_kv=20.0, vn_lv_kv=0.4,
++            vk_percent=6.0, vkr_percent=1.0, pfe_kw=0.0, i0_percent=0.0,
++            vector_group="Dyn", shift_degree=330.0,
++            vk0_percent=6.0, vkr0_percent=1.0, mag0_percent=100.0,
++            mag0_rx=0.0, si0_hv_partial=0.9, rn_ohm=rn_ohm, xn_ohm=xn_ohm)
++        calc_sc(net, fault="1ph", case="max", inverse_y=inverse_y)
++        return net.res_bus_sc.loc[b_lv]
++
++    base = build()
++    with_rn = build(rn_ohm=0.01)
++    with_xn = build(xn_ohm=0.02)
++
++    # the neutral earthing impedance adds exactly 3*Z_N to the zero sequence
++    assert np.isclose(with_rn.rk0_ohm - base.rk0_ohm, 3 * 0.01, rtol=0, atol=1e-6)
++    assert np.isclose(with_rn.xk0_ohm, base.xk0_ohm, rtol=0, atol=1e-6)
++    assert np.isclose(with_xn.xk0_ohm - base.xk0_ohm, 3 * 0.02, rtol=0, atol=1e-6)
++    assert np.isclose(with_xn.rk0_ohm, base.rk0_ohm, rtol=0, atol=1e-6)
++    # the positive sequence impedance is unaffected by neutral earthing
++    assert np.isclose(with_rn.rk_ohm, base.rk_ohm, rtol=0, atol=1e-6)
++    assert np.isclose(with_rn.xk_ohm, base.xk_ohm, rtol=0, atol=1e-6)
++    # and the earth-fault current is correspondingly reduced
++    assert with_rn.ikss_ka < base.ikss_ka
++
++
++@pytest.mark.parametrize("inverse_y", (True, False))
++def test_zigzag_earthing_transformer(inverse_y):
++    # A zigzag earthing transformer (ZNyn / ZNd) provides the earth reference on
++    # an otherwise delta-fed (un-earthed) system. In the zero sequence it is a
++    # shunt-to-ground at its zigzag (ZN, HV-side) terminal. Modelling it as the
++    # equivalent wye-delta grounding bank (YNd, HV earthed star) must give the
++    # same single-phase earth-fault current, and a neutral earthing resistor
++    # (rn_ohm) must limit that current.
++    def build(eat_vg, rn_ohm=0.0):
++        net = create_empty_network(sn_mva=1.0)
++        b_src = create_bus(net, vn_kv=110.0)
++        b_mv = create_bus(net, vn_kv=20.0)     # delta side of the main trafo -> no earth
++        b_aux = create_bus(net, vn_kv=0.4)
++        create_ext_grid(net, b_src, s_sc_max_mva=5000.0, s_sc_min_mva=5000.0,
++                        rx_max=0.1, rx_min=0.1, x0x_max=1.0, x0x_min=1.0,
++                        r0x0_max=0.1, r0x0_min=0.1)
++        # main transformer: delta on the MV side, so the MV system has no earth
++        create_transformer_from_parameters(
++            net, b_src, b_mv, sn_mva=40.0, vn_hv_kv=110.0, vn_lv_kv=20.0,
++            vk_percent=12.0, vkr_percent=0.4, pfe_kw=0.0, i0_percent=0.0,
++            vector_group="YNd", shift_degree=330.0, vk0_percent=12.0,
++            vkr0_percent=0.4, mag0_percent=100.0, mag0_rx=0.0, si0_hv_partial=0.9)
++        # earthing transformer on the MV bus
++        create_transformer_from_parameters(
++            net, b_mv, b_aux, sn_mva=0.4, vn_hv_kv=20.0, vn_lv_kv=0.4,
++            vk_percent=4.0, vkr_percent=1.0, pfe_kw=0.0, i0_percent=0.0,
++            vector_group=eat_vg, shift_degree=330.0, vk0_percent=4.0,
++            vkr0_percent=1.0, mag0_percent=100.0, mag0_rx=0.0, si0_hv_partial=0.9,
++            rn_ohm=rn_ohm)
++        calc_sc(net, fault="1ph", case="max", inverse_y=inverse_y)
++        return net.res_bus_sc.at[b_mv, "ikss_ka"], net.res_bus_sc.at[b_aux, "ikss_ka"]
++
++    znyn_mv, znyn_lv = build("ZNyn")
++    znd_mv, znd_lv = build("ZNd")
++    ynd_mv, _ = build("YNd")
++
++    # The zigzag earths the delta-fed MV system (finite MV earth-fault current),
++    # of the same order as the equivalent wye-delta grounding bank (YNd) -- but
++    # not identical, since the zigzag presents only its own HV-winding leakage
++    # portion to earth (si0), per the YNzn zero-sequence model.
++    assert znyn_mv > 0.0
++    assert 0.5 < znyn_mv / ynd_mv < 2.0
++    # ZNyn and ZNd share the same zigzag (HV) earth -> same MV earth-fault current.
++    assert np.isclose(znyn_mv, znd_mv, rtol=0, atol=1e-6)
++    # The zigzag decouples the two zero-sequence sides: an earthed-wye secondary
++    # (ZNyn) has its own LV earth-fault path, whereas a delta secondary (ZNd)
++    # gives no LV zero-sequence path.
++    assert znyn_lv > 0.0
++    assert np.isclose(znd_lv, 0.0, rtol=0, atol=1e-6)
++    # and a neutral earthing resistor limits the (HV) earth-fault current
++    assert build("ZNyn", rn_ohm=5.0)[0] < znyn_mv
++
++
+ if __name__ == "__main__":
+     pytest.main([__file__])

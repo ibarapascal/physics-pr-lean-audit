@@ -1,0 +1,581 @@
+[
+ {
+  "repo": "Cantera/cantera",
+  "pr": "2107",
+  "author": "speth",
+  "author_association": "MEMBER",
+  "merged_by": "speth",
+  "merged_at": "2026-05-05T13:39:11Z",
+  "body_ai_signature": false,
+  "n_commits": 16,
+  "n_commits_ai_trailer": 4,
+  "non_author_reviewers": [
+   "ischoegl"
+  ],
+  "approvers": [
+   "ischoegl"
+  ],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "9a6be4aa34",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "08187147ed",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "e0c798f65a",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "a46c6684cd",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "12c0d41728",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "e9779cef84",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "bf942cb602",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "53194d3dcb",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "98e56676ac",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "ad7cf002f5",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "abcfab33e5",
+    "author": "speth",
+    "ai_trailer": true
+   },
+   {
+    "sha": "ac286127bf",
+    "author": "speth",
+    "ai_trailer": true
+   },
+   {
+    "sha": "58a5d88318",
+    "author": "speth",
+    "ai_trailer": false
+   },
+   {
+    "sha": "90fed6cc53",
+    "author": "speth",
+    "ai_trailer": true
+   },
+   {
+    "sha": "0e5fb6d90a",
+    "author": "speth",
+    "ai_trailer": true
+   },
+   {
+    "sha": "b140812c13",
+    "author": "speth",
+    "ai_trailer": false
+   }
+  ]
+ },
+ {
+  "repo": "CliMA/ClimaAtmos.jl",
+  "pr": "4637",
+  "author": "tapios",
+  "author_association": "MEMBER",
+  "merged_by": "tapios",
+  "merged_at": "2026-07-07T07:51:17Z",
+  "body_ai_signature": false,
+  "n_commits": 7,
+  "n_commits_ai_trailer": 5,
+  "non_author_reviewers": [
+   "sajjadazimi"
+  ],
+  "approvers": [
+   "sajjadazimi"
+  ],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "a77a0a0bd4",
+    "author": "tapios",
+    "ai_trailer": true
+   },
+   {
+    "sha": "aecf5aab5b",
+    "author": "tapios",
+    "ai_trailer": true
+   },
+   {
+    "sha": "b9ca9a0060",
+    "author": "tapios",
+    "ai_trailer": true
+   },
+   {
+    "sha": "1112fc7315",
+    "author": "tapios",
+    "ai_trailer": true
+   },
+   {
+    "sha": "90e8aec327",
+    "author": "tapios",
+    "ai_trailer": false
+   },
+   {
+    "sha": "aa04b37847",
+    "author": "tapios",
+    "ai_trailer": false
+   },
+   {
+    "sha": "ceabb5ccb4",
+    "author": "tapios",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "CliMA/ClimaAtmos.jl",
+  "pr": "4822",
+  "author": "szy21",
+  "author_association": "MEMBER",
+  "merged_by": "szy21",
+  "merged_at": "2026-10-10T03:34:49Z",
+  "body_ai_signature": false,
+  "n_commits": 1,
+  "n_commits_ai_trailer": 1,
+  "non_author_reviewers": [
+   "costachris",
+   "sajjadazimi"
+  ],
+  "approvers": [
+   "costachris",
+   "sajjadazimi"
+  ],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "bd6f0166d9",
+    "author": "szy21",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "CliMA/Oceananigans.jl",
+  "pr": "6024",
+  "author": "glwagner",
+  "author_association": "MEMBER",
+  "merged_by": "glwagner",
+  "merged_at": "2026-10-06T21:21:20Z",
+  "body_ai_signature": false,
+  "n_commits": 1,
+  "n_commits_ai_trailer": 1,
+  "non_author_reviewers": [],
+  "approvers": [],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "93d9dda303",
+    "author": "glwagner",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "CliMA/Oceananigans.jl",
+  "pr": "6083",
+  "author": "jagoosw",
+  "author_association": "COLLABORATOR",
+  "merged_by": "jagoosw",
+  "merged_at": "2026-09-29T15:24:43Z",
+  "body_ai_signature": false,
+  "n_commits": 8,
+  "n_commits_ai_trailer": 2,
+  "non_author_reviewers": [
+   "simone-silvestri"
+  ],
+  "approvers": [
+   "simone-silvestri"
+  ],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "11ef28f114",
+    "author": "simone-silvestri",
+    "ai_trailer": false
+   },
+   {
+    "sha": "98ee585d1c",
+    "author": "jagoosw",
+    "ai_trailer": true
+   },
+   {
+    "sha": "55453e9d45",
+    "author": "simone-silvestri",
+    "ai_trailer": false
+   },
+   {
+    "sha": "29acd30d79",
+    "author": "simone-silvestri",
+    "ai_trailer": false
+   },
+   {
+    "sha": "4aac323cfb",
+    "author": "simone-silvestri",
+    "ai_trailer": false
+   },
+   {
+    "sha": "ea6de441f7",
+    "author": "simone-silvestri",
+    "ai_trailer": false
+   },
+   {
+    "sha": "820a68a814",
+    "author": "jagoosw",
+    "ai_trailer": false
+   },
+   {
+    "sha": "049c348677",
+    "author": "jagoosw",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "CoolProp/CoolProp",
+  "pr": "2851",
+  "author": "ibell",
+  "author_association": "CONTRIBUTOR",
+  "merged_by": "ibell",
+  "merged_at": "2026-05-05T12:08:51Z",
+  "body_ai_signature": true,
+  "n_commits": 3,
+  "n_commits_ai_trailer": 1,
+  "non_author_reviewers": [],
+  "approvers": [],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "96a79275e4",
+    "author": "ibell",
+    "ai_trailer": true
+   },
+   {
+    "sha": "4b09733e60",
+    "author": "ibell",
+    "ai_trailer": false
+   },
+   {
+    "sha": "fe243a916c",
+    "author": "ibell",
+    "ai_trailer": false
+   }
+  ]
+ },
+ {
+  "repo": "CoolProp/CoolProp",
+  "pr": "3339",
+  "author": "ibell",
+  "author_association": "CONTRIBUTOR",
+  "merged_by": "ibell",
+  "merged_at": "2026-08-29T16:18:13Z",
+  "body_ai_signature": true,
+  "n_commits": 1,
+  "n_commits_ai_trailer": 1,
+  "non_author_reviewers": [],
+  "approvers": [],
+  "merged_by_is_author": true,
+  "commits": [
+   {
+    "sha": "29f7efcaba",
+    "author": "ibell",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "e2nIEE/pandapower",
+  "pr": "3016",
+  "author": "stardeltapower",
+  "author_association": "CONTRIBUTOR",
+  "merged_by": "vogt31337",
+  "merged_at": "2026-07-04T10:51:52Z",
+  "body_ai_signature": true,
+  "n_commits": 3,
+  "n_commits_ai_trailer": 1,
+  "non_author_reviewers": [
+   "vogt31337"
+  ],
+  "approvers": [
+   "vogt31337"
+  ],
+  "merged_by_is_author": false,
+  "commits": [
+   {
+    "sha": "eb95238fa1",
+    "author": "stardeltapower",
+    "ai_trailer": true
+   },
+   {
+    "sha": "12a8af8bc5",
+    "author": "vogt31337",
+    "ai_trailer": false
+   },
+   {
+    "sha": "9b544669e8",
+    "author": "vogt31337",
+    "ai_trailer": false
+   }
+  ]
+ },
+ {
+  "repo": "idaholab/moose",
+  "pr": "34020",
+  "author": "Andreas-Lepak",
+  "author_association": "COLLABORATOR",
+  "merged_by": "lindsayad",
+  "merged_at": "2026-10-14T22:18:18Z",
+  "body_ai_signature": false,
+  "n_commits": 2,
+  "n_commits_ai_trailer": 2,
+  "non_author_reviewers": [
+   "lindsayad"
+  ],
+  "approvers": [
+   "lindsayad"
+  ],
+  "merged_by_is_author": false,
+  "commits": [
+   {
+    "sha": "ab91f5aff3",
+    "author": null,
+    "ai_trailer": true
+   },
+   {
+    "sha": "91f20a1752",
+    "author": null,
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "idaholab/moose",
+  "pr": "33307",
+  "author": "kyriv-lab",
+  "author_association": "COLLABORATOR",
+  "merged_by": "GiudGiud",
+  "merged_at": "2026-09-12T03:28:38Z",
+  "body_ai_signature": false,
+  "n_commits": 20,
+  "n_commits_ai_trailer": 4,
+  "non_author_reviewers": [
+   "GiudGiud",
+   "chatgpt-codex-connector[bot]",
+   "grmnptr",
+   "moosebuild"
+  ],
+  "approvers": [
+   "GiudGiud"
+  ],
+  "merged_by_is_author": false,
+  "commits": [
+   {
+    "sha": "134e99e385",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "6981569c49",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "e89b2982dc",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "e6880842b9",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "6fa529f2d1",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "20b55adee0",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "4e469e257c",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "d4a59a04b5",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "15c5de12b3",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "ccec90f5a5",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "ba2fb2eb36",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "6f700e0a73",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "64c0dbbd57",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "7b722f083a",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "f4155f7757",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "dc30dd6ed2",
+    "author": "kyriv-lab",
+    "ai_trailer": false
+   },
+   {
+    "sha": "baf106bc57",
+    "author": "kyriv-lab",
+    "ai_trailer": true
+   },
+   {
+    "sha": "57539dbb1f",
+    "author": "kyriv-lab",
+    "ai_trailer": true
+   },
+   {
+    "sha": "0f06b2bff5",
+    "author": "kyriv-lab",
+    "ai_trailer": true
+   },
+   {
+    "sha": "bc5b507d5c",
+    "author": "kyriv-lab",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "pybamm-team/PyBaMM",
+  "pr": "5889",
+  "author": "shaurya20335",
+  "author_association": "CONTRIBUTOR",
+  "merged_by": "rtimms",
+  "merged_at": "2026-10-13T17:19:32Z",
+  "body_ai_signature": false,
+  "n_commits": 3,
+  "n_commits_ai_trailer": 3,
+  "non_author_reviewers": [
+   "BradyPlanden",
+   "MarcBerliner",
+   "rtimms"
+  ],
+  "approvers": [
+   "BradyPlanden",
+   "MarcBerliner"
+  ],
+  "merged_by_is_author": false,
+  "commits": [
+   {
+    "sha": "63f25cfaf9",
+    "author": "shaurya20335",
+    "ai_trailer": true
+   },
+   {
+    "sha": "fa3fd0e27e",
+    "author": "shaurya20335",
+    "ai_trailer": true
+   },
+   {
+    "sha": "00c023aebc",
+    "author": "shaurya20335",
+    "ai_trailer": true
+   }
+  ]
+ },
+ {
+  "repo": "pybamm-team/PyBaMM",
+  "pr": "5888",
+  "author": "shaurya20335",
+  "author_association": "CONTRIBUTOR",
+  "merged_by": "BradyPlanden",
+  "merged_at": "2026-10-13T16:01:04Z",
+  "body_ai_signature": false,
+  "n_commits": 3,
+  "n_commits_ai_trailer": 3,
+  "non_author_reviewers": [
+   "BradyPlanden",
+   "MarcBerliner",
+   "rtimms"
+  ],
+  "approvers": [
+   "BradyPlanden",
+   "MarcBerliner"
+  ],
+  "merged_by_is_author": false,
+  "commits": [
+   {
+    "sha": "6e24cbdedd",
+    "author": "shaurya20335",
+    "ai_trailer": true
+   },
+   {
+    "sha": "b973b4b9e0",
+    "author": "shaurya20335",
+    "ai_trailer": true
+   },
+   {
+    "sha": "130e2da2ae",
+    "author": "shaurya20335",
+    "ai_trailer": true
+   }
+  ]
+ }
+]

@@ -1,0 +1,737 @@
+{
+ "module": "CoolProp3339",
+ "pr": "CoolProp/CoolProp#3339",
+ "merge_commit": "5418cec58c52183e3a010b2894e08b818ed4cc81",
+ "coolprop_version": "8.0.0",
+ "coolprop_gitrevision": "ae81610e7d23efc57f9d051c8e70a4d66e87537f",
+ "n_points": 2000,
+ "seed": 3339,
+ "fluids": {
+  "R1233zd(E)": {
+   "error": "KeyError: 'TRANSPORT'"
+  },
+  "R1234yf": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 0.87302,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -54468.47741433059,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 9.761484309775834e-16,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 7.121969452162276e-16,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    1.1442498137059648e-07,
+    10.99589462719041
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    1.448017951087806,
+    1.4466148848785623,
+    1.4465382223416048,
+    1.446531251035818,
+    1.4465305608612855,
+    1.4465304919133934,
+    1.4465304850193,
+    1.4465304843298974,
+    1.4465304842609572,
+    1.4465304842540632,
+    1.446530484253374
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 569,
+   "thm_c_bound_checked": 797,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.31139487735035623852884967558060451784155853993767613327423",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 5.842129419782488,
+     "shipped": 0.0001759521252854749,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 2.097757576494277,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 1.1320470529103404e-13,
+     "shipped": 1.2460976266380136e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.3113948773523565,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  },
+  "R1234ze(E)": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 0.91012,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -58081.52496563628,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 1.0455863052944149e-15,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 9.589926652729584e-16,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    8.81907003326728e-08,
+    12.227405476076814
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    1.5095531575955121,
+    1.508090466456298,
+    1.5080105460556932,
+    1.5080032784961612,
+    1.5080025589918593,
+    1.5080024871139466,
+    1.5080024799268805,
+    1.5080024792081812,
+    1.5080024791363111,
+    1.5080024791291242,
+    1.5080024791284055
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 586,
+   "thm_c_bound_checked": 764,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.32462796473632474212781338730812811924476484904366467226927",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 5.651230332835693,
+     "shipped": 0.0001719542954097232,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.789666514121804,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 1.1431312779374818e-13,
+     "shipped": 1.242640548188281e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.3246279647384287,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  },
+  "R124": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 0.99792,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -53640.36876934566,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 1.1717658262280459e-15,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 1.0917449327533054e-15,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    1.203541435348955e-07,
+    13.084300159672019
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    1.6551809508940727,
+    1.6535771527777312,
+    1.6534895223925388,
+    1.6534815537257606,
+    1.6534807648103067,
+    1.6534806859982745,
+    1.6534806781178664,
+    1.6534806773298334,
+    1.6534806772510302,
+    1.65348067724315,
+    1.653480677242362
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 551,
+   "thm_c_bound_checked": 774,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.35594508259314505987295092808376614272473806272673764433507",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 6.5569640113806384,
+     "shipped": 0.00025794265126130144,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 4.781027339044224,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 1.42320300815933e-13,
+     "shipped": 1.297107735715908e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.3559450825960118,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  },
+  "R152A": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 0.86166,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -71960.49367077358,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 7.678073942491193e-16,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 1.0112172364482048e-15,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    6.525600989230644e-08,
+    11.71046639039851
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    1.4291759040277643,
+    1.4277910949399348,
+    1.4277154299590697,
+    1.42770854936602,
+    1.427707868172247,
+    1.4277078001215258,
+    1.4277077933171403,
+    1.4277077926367086,
+    1.4277077925686654,
+    1.4277077925618613,
+    1.4277077925611807
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 523,
+   "thm_c_bound_checked": 810,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.30734291312651250272102361642679083063668910370520906645367",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 3.3677029489567665,
+     "shipped": 6.981827929379499e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 0.9372022011542495,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 9.607667231966447e-14,
+     "shipped": 1.1198215198581172e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.3073429131281884,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  },
+  "R22": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 0.6682,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -72911.40129607519,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 1.0568339926468726e-15,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 8.43101336806548e-16,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    4.169016243769217e-08,
+    10.331861404889532
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    1.1082971694999793,
+    1.1072232779041207,
+    1.1071646012332597,
+    1.1071592654717344,
+    1.1071587372196638,
+    1.1071586844476982,
+    1.107158679171034,
+    1.107158678643373,
+    1.107158678590607,
+    1.1071586785853302,
+    1.1071586785848027
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 575,
+   "thm_c_bound_checked": 762,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.23833824774404714585555088069640170671170882084701472818714",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 2.963451591571631,
+     "shipped": 6.128974444845862e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 0.9584363685106644,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 0.9594610177397354,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 5.601061793212746e-14,
+     "shipped": 1.386829240515854e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.238338247744808,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  },
+  "R245fa": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 1.21398,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -58212.384941089294,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 1.1006667432002243e-15,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 8.969073670685024e-16,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    1.6818002514330363e-07,
+    13.829907668051318
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    2.01354474383356,
+    2.011593706839336,
+    2.011487103569519,
+    2.011477409603975,
+    2.011476449880167,
+    2.0114763540045146,
+    2.011476344417917,
+    2.0114763434592664,
+    2.0114763433634018,
+    2.011476343353815,
+    2.0114763433528564
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 564,
+   "thm_c_bound_checked": 787,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.43301087398431362047158239666778423282881086665947946835331",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 7.6932929746711,
+     "shipped": 0.00039888763491582814,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 41.622682147529986,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 2.2562682874847404e-13,
+     "shipped": 1.1884760459074192e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.433010873989817,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  },
+  "R32": {
+   "type": "rhosr-CS",
+   "x_crossover": 2,
+   "C": 0.79022,
+   "c_liq": [
+    0.6100913843,
+    0.4508958312,
+    -0.017063,
+    0.000564
+   ],
+   "c_vap": [
+    0.0,
+    1.2,
+    -0.308598,
+    0.035317
+   ],
+   "rhosr_critical": -107473.04273260638,
+   "dilute_params": "Chung default (default_transport)",
+   "c_vap0_is_zero": true,
+   "native_vs_lean_full_max_rel": 5.884621085847408e-16,
+   "native_ratio_vs_lean_bracket_ratio_max_rel": 5.8859492220803e-16,
+   "thm_a_float64_bitwise_new_eq_old_at_xc2": true,
+   "x_range": [
+    2.1727502119912163e-08,
+    9.421783370107494
+   ],
+   "thm_b_psi_at_crossover_float64": 0.5,
+   "thm_b_psi_at_crossover_decimal": "0.5",
+   "thm_b_difference_quotient_at_crossover_h=1e-2..1e-12": [
+    1.3106833123051087,
+    1.3094133173681446,
+    1.3093439257505932,
+    1.309337615625672,
+    1.3093369909094923,
+    1.3093369285008383,
+    1.3093369222606024,
+    1.309336921636585,
+    1.3093369215741835,
+    1.3093369215679433,
+    1.3093369215673194
+   ],
+   "thm_c_bound_skipped_k_delta_gt_400": 533,
+   "thm_c_bound_checked": 795,
+   "thm_c_bound_violations": 0,
+   "thm_c_max_lhs_over_bound": 1.0,
+   "thm_c_counterexample_x=0.5_a=2_b=3": {
+    "exact_g_difference": "2.1817954695741531345491768514267417935299729787364839924747135088097150108551506080093447557506166900619286011381437607194099081731158357284719432720470671693458655558661221840548656773E-66",
+    "exact_etastar_differs": true,
+    "float64_etastar_equal": true
+   },
+   "dilute_etastar_x0_shipped": "1.00000000000000000000000000000000000000000000000000000000000",
+   "dilute_etastar_x0_if_xc0": "1.28186119445121361722023299971033852277655368173701548991403",
+   "clones": {
+    "T=300,rho=10000": {
+     "x": 4.281958613870896,
+     "shipped": 0.00010590410471206638,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 0.9813667336723824,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     }
+    },
+    "T=300,rho=0.001": {
+     "x": 3.8129856216877305e-14,
+     "shipped": 1.344685156419335e-05,
+     "clone_xc=2": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=12": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=3": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.0,
+      "bitwise_equal_to_shipped": true
+     },
+     "clone_xc=0": {
+      "ratio_to_shipped": 1.0,
+      "lean_merged_ratio": 1.2818611944518246,
+      "bitwise_equal_to_shipped": true
+     }
+    }
+   }
+  }
+ },
+ "native_honours_x_crossover": null,
+ "note": "native_honours_x_crossover == False means the build predates PR #3339; then clone ratios are expected to be 1 and only the x_c = 2 comparisons test the merged formula."
+}

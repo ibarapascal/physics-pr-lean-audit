@@ -1,0 +1,86 @@
+⚠ [8924/8924] Built PhysAudit.Oceananigans6083 (17s)
+warning: PhysAudit/Oceananigans6083.lean:92:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:106:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:201:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:203:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:208:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:217:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:219:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:224:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:206:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:207:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:213:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:214:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:222:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:223:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:229:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:230:10: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:206:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:207:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:213:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:214:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:222:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:223:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:229:10: Unused tactic linter: `field_simp` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:230:10: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:286:8: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PhysAudit/Oceananigans6083.lean:284:21: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:286:8: Unused tactic linter: `ring1` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PhysAudit/Oceananigans6083.lean:454:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:467:4: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: PhysAudit/Oceananigans6083.lean:540:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:570:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:573:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:573:18: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:625:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:627:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:627:33: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:638:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: PhysAudit/Oceananigans6083.lean:640:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:642:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Oceananigans6083.lean:652:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (8924 jobs).

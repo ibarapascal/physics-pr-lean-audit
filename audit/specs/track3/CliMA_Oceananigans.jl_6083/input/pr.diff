@@ -1,0 +1,353 @@
+diff --git a/src/ImmersedBoundaries/mutable_immersed_grid.jl b/src/ImmersedBoundaries/mutable_immersed_grid.jl
+index 1f467e52f8d..f386618cc6e 100644
+--- a/src/ImmersedBoundaries/mutable_immersed_grid.jl
++++ b/src/ImmersedBoundaries/mutable_immersed_grid.jl
+@@ -162,12 +162,12 @@ end
+ 
+ import Oceananigans.Operators: ∂xᶠᶜᶜ, ∂xᶜᶜᶜ, ∂xᶠᶜᶠ, ∂xᶜᶠᶜ, ∂xᶠᶠᶜ
+ import Oceananigans.Operators: ∂yᶜᶠᶜ, ∂yᶜᶜᶜ, ∂yᶜᶠᶠ, ∂yᶠᶜᶜ, ∂yᶠᶠᶜ
+-import Oceananigans.Operators: ∂x_zᶠᶜᶜ, ∂x_zᶜᶜᶜ, ∂x_zᶠᶜᶠ, ∂x_zᶜᶠᶜ, ∂x_zᶠᶠᶜ, ∂x_zᶜᶜᶠ
+-import Oceananigans.Operators: ∂y_zᶜᶠᶜ, ∂y_zᶜᶜᶜ, ∂y_zᶜᶠᶠ, ∂y_zᶠᶜᶜ, ∂y_zᶠᶠᶜ, ∂y_zᶜᶜᶠ
++import Oceananigans.Operators: ∂x_zᶠᶜᶜ, ∂x_zᶜᶜᶜ, ∂x_zᶠᶜᶠ, ∂x_zᶜᶠᶜ, ∂x_zᶠᶠᶜ, ∂x_zᶜᶜᶠ, ∂x_zᶜᶠᶠ
++import Oceananigans.Operators: ∂y_zᶜᶠᶜ, ∂y_zᶜᶜᶜ, ∂y_zᶜᶠᶠ, ∂y_zᶠᶜᶜ, ∂y_zᶠᶠᶜ, ∂y_zᶜᶜᶠ, ∂y_zᶠᶜᶠ
+ 
+-using Oceananigans.Operators: Δx⁻¹ᶜᶜᶜ, Δx⁻¹ᶜᶜᶠ, Δx⁻¹ᶜᶠᶜ, Δx⁻¹ᶠᶜᶜ, Δx⁻¹ᶠᶜᶠ, Δx⁻¹ᶠᶠᶜ
+-using Oceananigans.Operators: Δy⁻¹ᶜᶜᶜ, Δy⁻¹ᶜᶜᶠ, Δy⁻¹ᶜᶠᶜ, Δy⁻¹ᶜᶠᶠ, Δy⁻¹ᶠᶜᶜ, Δy⁻¹ᶠᶠᶜ
+-using Oceananigans.Operators: δxᶜᶜᶜ, δxᶜᶜᶠ, δxᶜᶠᶜ, δxᶠᶜᶜ, δxᶠᶜᶠ, δxᶠᶠᶜ, δyᶜᶜᶜ, δyᶜᶜᶠ, δyᶜᶠᶜ, δyᶜᶠᶠ, δyᶠᶜᶜ, δyᶠᶠᶜ
++using Oceananigans.Operators: Δx⁻¹ᶜᶜᶜ, Δx⁻¹ᶜᶜᶠ, Δx⁻¹ᶜᶠᶜ, Δx⁻¹ᶜᶠᶠ, Δx⁻¹ᶠᶜᶜ, Δx⁻¹ᶠᶜᶠ, Δx⁻¹ᶠᶠᶜ
++using Oceananigans.Operators: Δy⁻¹ᶜᶜᶜ, Δy⁻¹ᶜᶜᶠ, Δy⁻¹ᶜᶠᶜ, Δy⁻¹ᶜᶠᶠ, Δy⁻¹ᶠᶜᶜ, Δy⁻¹ᶠᶜᶠ, Δy⁻¹ᶠᶠᶜ
++using Oceananigans.Operators: δxᶜᶜᶜ, δxᶜᶜᶠ, δxᶜᶠᶜ, δxᶜᶠᶠ, δxᶠᶜᶜ, δxᶠᶜᶠ, δxᶠᶠᶜ, δyᶜᶜᶜ, δyᶜᶜᶠ, δyᶜᶠᶜ, δyᶜᶠᶠ, δyᶠᶜᶜ, δyᶠᶜᶠ, δyᶠᶠᶜ
+ using Oceananigans.Operators: ℑxzᶜᵃᶜ, ℑxzᶠᵃᶜ, ℑxzᶠᵃᶠ, ℑyzᵃᶜᶜ, ℑyzᵃᶠᶜ, ℑyzᵃᶠᶠ
+ using Oceananigans.Operators: ∂zᶜᶜᶜ, ∂zᶜᶜᶠ, ∂zᶜᶠᶠ, ∂zᶠᶜᶠ, ∂zᶠᶠᶠ
+ 
+@@ -210,6 +210,7 @@ const F = Face
+ @inline ∂x_zᶜᶠᶜ(i, j, k, grid::AMG) = δxᶜᶠᶜ(i, j, k, grid, znode, F(), F(), C()) * Δx⁻¹ᶜᶠᶜ(i, j, k, grid)
+ @inline ∂x_zᶠᶠᶜ(i, j, k, grid::AMG) = δxᶠᶠᶜ(i, j, k, grid, znode, C(), F(), C()) * Δx⁻¹ᶠᶠᶜ(i, j, k, grid)
+ @inline ∂x_zᶜᶜᶠ(i, j, k, grid::AMG) = δxᶜᶜᶠ(i, j, k, grid, znode, F(), C(), F()) * Δx⁻¹ᶜᶜᶠ(i, j, k, grid)
++@inline ∂x_zᶜᶠᶠ(i, j, k, grid::AMG) = δxᶜᶠᶠ(i, j, k, grid, znode, F(), F(), F()) * Δx⁻¹ᶜᶠᶠ(i, j, k, grid)
+ 
+ # y-direction slopes at different staggerings
+ @inline ∂y_zᶜᶠᶜ(i, j, k, grid::AMG) = δyᶜᶠᶜ(i, j, k, grid, znode, C(), C(), C()) * Δy⁻¹ᶜᶠᶜ(i, j, k, grid)
+@@ -218,6 +219,7 @@ const F = Face
+ @inline ∂y_zᶠᶜᶜ(i, j, k, grid::AMG) = δyᶠᶜᶜ(i, j, k, grid, znode, F(), F(), C()) * Δy⁻¹ᶠᶜᶜ(i, j, k, grid)
+ @inline ∂y_zᶠᶠᶜ(i, j, k, grid::AMG) = δyᶠᶠᶜ(i, j, k, grid, znode, F(), C(), C()) * Δy⁻¹ᶠᶠᶜ(i, j, k, grid)
+ @inline ∂y_zᶜᶜᶠ(i, j, k, grid::AMG) = δyᶜᶜᶠ(i, j, k, grid, znode, C(), F(), F()) * Δy⁻¹ᶜᶜᶠ(i, j, k, grid)
++@inline ∂y_zᶠᶜᶠ(i, j, k, grid::AMG) = δyᶠᶜᶠ(i, j, k, grid, znode, F(), F(), F()) * Δy⁻¹ᶠᶜᶠ(i, j, k, grid)
+ 
+ #####
+ ##### Disambiguation for Number arguments (derivative of a constant is zero)
+diff --git a/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_ab2_step.jl b/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_ab2_step.jl
+index 92ab981430a..6e06cb71c47 100644
+--- a/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_ab2_step.jl
++++ b/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_ab2_step.jl
+@@ -245,7 +245,11 @@ end
+     FT = eltype(grid)
+     launch!(architecture(grid), grid, :xyz, _ab2_step_tracer_field!, tracer_field, grid, convert(FT, Δt), χ, Gⁿ, G⁻)
+ 
++    # The adaptive implicit advection must see the same total velocity as the explicit flux, drift included
+     @inbounds c_advection = model.advection[tracer_name]
++    c_velocities = tracer_advecting_velocities(model.transport_velocities, model.biogeochemistry, closure,
++                                               model.closure_fields, model.forcing[tracer_name], Val(tracer_name))
++
+     implicit_step!(tracer_field,
+                    model.timestepper.implicit_solver,
+                    closure,
+@@ -255,7 +259,7 @@ end
+                    fields(model),
+                    Δt,
+                    c_advection,
+-                   model.transport_velocities)
++                   c_velocities)
+     return nothing
+ end
+ 
+diff --git a/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_rk_step.jl b/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_rk_step.jl
+index 74396212638..401ce32bdb8 100644
+--- a/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_rk_step.jl
++++ b/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_rk_step.jl
+@@ -231,7 +231,11 @@ end
+     launch!(architecture(grid), grid, :xyz,
+             _rk_substep_tracer_field!, c, grid, convert(FT, Δt), Gⁿ, Ψ⁻)
+ 
++    # The adaptive implicit advection must see the same total velocity as the explicit flux, drift included
+     @inbounds c_advection = model.advection[tracer_name]
++    c_velocities = tracer_advecting_velocities(model.transport_velocities, model.biogeochemistry, closure,
++                                               model.closure_fields, model.forcing[tracer_name], Val(tracer_name))
++
+     implicit_step!(c,
+                    model.timestepper.implicit_solver,
+                    closure,
+@@ -241,7 +245,7 @@ end
+                    fields(model),
+                    Δt,
+                    c_advection,
+-                   model.transport_velocities)
++                   c_velocities)
+     return nothing
+ end
+ 
+diff --git a/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_tendency_kernel_functions.jl b/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_tendency_kernel_functions.jl
+index e8592ba3944..91a807c9604 100644
+--- a/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_tendency_kernel_functions.jl
++++ b/src/Models/HydrostaticFreeSurfaceModels/hydrostatic_free_surface_tendency_kernel_functions.jl
+@@ -94,6 +94,19 @@ implicitly during time-stepping.
+              + forcing(i, j, k, grid, clock, model_fields))
+ end
+ 
++"""
++$(TYPEDSIGNATURES)
++
++Return the velocities that advect the tracer `val_tracer_name`: the transport `velocities` plus the
++biogeochemical drift velocity, the closure's auxiliary velocity and any advective forcing.
++"""
++@inline function tracer_advecting_velocities(velocities, biogeochemistry, closure, closure_fields, forcing, val_tracer_name)
++    biogeochemical_velocities = biogeochemical_drift_velocity(biogeochemistry, val_tracer_name)
++    closure_velocities = closure_auxiliary_velocity(closure, closure_fields, val_tracer_name)
++    total_velocities = sum_of_velocities(velocities, biogeochemical_velocities, closure_velocities)
++    return with_advective_forcing(forcing, total_velocities)
++end
++
+ """
+ Return the tendency for a tracer field with index `tracer_index`
+ at grid point `i, j, k`.
+@@ -127,11 +140,7 @@ where `c = C[tracer_index]`.
+                          auxiliary_fields,
+                          biogeochemical_auxiliary_fields(biogeochemistry))
+ 
+-    biogeochemical_velocities = biogeochemical_drift_velocity(biogeochemistry, val_tracer_name)
+-    closure_velocities = closure_auxiliary_velocity(closure, closure_fields, val_tracer_name)
+-
+-    total_velocities = sum_of_velocities(velocities, biogeochemical_velocities, closure_velocities)
+-    total_velocities = with_advective_forcing(forcing, total_velocities)
++    total_velocities = tracer_advecting_velocities(velocities, biogeochemistry, closure, closure_fields, forcing, val_tracer_name)
+ 
+     return ( - div_Uc(i, j, k, grid, advection, total_velocities, c)
+              - ∇_dot_qᶜ(i, j, k, grid, closure, closure_fields, val_tracer_index, c, clock, model_fields, buoyancy)
+diff --git a/src/Operators/derivative_operators.jl b/src/Operators/derivative_operators.jl
+index 6f87280f751..69d49132588 100644
+--- a/src/Operators/derivative_operators.jl
++++ b/src/Operators/derivative_operators.jl
+@@ -100,6 +100,7 @@ end
+ @inline ∂x_zᶜᶠᶜ(i, j, k, grid) = zero(grid)
+ @inline ∂x_zᶠᶠᶜ(i, j, k, grid) = zero(grid)
+ @inline ∂x_zᶜᶜᶠ(i, j, k, grid) = zero(grid)
++@inline ∂x_zᶜᶠᶠ(i, j, k, grid) = zero(grid)
+ 
+ # y-direction slopes at different staggerings
+ @inline ∂y_zᶜᶠᶜ(i, j, k, grid) = zero(grid)
+@@ -108,3 +109,4 @@ end
+ @inline ∂y_zᶠᶜᶜ(i, j, k, grid) = zero(grid)
+ @inline ∂y_zᶠᶠᶜ(i, j, k, grid) = zero(grid)
+ @inline ∂y_zᶜᶜᶠ(i, j, k, grid) = zero(grid)
++@inline ∂y_zᶠᶜᶠ(i, j, k, grid) = zero(grid)
+diff --git a/src/TurbulenceClosures/TurbulenceClosures.jl b/src/TurbulenceClosures/TurbulenceClosures.jl
+index 0337a80480e..ff3b7ae75c0 100644
+--- a/src/TurbulenceClosures/TurbulenceClosures.jl
++++ b/src/TurbulenceClosures/TurbulenceClosures.jl
+@@ -60,8 +60,8 @@ using Oceananigans.Operators: Operators,
+     ζ₃ᶠᶠᶜ,
+     ℑxyzᶠᶠᶜ, ℑxyᶜᶜᵃ, ℑxyᶜᶠᵃ, ℑxyᶠᶜᵃ, ℑxzᶜᵃᶜ, ℑxzᶜᵃᶠ, ℑxzᶠᵃᶜ, ℑxᶜᵃᵃ, ℑxᶠᵃᵃ, ℑyzᵃᶜᶜ, ℑyzᵃᶜᶠ, ℑyzᵃᶠᶜ, ℑyᵃᶜᵃ, ℑyᵃᶠᵃ, ℑzᵃᵃᶠ,
+     ∂xᵣᶜᶜᶜ, ∂xᵣᶜᶠᶜ, ∂xᵣᶠᶜᶜ, ∂xᵣᶠᶜᶠ, ∂xᵣᶠᶠᶜ, ∂yᵣᶜᶜᶜ, ∂yᵣᶜᶠᶜ, ∂yᵣᶜᶠᶠ, ∂yᵣᶠᶜᶜ, ∂yᵣᶠᶠᶜ, ∂zᶜᶜᶜ, ∂zᶜᶜᶠ, ∂zᶜᶠᶠ, ∂zᶠᶜᶠ, ∂²zᶜᶜᶠ, ∂²zᶜᶠᶜ, ∂²zᶠᶜᶜ, ∂³zᶜᶜᶠ,
+-    ∂x_zᶠᶜᶜ, ∂x_zᶠᶜᶠ, ∂x_zᶜᶠᶜ, ∂x_zᶜᶜᶠ,
+-    ∂y_zᶜᶠᶜ, ∂y_zᶜᶠᶠ, ∂y_zᶠᶜᶜ, ∂y_zᶜᶜᶠ,
++    ∂x_zᶠᶜᶜ, ∂x_zᶠᶜᶠ, ∂x_zᶜᶠᶜ, ∂x_zᶜᶜᶠ, ∂x_zᶜᶠᶠ,
++    ∂y_zᶜᶠᶜ, ∂y_zᶜᶠᶠ, ∂y_zᶠᶜᶜ, ∂y_zᶜᶜᶠ, ∂y_zᶠᶜᶠ,
+     ∇²hᶜᶜᶜ, ∇²hᶜᶠᶜ, ∇²hᶠᶜᶜ, ∇²ᶜᶜᶜ, ∇²ᶜᶜᶠ, ∇²ᶜᶠᶜ, ∇²ᶠᶜᶜ
+ using Oceananigans.BoundaryConditions: FieldBoundaryConditions, fill_halo_regions!
+ using Oceananigans.Utils: Utils, launch!, prettysummary, with_tracers, named_tuple
+diff --git a/src/TurbulenceClosures/turbulence_closure_implementations/advective_skew_diffusion.jl b/src/TurbulenceClosures/turbulence_closure_implementations/advective_skew_diffusion.jl
+index a6ed387225a..a56a33011c2 100644
+--- a/src/TurbulenceClosures/turbulence_closure_implementations/advective_skew_diffusion.jl
++++ b/src/TurbulenceClosures/turbulence_closure_implementations/advective_skew_diffusion.jl
+@@ -47,57 +47,92 @@ end
+     ∂x_z = ∂x_zᶠᶜᶠ(i, j, k, grid)
+     Sx   = ifelse(bz == 0, ∂x_z, - bx / bz + ∂x_z)
+ 
+-    # Impose a boundary condition on immersed peripheries
+     inactive = peripheral_node(i, j, k, grid, Face(), Center(), Face())
+-    Sx = ifelse(inactive, zero(grid), Sx)
+ 
+-    return Sx
++    return ifelse(inactive, zero(grid), Sx)
+ end
+ 
+-# Slope in y-direction at F, C, F locations, zeroed out on peripheries
++# Slope in y-direction at C, F, F locations, zeroed out on peripheries
+ @inline function Syᶜᶠᶠ(i, j, k, grid, b, C)
+     by   = ℑzᵃᵃᶠ(i, j, k, grid, ∂yᵣ_b, b, C)
+     bz   = ℑyᵃᶠᵃ(i, j, k, grid, ∂z_b, b, C)
+     ∂y_z = ∂y_zᶜᶠᶠ(i, j, k, grid)
+     Sy   = ifelse(bz == 0, ∂y_z, - by / bz + ∂y_z)
+ 
+-    # Impose a boundary condition on immersed peripheries
+     inactive = peripheral_node(i, j, k, grid, Center(), Face(), Face())
+-    Sy = ifelse(inactive, zero(grid), Sy)
+ 
+-    return Sy
++    return ifelse(inactive, zero(grid), Sy)
+ end
+ 
+-# tapered slope in x-direction at F, C, F locations
+-@inline function ϵSxᶠᶜᶠ(i, j, k, grid, slope_limiter, b, C)
+-    Sx = Sxᶠᶜᶠ(i, j, k, grid, b, C)
+-    ϵ  = tapering_factor(Sx, zero(grid), slope_limiter)
+-    return ϵ * Sx
++# Isopycnal slope, floored and switched off in unstable stratification exactly like the
++# slope entering the isopycnal rotation tensor of the diffusive formulation.
++@inline function isopycnal_slope(bh, bz, ∂h_z, grid, slope_model)
++    FT = eltype(grid)
++    bz = max(bz, convert(FT, slope_model.minimum_bz))
++    return ifelse(bz <= 0, zero(grid), -bh / bz) + ∂h_z
++end
++
++# Buoyancy gradients at (F, C, F), the location of the x-component of the eddy streamfunction
++@inline bxᶠᶜᶠ(i, j, k, grid, b, C) = ℑzᵃᵃᶠ(i, j, k, grid, ∂xᵣ_b, b, C)
++@inline byᶠᶜᶠ(i, j, k, grid, b, C) = ℑzᵃᵃᶠ(i, j, k, grid, ℑxyᶠᶜᵃ, ∂yᵣ_b, b, C)
++@inline bzᶠᶜᶠ(i, j, k, grid, b, C) = ℑxᶠᵃᵃ(i, j, k, grid, ∂z_b, b, C)
++
++# Buoyancy gradients at (C, F, F), the location of the y-component of the eddy streamfunction
++@inline bxᶜᶠᶠ(i, j, k, grid, b, C) = ℑzᵃᵃᶠ(i, j, k, grid, ℑxyᶜᶠᵃ, ∂xᵣ_b, b, C)
++@inline byᶜᶠᶠ(i, j, k, grid, b, C) = ℑzᵃᵃᶠ(i, j, k, grid, ∂yᵣ_b, b, C)
++@inline bzᶜᶠᶠ(i, j, k, grid, b, C) = ℑyᵃᶠᵃ(i, j, k, grid, ∂z_b, b, C)
++
++# Tapered slope in x-direction at F, C, F locations, zeroed out on peripheries
++@inline function ϵSxᶠᶜᶠ(i, j, k, grid, closure, b, C)
++    bx = bxᶠᶜᶠ(i, j, k, grid, b, C)
++    by = byᶠᶜᶠ(i, j, k, grid, b, C)
++    bz = bzᶠᶜᶠ(i, j, k, grid, b, C)
++
++    ∂x_z = ∂x_zᶠᶜᶠ(i, j, k, grid)
++    ∂y_z = ∂y_zᶠᶜᶠ(i, j, k, grid)
++
++    ϵ  = calc_tapering(bx, by, bz, ∂x_z, ∂y_z, grid, closure.isopycnal_tensor, closure.slope_limiter)
++    Sx = isopycnal_slope(bx, bz, ∂x_z, grid, closure.isopycnal_tensor)
++
++    # Impose a boundary condition on immersed peripheries
++    inactive = peripheral_node(i, j, k, grid, Face(), Center(), Face())
++
++    return ifelse(inactive, zero(grid), ϵ * Sx)
+ end
+ 
+-# tapered slope in y-direction at F, C, F locations
+-@inline function ϵSyᶜᶠᶠ(i, j, k, grid, slope_limiter, b, C)
+-    Sy = Syᶜᶠᶠ(i, j, k, grid, b, C)
+-    ϵ  = tapering_factor(zero(grid), Sy, slope_limiter)
+-    return ϵ * Sy
++# Tapered slope in y-direction at C, F, F locations, zeroed out on peripheries
++@inline function ϵSyᶜᶠᶠ(i, j, k, grid, closure, b, C)
++    bx = bxᶜᶠᶠ(i, j, k, grid, b, C)
++    by = byᶜᶠᶠ(i, j, k, grid, b, C)
++    bz = bzᶜᶠᶠ(i, j, k, grid, b, C)
++
++    ∂x_z = ∂x_zᶜᶠᶠ(i, j, k, grid)
++    ∂y_z = ∂y_zᶜᶠᶠ(i, j, k, grid)
++
++    ϵ  = calc_tapering(bx, by, bz, ∂x_z, ∂y_z, grid, closure.isopycnal_tensor, closure.slope_limiter)
++    Sy = isopycnal_slope(by, bz, ∂y_z, grid, closure.isopycnal_tensor)
++
++    # Impose a boundary condition on immersed peripheries
++    inactive = peripheral_node(i, j, k, grid, Center(), Face(), Face())
++
++    return ifelse(inactive, zero(grid), ϵ * Sy)
+ end
+ 
+-@inline κ_ϵSxᶠᶜᶠ(i, j, k, grid, clk, sl, κ, b, fields) = κᶠᶜᶠ(i, j, k, grid, issd_coefficient_loc, κ, clk.time, fields) * ϵSxᶠᶜᶠ(i, j, k, grid, sl, b, fields)
+-@inline κ_ϵSyᶜᶠᶠ(i, j, k, grid, clk, sl, κ, b, fields) = κᶜᶠᶠ(i, j, k, grid, issd_coefficient_loc, κ, clk.time, fields) * ϵSyᶜᶠᶠ(i, j, k, grid, sl, b, fields)
++@inline κ_ϵSxᶠᶜᶠ(i, j, k, grid, clk, clo, κ, b, fields) = κᶠᶜᶠ(i, j, k, grid, issd_coefficient_loc, κ, clk.time, fields) * ϵSxᶠᶜᶠ(i, j, k, grid, clo, b, fields)
++@inline κ_ϵSyᶜᶠᶠ(i, j, k, grid, clk, clo, κ, b, fields) = κᶜᶠᶠ(i, j, k, grid, issd_coefficient_loc, κ, clk.time, fields) * ϵSyᶜᶠᶠ(i, j, k, grid, clo, b, fields)
+ 
+ @kernel function _compute_eddy_velocities!(uₑ, vₑ, wₑ, grid, clock, closure, buoyancy, fields)
+     i, j, k = @index(Global, NTuple)
+ 
+     closure = getclosure(i, j, closure)
+     κ = closure.κ_skew
+-    slope_limiter = closure.slope_limiter
+ 
+     @inbounds begin
+-        uₑ[i, j, k] = - δzᵃᵃᶜ(i, j, k, grid, κ_ϵSxᶠᶜᶠ, clock, slope_limiter, κ, buoyancy, fields) * Δz⁻¹ᶠᶜᶜ(i, j, k, grid)
+-        vₑ[i, j, k] = - δzᵃᵃᶜ(i, j, k, grid, κ_ϵSyᶜᶠᶠ, clock, slope_limiter, κ, buoyancy, fields) * Δz⁻¹ᶜᶠᶜ(i, j, k, grid)
++        uₑ[i, j, k] = - δzᵃᵃᶜ(i, j, k, grid, κ_ϵSxᶠᶜᶠ, clock, closure, κ, buoyancy, fields) * Δz⁻¹ᶠᶜᶜ(i, j, k, grid)
++        vₑ[i, j, k] = - δzᵃᵃᶜ(i, j, k, grid, κ_ϵSyᶜᶠᶠ, clock, closure, κ, buoyancy, fields) * Δz⁻¹ᶜᶠᶜ(i, j, k, grid)
+ 
+-        wˣ = δxᶜᵃᵃ(i, j, k, grid, Δy_qᶠᶜᶠ, κ_ϵSxᶠᶜᶠ, clock, slope_limiter, κ, buoyancy, fields)
+-        wʸ = δyᵃᶜᵃ(i, j, k, grid, Δx_qᶜᶠᶠ, κ_ϵSyᶜᶠᶠ, clock, slope_limiter, κ, buoyancy, fields)
++        wˣ = δxᶜᵃᵃ(i, j, k, grid, Δy_qᶠᶜᶠ, κ_ϵSxᶠᶜᶠ, clock, closure, κ, buoyancy, fields)
++        wʸ = δyᵃᶜᵃ(i, j, k, grid, Δx_qᶜᶠᶠ, κ_ϵSyᶜᶠᶠ, clock, closure, κ, buoyancy, fields)
+ 
+         wₑ[i, j, k] =  (wˣ + wʸ) * Az⁻¹ᶜᶜᶠ(i, j, k, grid)
+     end
+diff --git a/src/TurbulenceClosures/turbulence_closure_implementations/isopycnal_skew_symmetric_diffusivity.jl b/src/TurbulenceClosures/turbulence_closure_implementations/isopycnal_skew_symmetric_diffusivity.jl
+index 0f15086ac59..4db14ac03c0 100644
+--- a/src/TurbulenceClosures/turbulence_closure_implementations/isopycnal_skew_symmetric_diffusivity.jl
++++ b/src/TurbulenceClosures/turbulence_closure_implementations/isopycnal_skew_symmetric_diffusivity.jl
+@@ -214,13 +214,14 @@ end
+ end
+ 
+ @inline function calc_tapering(bx, by, bz, ∂x_z, ∂y_z, grid, slope_model, slope_limiter)
+-
+-    bz = max(bz, slope_model.minimum_bz)
++    FT = eltype(grid)
++    Sₘ = convert(FT, slope_limiter.max_slope)
++    bz = max(bz, convert(FT, slope_model.minimum_bz))
+ 
+     Sx = - bx / bz + ∂x_z
+     Sy = - by / bz + ∂y_z
+ 
+-    return ifelse(bz <= 0, zero(grid), min(one(grid), slope_limiter.max_slope^2 / (Sx^2 + Sy^2)))
++    return ifelse(bz <= 0, zero(grid), min(one(grid), Sₘ^2 / (Sx^2 + Sy^2)))
+ end
+ 
+ # Make sure we do not need to perform heavy calculations if we really do not need to
+diff --git a/test/unit/adaptive_implicit_vertical_advection.jl b/test/unit/adaptive_implicit_vertical_advection.jl
+index c225365794f..217b267bcf0 100644
+--- a/test/unit/adaptive_implicit_vertical_advection.jl
++++ b/test/unit/adaptive_implicit_vertical_advection.jl
+@@ -437,3 +437,48 @@ end
+         end
+     end
+ end
++
++struct SinkingParticles{W} <: Oceananigans.Biogeochemistry.AbstractBiogeochemistry
++    sinking_velocity :: W
++end
++
++Adapt.adapt_structure(to, bgc::SinkingParticles) = SinkingParticles(Adapt.adapt(to, bgc.sinking_velocity))
++Oceananigans.Biogeochemistry.required_biogeochemical_tracers(::SinkingParticles) = (:D,)
++Oceananigans.Biogeochemistry.biogeochemical_drift_velocity(bgc::SinkingParticles, ::Val{:D}) = bgc.sinking_velocity
++
++@testset "AIVA carries the biogeochemical drift velocity through the implicit solve" begin
++    speed = 100 / day
++    Δt = 0.4day # sinking Courant number 4, so most of the flux goes through the implicit part
++    nsteps = 3
++
++    for arch in archs, timestepper in (:QuasiAdamsBashforth2, :SplitRungeKutta3)
++        grid = RectilinearGrid(arch; size=40, z=(-400, 0), topology=(Flat, Flat, Bounded))
++
++        # w = 0 on the top and bottom faces keeps the sinking tracer inside the domain
++        w = ZFaceField(grid)
++        set!(w, z -> ifelse((z == 0) | (z == -400), 0, -speed))
++        biogeochemistry = SinkingParticles((u=Oceananigans.Fields.ZeroField(), v=Oceananigans.Fields.ZeroField(), w))
++
++        tracer_advection = WENO(order=5, time_discretization=AdaptiveVerticallyImplicitDiscretization(cfl=0.5))
++        model = HydrostaticFreeSurfaceModel(grid; biogeochemistry, timestepper, tracer_advection,
++                                            momentum_advection=nothing, free_surface=nothing)
++
++        set!(model, D = z -> exp(-(z + 100)^2 / 800))
++
++        z = znodes(grid, Center())
++        center_of_mass(D) = sum(z .* D) / sum(D)
++        D₀ = Array(interior(model.tracers.D, 1, 1, :))
++
++        for _ in 1:nsteps
++            time_step!(model, Δt)
++        end
++
++        D = Array(interior(model.tracers.D, 1, 1, :))
++        descent = center_of_mass(D₀) - center_of_mass(D)
++
++        @testset "Sinking tracer [$(typeof(arch)), $timestepper]" begin
++            @test sum(D) ≈ sum(D₀) rtol=1e-12
++            @test descent ≈ speed * Δt * nsteps rtol=0.05
++        end
++    end
++end

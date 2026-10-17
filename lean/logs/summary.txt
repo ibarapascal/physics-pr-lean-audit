@@ -1,0 +1,12 @@
+PhysAudit.Cantera2107 build=ok module_time=9.8s warnings=61 errors=0 sorry_like_lines=0
+PhysAudit.ClimaAtmos4637 build=ok module_time=10s warnings=26 errors=0 sorry_like_lines=0
+PhysAudit.ClimaAtmos4822 build=ok module_time=7.3s warnings=3 errors=0 sorry_like_lines=0
+PhysAudit.CoolProp2851 build=ok module_time=14s warnings=2 errors=0 sorry_like_lines=0
+PhysAudit.CoolProp3339 build=ok module_time=5.0s warnings=0 errors=0 sorry_like_lines=0
+PhysAudit.Moose33307 build=ok module_time=6.1s warnings=2 errors=0 sorry_like_lines=0
+PhysAudit.Moose34020 build=ok module_time=6.2s warnings=2 errors=0 sorry_like_lines=0
+PhysAudit.Oceananigans6024 build=ok module_time=13s warnings=2 errors=0 sorry_like_lines=0
+PhysAudit.Oceananigans6083 build=ok module_time=17s warnings=40 errors=0 sorry_like_lines=0
+PhysAudit.Pandapower3016 build=ok module_time=6.3s warnings=11 errors=0 sorry_like_lines=0
+PhysAudit.PyBaMM5888 build=ok module_time=5.9s warnings=0 errors=0 sorry_like_lines=0
+PhysAudit.PyBaMM5889 build=ok module_time=5.8s warnings=2 errors=0 sorry_like_lines=0

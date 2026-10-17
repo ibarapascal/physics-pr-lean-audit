@@ -1,0 +1,4683 @@
+{
+ "pr": "e2nIEE/pandapower#3016",
+ "track": 2,
+ "n": 10000,
+ "seed": 20261099,
+ "n_branches": 20,
+ "branches": {
+  "Dyn_radial[max,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 270,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[Dyn_lv]": 270
+   },
+   "fail_examples": [],
+   "seconds": 51.17
+  },
+  "ZNd_radial[max,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 274,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 6500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNd_mv]": 274
+   },
+   "fail_examples": [],
+   "seconds": 54.031
+  },
+  "ZNyn_radial[max,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 269,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 7500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNyn_mv]": 269
+   },
+   "fail_examples": [],
+   "seconds": 58.39
+  },
+  "YNd_parallel[max,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 0,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {},
+   "fail_examples": [],
+   "seconds": 47.144
+  },
+  "Zd[max,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 500,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 1000,
+   "reject_checks": {
+    "I3b.Zd_mv_ikss=0[0]": 500,
+    "I3b.Zd_mv_ikss=0[ZN]": 500
+   },
+   "fail_examples": [],
+   "seconds": 41.42
+  },
+  "Dyn_radial[max,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 311,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[Dyn_lv]": 311
+   },
+   "fail_examples": [],
+   "seconds": 51.315
+  },
+  "ZNd_radial[max,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 261,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 6500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNd_mv]": 261
+   },
+   "fail_examples": [],
+   "seconds": 53.946
+  },
+  "ZNyn_radial[max,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 260,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 7500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNyn_mv]": 260
+   },
+   "fail_examples": [],
+   "seconds": 58.357
+  },
+  "YNd_parallel[max,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 0,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {},
+   "fail_examples": [],
+   "seconds": 47.596
+  },
+  "Zd[max,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 500,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 1000,
+   "reject_checks": {
+    "I3b.Zd_mv_ikss=0[0]": 500,
+    "I3b.Zd_mv_ikss=0[ZN]": 500
+   },
+   "fail_examples": [],
+   "seconds": 41.673
+  },
+  "Dyn_radial[min,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 294,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[Dyn_lv]": 294
+   },
+   "fail_examples": [],
+   "seconds": 48.717
+  },
+  "ZNd_radial[min,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 278,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 6500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNd_mv]": 278
+   },
+   "fail_examples": [],
+   "seconds": 51.508
+  },
+  "ZNyn_radial[min,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 269,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 7500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNyn_mv]": 269
+   },
+   "fail_examples": [],
+   "seconds": 55.177
+  },
+  "YNd_parallel[min,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 0,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {},
+   "fail_examples": [],
+   "seconds": 45.699
+  },
+  "Zd[min,inv=True]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 500,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 1000,
+   "reject_checks": {
+    "I3b.Zd_mv_ikss=0[0]": 500,
+    "I3b.Zd_mv_ikss=0[ZN]": 500
+   },
+   "fail_examples": [],
+   "seconds": 40.359
+  },
+  "Dyn_radial[min,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 292,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[Dyn_lv]": 292
+   },
+   "fail_examples": [],
+   "seconds": 48.886
+  },
+  "ZNd_radial[min,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 279,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 6500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNd_mv]": 279
+   },
+   "fail_examples": [],
+   "seconds": 51.809
+  },
+  "ZNyn_radial[min,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 269,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 7500,
+   "reject_checks": {
+    "I2.asymptote_RN1000<1%[ZNyn_mv]": 269
+   },
+   "fail_examples": [],
+   "seconds": 55.614
+  },
+  "YNd_parallel[min,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 0,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 5500,
+   "reject_checks": {},
+   "fail_examples": [],
+   "seconds": 45.577
+  },
+  "Zd[min,inv=False]": {
+   "n": 500,
+   "n_must": 0,
+   "rejects": 500,
+   "fails": 0,
+   "nonreproducible": 0,
+   "n_checks": 1000,
+   "reject_checks": {
+    "I3b.Zd_mv_ikss=0[0]": 500,
+    "I3b.Zd_mv_ikss=0[ZN]": 500
+   },
+   "fail_examples": [],
+   "seconds": 40.402
+  }
+ },
+ "total_points": 10000,
+ "total_rejects": 5326,
+ "total_fails": 0,
+ "total_nonreproducible": 0,
+ "first_rejects": [
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 1,
+   "must": false,
+   "params": {
+    "vk0": 6.962006041771586,
+    "vkr0": 0.5133076995615886,
+    "si0": 0.5959498570435364,
+    "RN": 133.96055248190294,
+    "XN": 15.24812650338117,
+    "ssc": 6281.751011976337,
+    "x0x": 2.829561405222871,
+    "x0x2": 2.982603837406865,
+    "hv": 62.11820092841657,
+    "lv": 54.36698708362475,
+    "sn": 0.6713619828727307
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.03233560776772906,
+     "exp": 0.03452767409053563,
+     "resid": 0.06348722815961216,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 2,
+   "must": false,
+   "params": {
+    "vk0": 10.506182064963985,
+    "vkr0": 1.3071079600075002,
+    "si0": 0.9480293165010498,
+    "RN": 108.58033049091445,
+    "XN": 2.287028566232757,
+    "ssc": 5190.870037506411,
+    "x0x": 0.6110653432856554,
+    "x0x2": 1.0994251406511817,
+    "hv": 67.28880692613437,
+    "lv": 49.46958124320286,
+    "sn": 1.5661323174124846
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.030423223582468923,
+     "exp": 0.03141740365220736,
+     "resid": 0.031644246632983264,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 3,
+   "must": false,
+   "params": {
+    "vk0": 13.716772530777716,
+    "vkr0": 1.143920684979443,
+    "si0": 0.6183146600086004,
+    "RN": 62.54108952965054,
+    "XN": 14.294383715569548,
+    "ssc": 7330.589495579173,
+    "x0x": 2.714576796054506,
+    "x0x2": 1.1542939613933194,
+    "hv": 108.67457294746522,
+    "lv": 79.80079756742427,
+    "sn": 2.2162613467650365
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.04609209664179673,
+     "exp": 0.05068031315280916,
+     "resid": 0.0905325209253981,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 6,
+   "must": false,
+   "params": {
+    "vk0": 9.906277615811454,
+    "vkr0": 1.3917524061883266,
+    "si0": 0.5411600887267195,
+    "RN": 39.735436541733506,
+    "XN": 23.180529192024395,
+    "ssc": 4250.135665549429,
+    "x0x": 1.6067464791454262,
+    "x0x2": 1.0643977911890106,
+    "hv": 125.48198541660952,
+    "lv": 55.805611686350275,
+    "sn": 0.6116771058753674
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.03007956523634877,
+     "exp": 0.03544132342234667,
+     "resid": 0.15128549580677264,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 10,
+   "must": false,
+   "params": {
+    "vk0": 9.011963208325637,
+    "vkr0": 0.8461592000075294,
+    "si0": 0.6891643027848234,
+    "RN": 110.02480133334022,
+    "XN": 1.5785062175009301,
+    "ssc": 5483.908707506578,
+    "x0x": 2.153583404913335,
+    "x0x2": 0.8758683090190138,
+    "hv": 73.31947959523458,
+    "lv": 58.99843974792254,
+    "sn": 1.8194377485600068
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.03636595550740439,
+     "exp": 0.03746904157725409,
+     "resid": 0.02943993289968072,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 11,
+   "must": false,
+   "params": {
+    "vk0": 8.037299368305376,
+    "vkr0": 0.8931176974271678,
+    "si0": 0.7265993859683806,
+    "RN": 163.50788468553318,
+    "XN": 19.873734359178634,
+    "ssc": 1945.7320787853603,
+    "x0x": 2.4765606059148255,
+    "x0x2": 2.020786474956993,
+    "hv": 119.67234965892631,
+    "lv": 75.81210636070203,
+    "sn": 1.4371969441059451
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.0444022906593615,
+     "exp": 0.04814715401670225,
+     "resid": 0.07777953720881725,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 12,
+   "must": false,
+   "params": {
+    "vk0": 7.3915343707601675,
+    "vkr0": 1.0423286329388886,
+    "si0": 0.7232107963804716,
+    "RN": 50.30574072733198,
+    "XN": 14.058134451060871,
+    "ssc": 1923.2622743312845,
+    "x0x": 1.6057891921113447,
+    "x0x2": 2.6285763999050085,
+    "hv": 94.75142515156818,
+    "lv": 36.65471504816012,
+    "sn": 0.18434540621797746
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.019375014401583804,
+     "exp": 0.023278870560136704,
+     "resid": 0.1676995517659674,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 15,
+   "must": false,
+   "params": {
+    "vk0": 8.472261931972048,
+    "vkr0": 0.6152778992974881,
+    "si0": 0.5853719178383302,
+    "RN": 85.57719548087148,
+    "XN": 36.06175433240217,
+    "ssc": 1017.1791334321481,
+    "x0x": 1.8405429845370707,
+    "x0x2": 1.1583652037130308,
+    "hv": 99.48155597275439,
+    "lv": 82.41856685768077,
+    "sn": 1.4570133438019117
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.04746229092098675,
+     "exp": 0.05234281993765569,
+     "resid": 0.0932416140834984,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 16,
+   "must": false,
+   "params": {
+    "vk0": 11.526670355214854,
+    "vkr0": 1.153027002876307,
+    "si0": 0.640845971537545,
+    "RN": 98.79629940330781,
+    "XN": 4.248930955139452,
+    "ssc": 4605.01992280909,
+    "x0x": 0.6140140704990986,
+    "x0x2": 2.460974799764926,
+    "hv": 69.18232458308552,
+    "lv": 63.46265351019867,
+    "sn": 2.276368740325627
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.038782138839090326,
+     "exp": 0.04030419809636127,
+     "resid": 0.03776428583523561,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 18,
+   "must": false,
+   "params": {
+    "vk0": 12.27472786699635,
+    "vkr0": 0.7605975159718839,
+    "si0": 0.5580855473865879,
+    "RN": 100.59555008458977,
+    "XN": 32.79018410786132,
+    "ssc": 3336.8444597149974,
+    "x0x": 1.4437449765890058,
+    "x0x2": 2.34066164869033,
+    "hv": 106.0933709175336,
+    "lv": 44.78992658983408,
+    "sn": 1.362459074692192
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.027720303869166723,
+     "exp": 0.028445423790986718,
+     "resid": 0.02549161957115076,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 19,
+   "must": false,
+   "params": {
+    "vk0": 9.499079742045058,
+    "vkr0": 1.0017368878650523,
+    "si0": 0.5558020940677095,
+    "RN": 169.2481698538488,
+    "XN": 27.86883497333697,
+    "ssc": 2414.6968280590777,
+    "x0x": 2.81789249024484,
+    "x0x2": 0.7673564826529737,
+    "hv": 127.55017508224039,
+    "lv": 49.76963683425596,
+    "sn": 1.7772016445917775
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.0309183545105793,
+     "exp": 0.03160796454610036,
+     "resid": 0.02181760342445538,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 20,
+   "must": false,
+   "params": {
+    "vk0": 8.379274797025785,
+    "vkr0": 0.5884617980054493,
+    "si0": 0.5421330115419801,
+    "RN": 103.69859410781888,
+    "XN": 31.932635215784327,
+    "ssc": 9609.165297107851,
+    "x0x": 1.3148314278790996,
+    "x0x2": 2.827817518401575,
+    "hv": 49.09095116582008,
+    "lv": 35.05254192002999,
+    "sn": 0.7990304551182374
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.021887096409023386,
+     "exp": 0.02226135396464095,
+     "resid": 0.016811985300266175,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 21,
+   "must": false,
+   "params": {
+    "vk0": 7.871352972282884,
+    "vkr0": 0.3440150682223851,
+    "si0": 0.9464257181972728,
+    "RN": 18.724243067918888,
+    "XN": 7.434054440759979,
+    "ssc": 1717.9042591981888,
+    "x0x": 2.0526286225254395,
+    "x0x2": 0.8928116459553399,
+    "hv": 118.2005432068195,
+    "lv": 52.086980898432664,
+    "sn": 0.24726261641422226
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.02451769437709994,
+     "exp": 0.0330796756872835,
+     "resid": 0.25882905839596715,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 22,
+   "must": false,
+   "params": {
+    "vk0": 4.989454861137941,
+    "vkr0": 0.8292247883051072,
+    "si0": 0.6435769362114441,
+    "RN": 158.17822365919335,
+    "XN": 33.42671872964942,
+    "ssc": 9218.66862534766,
+    "x0x": 2.4557274524561903,
+    "x0x2": 1.3247753898011776,
+    "hv": 88.04435326497115,
+    "lv": 87.96470763055369,
+    "sn": 1.958571381766011
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.05309880127056428,
+     "exp": 0.0558650923926556,
+     "resid": 0.04951734622844717,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 24,
+   "must": false,
+   "params": {
+    "vk0": 13.282427869907448,
+    "vkr0": 0.8090494362796506,
+    "si0": 0.8031119719075374,
+    "RN": 37.13132544267563,
+    "XN": 47.61857666432324,
+    "ssc": 7687.320240533218,
+    "x0x": 0.8376249488222299,
+    "x0x2": 2.149484792425373,
+    "hv": 112.22922257125475,
+    "lv": 47.926976336537514,
+    "sn": 2.317031471083323
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.029963932224229883,
+     "exp": 0.030437717958279237,
+     "resid": 0.015565744274875226,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 25,
+   "must": false,
+   "params": {
+    "vk0": 11.100695961720012,
+    "vkr0": 0.3974020652241463,
+    "si0": 0.8298014403114641,
+    "RN": 187.24718658302203,
+    "XN": 33.72396402473184,
+    "ssc": 3989.2015400105465,
+    "x0x": 2.929385208232513,
+    "x0x2": 0.6636647064154193,
+    "hv": 87.86793839187963,
+    "lv": 68.24352238386733,
+    "sn": 2.2947096963278533
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.04199550423423795,
+     "exp": 0.04334045762065147,
+     "resid": 0.031032283927077242,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 27,
+   "must": false,
+   "params": {
+    "vk0": 5.456431965680926,
+    "vkr0": 1.3282737319421285,
+    "si0": 0.5930661929800808,
+    "RN": 16.026445067571117,
+    "XN": 41.070716917417876,
+    "ssc": 850.4190041006651,
+    "x0x": 1.1587192992218682,
+    "x0x2": 2.5956336765990553,
+    "hv": 124.89658285213751,
+    "lv": 120.30151607706756,
+    "sn": 1.996801304185335
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.06532247812649358,
+     "exp": 0.07640172396011656,
+     "resid": 0.14501303451485725,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 28,
+   "must": false,
+   "params": {
+    "vk0": 4.898907580733067,
+    "vkr0": 1.3182541112290833,
+    "si0": 0.5256170914356743,
+    "RN": 156.53133445087246,
+    "XN": 23.678861870452828,
+    "ssc": 6472.44939801456,
+    "x0x": 2.3764462888301483,
+    "x0x2": 1.4747215224434724,
+    "hv": 72.92830251048917,
+    "lv": 57.742371090801775,
+    "sn": 0.34231363014372046
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.02997663994058127,
+     "exp": 0.03667133084221384,
+     "resid": 0.18255925672394868,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 29,
+   "must": false,
+   "params": {
+    "vk0": 11.622152306319096,
+    "vkr0": 1.0359004726659717,
+    "si0": 0.6587345150440087,
+    "RN": 82.5725001132424,
+    "XN": 35.63423062098743,
+    "ssc": 9915.795528576818,
+    "x0x": 1.5796989290158305,
+    "x0x2": 1.0261097172716016,
+    "hv": 123.82901932932185,
+    "lv": 23.62527508804724,
+    "sn": 0.2902538966773748
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.01439344886847287,
+     "exp": 0.015004064824939338,
+     "resid": 0.04069670209978826,
+     "tol": null
+    }
+   ],
+   "fails": []
+  },
+  {
+   "branch": "Dyn_radial[max,inv=True]",
+   "idx": 35,
+   "must": false,
+   "params": {
+    "vk0": 8.36564205968525,
+    "vkr0": 1.3278932658570788,
+    "si0": 0.8869754959503304,
+    "RN": 74.88740578985575,
+    "XN": 33.18906966643381,
+    "ssc": 8980.584103018617,
+    "x0x": 2.800741033251042,
+    "x0x2": 2.6916327273537313,
+    "hv": 76.02514499445142,
+    "lv": 55.38656630350599,
+    "sn": 0.864850660580153
+   },
+   "n_bad_checks": 1,
+   "bad_checks": [
+    {
+     "name": "I2.asymptote_RN1000<1%[Dyn_lv]",
+     "ok": false,
+     "obs": 0.03236385966382786,
+     "exp": 0.035175193861300066,
+     "resid": 0.07992377266085937,
+     "tol": null
+    }
+   ],
+   "fails": []
+  }
+ ],
+ "records_sample": [
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 0,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5192005629294357e-13,
+     "Z0_p": [
+      5.988340397228216,
+      59.88340397228213
+     ],
+     "Z0_branch": [
+      1.5466492862155503,
+      12.074385363781094
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 1,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.8273361739965754e-12,
+     "Z0_p": [
+      0.18823213938962643,
+      1.8823213938962606
+     ],
+     "Z0_branch": [
+      0.3780927422583096,
+      4.648028234797783
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 2,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.8860995109051995e-11,
+     "Z0_p": [
+      0.08747913194910271,
+      0.8747913194910273
+     ],
+     "Z0_branch": [
+      0.02179487559522935,
+      0.1478140191821668
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 3,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.0605455752902917e-10,
+     "Z0_p": [
+      0.035151465158315034,
+      0.35151465158314893
+     ],
+     "Z0_branch": [
+      1.0913187708176124,
+      6.831064954149069
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 4,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4468929996314283e-11,
+     "Z0_p": [
+      1.0812776973962568,
+      10.812776973962578
+     ],
+     "Z0_branch": [
+      1.625227219411846,
+      9.376437377581672
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 5,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.9219368326501753e-14,
+     "Z0_p": [
+      2.616561552686508,
+      26.165615526865075
+     ],
+     "Z0_branch": [
+      1.329081149688633,
+      12.541249051095848
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 6,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5187088215087903e-10,
+     "Z0_p": [
+      0.2825399568857876,
+      2.825399568857863
+     ],
+     "Z0_branch": [
+      1.6635061759331156,
+      28.14854419369346
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 7,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.7851973816142535e-11,
+     "Z0_p": [
+      0.0633231774382963,
+      0.6332317743829631
+     ],
+     "Z0_branch": [
+      0.2791672935951442,
+      2.613001357015956
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 8,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.303647544146047e-14,
+     "Z0_p": [
+      12.595413387938738,
+      125.95413387938738
+     ],
+     "Z0_branch": [
+      1.755856373800132,
+      23.30338160991613
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 9,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.250107184993778e-13,
+     "Z0_p": [
+      1.3036559662116645,
+      13.036559662116655
+     ],
+     "Z0_branch": [
+      4.086050359742624,
+      65.74005177370617
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 10,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.2815919102545109e-12,
+     "Z0_p": [
+      2.280191101033086,
+      22.801911010330848
+     ],
+     "Z0_branch": [
+      1.870908969548415,
+      15.022243632006552
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 11,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.3869795029440866e-13,
+     "Z0_p": [
+      7.345522273806892,
+      73.45522273806897
+     ],
+     "Z0_branch": [
+      1.7900475444445945,
+      7.8337879352484965
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 12,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.6288024417839525e-10,
+     "Z0_p": [
+      0.10599790303679728,
+      1.0599790303679784
+     ],
+     "Z0_branch": [
+      0.9512596804884125,
+      31.109686342769173
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 13,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.2754401705733783e-13,
+     "Z0_p": [
+      4.68233614944912,
+      46.82336149449122
+     ],
+     "Z0_branch": [
+      9.124111345844334,
+      70.09609155168107
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 14,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.466250778821139e-12,
+     "Z0_p": [
+      0.46652599355374447,
+      4.66525993553744
+     ],
+     "Z0_branch": [
+      0.9507870301207609,
+      4.1817802848804035
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 15,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.485971076978422e-10,
+     "Z0_p": [
+      0.09765218922234167,
+      0.9765218922234201
+     ],
+     "Z0_branch": [
+      1.388409000858461,
+      10.428861882108539
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 16,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.466296606734034e-09,
+     "Z0_p": [
+      0.024774627889040026,
+      0.24774627889039907
+     ],
+     "Z0_branch": [
+      0.26272319628614754,
+      3.005714249240384
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 17,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.118749489136668e-10,
+     "Z0_p": [
+      0.1573149868965616,
+      1.5731498689656154
+     ],
+     "Z0_branch": [
+      4.407837289102696,
+      50.87585615802855
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 18,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.750140444603129e-11,
+     "Z0_p": [
+      0.5559210496767837,
+      5.55921049676785
+     ],
+     "Z0_branch": [
+      0.5905302800401309,
+      22.325679278453567
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 19,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5822720336930235e-11,
+     "Z0_p": [
+      0.3037570750353311,
+      3.0375707503532996
+     ],
+     "Z0_branch": [
+      3.2585481435689214,
+      53.55588285771584
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 20,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.089417419178322e-11,
+     "Z0_p": [
+      0.08689504285240746,
+      0.8689504285240742
+     ],
+     "Z0_branch": [
+      0.21719693518554736,
+      2.4549991794262382
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 21,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.143804913744519e-11,
+     "Z0_p": [
+      0.07553671342179027,
+      0.7553671342179039
+     ],
+     "Z0_branch": [
+      0.17120801274239478,
+      0.8585074823639722
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 22,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.769523689830421e-09,
+     "Z0_p": [
+      0.047163486459140015,
+      0.4716348645914101
+     ],
+     "Z0_branch": [
+      1.117112503826477,
+      11.864582909055358
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 23,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.2329780227437984e-12,
+     "Z0_p": [
+      0.7881200118230973,
+      7.8812001182309706
+     ],
+     "Z0_branch": [
+      1.782936036182744,
+      17.46766658774563
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 24,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.525431858185029e-11,
+     "Z0_p": [
+      0.2942011710647583,
+      2.9420117106475843
+     ],
+     "Z0_branch": [
+      0.5884557748202416,
+      4.347768670481357
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 25,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.744874325133077e-13,
+     "Z0_p": [
+      0.8304658552429398,
+      8.304658552429402
+     ],
+     "Z0_branch": [
+      1.4037428153820772,
+      13.045305622383205
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 26,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4691121474352785e-12,
+     "Z0_p": [
+      0.8477904617473813,
+      8.477904617473818
+     ],
+     "Z0_branch": [
+      0.2625444802012318,
+      2.0086174358412427
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 27,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.2106172324031485e-13,
+     "Z0_p": [
+      0.7724730174730998,
+      7.724730174730995
+     ],
+     "Z0_branch": [
+      0.4942326365309479,
+      9.580192052107618
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 28,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.8216117704116654e-13,
+     "Z0_p": [
+      2.4528180032509166,
+      24.52818003250917
+     ],
+     "Z0_branch": [
+      0.7992817484727086,
+      9.500253791521796
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 29,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.351510852516127e-10,
+     "Z0_p": [
+      0.09552823818029978,
+      0.9552823818030027
+     ],
+     "Z0_branch": [
+      0.31660967780102534,
+      6.999504639592917
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 30,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5984684980784363e-12,
+     "Z0_p": [
+      0.8952978796836382,
+      8.952978796836382
+     ],
+     "Z0_branch": [
+      4.140691774212989,
+      35.6463726724601
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 31,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.986142935647668e-13,
+     "Z0_p": [
+      7.624775604324511,
+      76.24775604324502
+     ],
+     "Z0_branch": [
+      12.508137538750008,
+      57.41821534130166
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 32,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.740210805433996e-13,
+     "Z0_p": [
+      1.2082238658516027,
+      12.082238658516035
+     ],
+     "Z0_branch": [
+      2.5164288723862906,
+      7.341305159978539
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 33,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.476297766425768e-12,
+     "Z0_p": [
+      0.6647920811460457,
+      6.647920811460453
+     ],
+     "Z0_branch": [
+      0.9293963328749759,
+      8.3582291135364
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 34,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.1579559082508663e-09,
+     "Z0_p": [
+      0.021233064521406032,
+      0.21233064521406145
+     ],
+     "Z0_branch": [
+      0.5165171245331985,
+      6.244459283277651
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 35,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.7930338223962958e-12,
+     "Z0_p": [
+      0.9974592534188973,
+      9.974592534188973
+     ],
+     "Z0_branch": [
+      0.5546079971248298,
+      8.413513926995149
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 36,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.4437948586559368e-12,
+     "Z0_p": [
+      0.9549730356247013,
+      9.549730356247029
+     ],
+     "Z0_branch": [
+      0.6709178183069858,
+      7.266490610414239
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 37,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.535145288074456e-11,
+     "Z0_p": [
+      0.32668868399451717,
+      3.266886839945167
+     ],
+     "Z0_branch": [
+      3.5557218870046663,
+      46.39926306163197
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 38,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.851998504119596e-12,
+     "Z0_p": [
+      0.634076585858051,
+      6.340765858580507
+     ],
+     "Z0_branch": [
+      1.5752180961197269,
+      18.68768777560798
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 39,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.320245082937922e-11,
+     "Z0_p": [
+      0.17412581002660674,
+      1.7412581002660574
+     ],
+     "Z0_branch": [
+      4.444240566303911,
+      39.73017745922633
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 40,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.688108615614071e-10,
+     "Z0_p": [
+      0.14792202649075967,
+      1.4792202649075976
+     ],
+     "Z0_branch": [
+      0.8876967014296493,
+      22.479582022851602
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 41,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.3267197661223126e-13,
+     "Z0_p": [
+      1.9204336337113934,
+      19.204336337113936
+     ],
+     "Z0_branch": [
+      2.21752189502529,
+      20.33289247304447
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 42,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.7810138052029474e-11,
+     "Z0_p": [
+      0.42706958338849016,
+      4.270695833884889
+     ],
+     "Z0_branch": [
+      1.934617968487304,
+      33.18577664513014
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 43,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.0960804325913178e-11,
+     "Z0_p": [
+      0.21289789378680263,
+      2.128978937868027
+     ],
+     "Z0_branch": [
+      1.8430372460500586,
+      21.5546156187287
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 44,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4847200371454315e-10,
+     "Z0_p": [
+      0.10429463073401768,
+      1.0429463073401737
+     ],
+     "Z0_branch": [
+      0.672941275707845,
+      11.708997713612751
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 45,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.5515636257896244e-11,
+     "Z0_p": [
+      0.5928103467568206,
+      5.928103467568178
+     ],
+     "Z0_branch": [
+      13.206856411769065,
+      91.03824396372762
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 46,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5871489906466166e-12,
+     "Z0_p": [
+      0.40693521296578944,
+      4.069352129657905
+     ],
+     "Z0_branch": [
+      0.8767916117863974,
+      18.618667422366695
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 47,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0027433480033864e-10,
+     "Z0_p": [
+      0.3375312648754342,
+      3.37531264875432
+     ],
+     "Z0_branch": [
+      4.942467568921545,
+      74.53634598456608
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 48,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.342668214455492e-13,
+     "Z0_p": [
+      3.6543007013073954,
+      36.54300701307395
+     ],
+     "Z0_branch": [
+      1.2550028264880242,
+      11.33335421809879
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 49,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.1551254055423164e-11,
+     "Z0_p": [
+      0.04981023871319177,
+      0.49810238713192195
+     ],
+     "Z0_branch": [
+      0.6532995221408157,
+      7.416847670276825
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 50,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.9891643216100996e-09,
+     "Z0_p": [
+      0.026733825555133803,
+      0.2673382555513396
+     ],
+     "Z0_branch": [
+      0.643599228517918,
+      8.15238595227091
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 51,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.958352642399265e-13,
+     "Z0_p": [
+      1.6686592444872954,
+      16.68659244487292
+     ],
+     "Z0_branch": [
+      2.430052902569548,
+      43.10339658564056
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 52,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.407454292759237e-12,
+     "Z0_p": [
+      1.4988741568855914,
+      14.988741568855922
+     ],
+     "Z0_branch": [
+      2.951267921137778,
+      13.074390301642884
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 53,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0979998871176074e-11,
+     "Z0_p": [
+      0.4845007691888103,
+      4.845007691888087
+     ],
+     "Z0_branch": [
+      4.053403602391352,
+      31.202850318484437
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 54,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.111542971909042e-09,
+     "Z0_p": [
+      0.029444355150635967,
+      0.29444355150636237
+     ],
+     "Z0_branch": [
+      1.475773514826727,
+      11.855219619835848
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 55,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.9992222208109156e-14,
+     "Z0_p": [
+      7.363658252008585,
+      73.63658252008587
+     ],
+     "Z0_branch": [
+      0.8912336458120717,
+      9.30362873651802
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 56,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.065264971502149e-12,
+     "Z0_p": [
+      0.2324852399963324,
+      2.324852399963322
+     ],
+     "Z0_branch": [
+      0.6133428337181039,
+      16.660908379583756
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 57,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.685570825498368e-11,
+     "Z0_p": [
+      0.20805206663795967,
+      2.080520666379598
+     ],
+     "Z0_branch": [
+      0.48916105791850656,
+      2.065988470516705
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 58,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.71679832765233e-11,
+     "Z0_p": [
+      0.2000946862582513,
+      2.000946862582515
+     ],
+     "Z0_branch": [
+      0.5125195878983964,
+      8.928872513022448
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 59,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.978048632465206e-13,
+     "Z0_p": [
+      1.2503506385236183,
+      12.50350638523618
+     ],
+     "Z0_branch": [
+      1.396598445605216,
+      9.422802893093781
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 60,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.6010986986678725e-09,
+     "Z0_p": [
+      0.09610267515683137,
+      0.9610267515683144
+     ],
+     "Z0_branch": [
+      4.976036219162004,
+      34.581536376582534
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 61,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.2537606654212894e-09,
+     "Z0_p": [
+      0.15049173289901951,
+      1.5049173289901578
+     ],
+     "Z0_branch": [
+      2.392333330785761,
+      63.76154123183449
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 62,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.061177969685542e-11,
+     "Z0_p": [
+      0.22800366709321135,
+      2.280036670932119
+     ],
+     "Z0_branch": [
+      1.6349781692267902,
+      31.188309214921635
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 63,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.319723484260163e-12,
+     "Z0_p": [
+      2.932783198327039,
+      29.327831983270407
+     ],
+     "Z0_branch": [
+      1.7464613720602098,
+      19.03291689556774
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 64,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.738762971559752e-11,
+     "Z0_p": [
+      0.36575166766558687,
+      3.657516676655833
+     ],
+     "Z0_branch": [
+      4.528702099229967,
+      121.74632403706198
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 65,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.709719108923286e-11,
+     "Z0_p": [
+      0.4046670225124827,
+      4.046670225124794
+     ],
+     "Z0_branch": [
+      0.9294429981805681,
+      21.40952904037233
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 66,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.8532306178834624e-12,
+     "Z0_p": [
+      1.3548877212551607,
+      13.548877212551634
+     ],
+     "Z0_branch": [
+      3.2424155012799023,
+      29.562450429882034
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 67,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.989938784819326e-11,
+     "Z0_p": [
+      0.024389246832665364,
+      0.2438924683266538
+     ],
+     "Z0_branch": [
+      0.06592806908737024,
+      0.8659852016408044
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 68,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.667757389375155e-11,
+     "Z0_p": [
+      0.4487197428702694,
+      4.48719742870272
+     ],
+     "Z0_branch": [
+      5.109350382606295,
+      53.459931139607654
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 69,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.80886386006055e-11,
+     "Z0_p": [
+      0.06523236403806273,
+      0.6523236403806291
+     ],
+     "Z0_branch": [
+      0.17055236493406434,
+      3.0927745606252337
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 70,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.57563038785825e-10,
+     "Z0_p": [
+      0.0526876063846118,
+      0.5268760638461185
+     ],
+     "Z0_branch": [
+      0.5150898066648443,
+      3.4991460449765035
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 71,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.104412701958751e-12,
+     "Z0_p": [
+      0.841284618850045,
+      8.412846188500453
+     ],
+     "Z0_branch": [
+      0.5052553270664767,
+      16.485244766130652
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 72,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.087121954040604e-11,
+     "Z0_p": [
+      0.01350578798488726,
+      0.13505787984887271
+     ],
+     "Z0_branch": [
+      0.024408769259045233,
+      0.1520338464612464
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 73,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.012385419733137e-13,
+     "Z0_p": [
+      0.5404052890484682,
+      5.404052890484674
+     ],
+     "Z0_branch": [
+      4.24353700248989,
+      41.82907422223245
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 74,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.829711082267508e-13,
+     "Z0_p": [
+      0.5532529047658349,
+      5.532529047658348
+     ],
+     "Z0_branch": [
+      0.5067383867329684,
+      21.80258545438632
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 75,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.322717015694746e-11,
+     "Z0_p": [
+      0.12906529746625667,
+      1.2906529746625655
+     ],
+     "Z0_branch": [
+      0.8463273629953907,
+      18.022230768361208
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 76,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.109660643392483e-12,
+     "Z0_p": [
+      1.7918501280755037,
+      17.918501280755045
+     ],
+     "Z0_branch": [
+      7.994180507196665,
+      27.716019185785186
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 77,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.482676130430939e-12,
+     "Z0_p": [
+      3.3079298225883784,
+      33.079298225883775
+     ],
+     "Z0_branch": [
+      1.5436341628132197,
+      23.148829358386354
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 78,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.022229327299272e-12,
+     "Z0_p": [
+      0.7493864337846401,
+      7.493864337846438
+     ],
+     "Z0_branch": [
+      3.2432372069350035,
+      45.591719431257594
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 79,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.715476560849728e-11,
+     "Z0_p": [
+      0.4565473513869347,
+      4.565473513869327
+     ],
+     "Z0_branch": [
+      2.763208646790858,
+      29.188757586769665
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 80,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.080504779924088e-13,
+     "Z0_p": [
+      2.2171412873225065,
+      22.17141287322503
+     ],
+     "Z0_branch": [
+      2.554546267820191,
+      27.922988906772705
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 81,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.8155264660194695e-13,
+     "Z0_p": [
+      0.1993726586096207,
+      1.9937265860962003
+     ],
+     "Z0_branch": [
+      0.9300223646563752,
+      6.126984637106277
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 82,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.2144887558430926e-12,
+     "Z0_p": [
+      0.3069481520837265,
+      3.0694815208372708
+     ],
+     "Z0_branch": [
+      0.9881370849952801,
+      11.673708049419206
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 83,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4965953409369108e-10,
+     "Z0_p": [
+      0.016303122175882128,
+      0.16303122175882193
+     ],
+     "Z0_branch": [
+      0.2933681962161911,
+      1.3627870645279527
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 84,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4205976156311492e-11,
+     "Z0_p": [
+      0.39901065218923304,
+      3.9901065218923324
+     ],
+     "Z0_branch": [
+      1.5526048568748732,
+      10.911231667792293
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 85,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.73393313753663e-09,
+     "Z0_p": [
+      0.022068120897223664,
+      0.22068120897223917
+     ],
+     "Z0_branch": [
+      0.26036937519374986,
+      3.4777212633950216
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 86,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.9056010957116712e-10,
+     "Z0_p": [
+      0.41844826524201884,
+      4.1844826524201695
+     ],
+     "Z0_branch": [
+      4.885491627937162,
+      54.9050266729236
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 87,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.7091327586336498e-12,
+     "Z0_p": [
+      0.5207681521668843,
+      5.20768152166885
+     ],
+     "Z0_branch": [
+      0.4298065102163474,
+      14.896849361430688
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 88,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.702374710257214e-12,
+     "Z0_p": [
+      1.1077107532347195,
+      11.077107532347176
+     ],
+     "Z0_branch": [
+      8.680279205371521,
+      90.19410324406947
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 89,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.49232807347714e-13,
+     "Z0_p": [
+      9.667668835128397,
+      96.67668835128397
+     ],
+     "Z0_branch": [
+      5.8044155959992105,
+      64.86298366236832
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 90,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.916481573953964e-12,
+     "Z0_p": [
+      0.21627185780434913,
+      2.1627185780434903
+     ],
+     "Z0_branch": [
+      0.3712005299305727,
+      4.0214038246956045
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 91,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0335646383061663e-10,
+     "Z0_p": [
+      0.5347453202300688,
+      5.3474532023006605
+     ],
+     "Z0_branch": [
+      6.025944200588598,
+      54.41236008437069
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 92,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.821528988253548e-10,
+     "Z0_p": [
+      0.18738689258494493,
+      1.8738689258494186
+     ],
+     "Z0_branch": [
+      4.04527428394054,
+      37.52048217194291
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 93,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4093739075075134e-12,
+     "Z0_p": [
+      0.5286873100132669,
+      5.2868731001326665
+     ],
+     "Z0_branch": [
+      0.6817604581229607,
+      11.63800333211086
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 94,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.2846664873505238e-10,
+     "Z0_p": [
+      0.12302260894616877,
+      1.2302260894616943
+     ],
+     "Z0_branch": [
+      1.073304375650616,
+      8.283421999675609
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 95,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.853526177917377e-10,
+     "Z0_p": [
+      0.015648727685499873,
+      0.15648727685499805
+     ],
+     "Z0_branch": [
+      0.2152019664587098,
+      0.9712975718163221
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 96,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.131592708317956e-11,
+     "Z0_p": [
+      0.12961128335648414,
+      1.296112833564841
+     ],
+     "Z0_branch": [
+      0.22959414889954802,
+      3.2384890928526717
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 97,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.1397760645998538e-11,
+     "Z0_p": [
+      0.1127162069454664,
+      1.1271620694546638
+     ],
+     "Z0_branch": [
+      0.07486576991147892,
+      0.792233685226713
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 98,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.649098497023709e-12,
+     "Z0_p": [
+      0.37520005766157444,
+      3.7520005766157456
+     ],
+     "Z0_branch": [
+      0.17033455350672372,
+      1.910186294140774
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 99,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.8902751302832867e-10,
+     "Z0_p": [
+      0.14762785896614658,
+      1.476278589661471
+     ],
+     "Z0_branch": [
+      0.443338715017136,
+      5.613704281078652
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 100,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.692198068106787e-13,
+     "Z0_p": [
+      0.04061294154651289,
+      0.40612941546512876
+     ],
+     "Z0_branch": [
+      0.14789860541275726,
+      1.365737385317967
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 101,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.374057091670173e-11,
+     "Z0_p": [
+      0.24324394170095448,
+      2.4324394170095394
+     ],
+     "Z0_branch": [
+      0.8334952594070053,
+      6.556423541879525
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 102,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.667991968544329e-11,
+     "Z0_p": [
+      0.24201271980279515,
+      2.420127198027951
+     ],
+     "Z0_branch": [
+      4.130669182210472,
+      15.957047123155492
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 103,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.8999781449335727e-11,
+     "Z0_p": [
+      0.543414872552356,
+      5.434148725523557
+     ],
+     "Z0_branch": [
+      0.4097400506454822,
+      12.065623301397677
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 104,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0037979433485399e-11,
+     "Z0_p": [
+      0.3780892265048452,
+      3.7808922650484473
+     ],
+     "Z0_branch": [
+      1.3225543951281498,
+      14.602404886982923
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 105,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.122453814266781e-11,
+     "Z0_p": [
+      0.1574274214400251,
+      1.5742742144002526
+     ],
+     "Z0_branch": [
+      1.3938699418262108,
+      5.343632719011843
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 106,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0658411418537683e-12,
+     "Z0_p": [
+      0.4853966941766491,
+      4.853966941766486
+     ],
+     "Z0_branch": [
+      1.043865906473821,
+      8.727017619552866
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 107,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.859058302292555e-13,
+     "Z0_p": [
+      0.12919994367587267,
+      1.2919994367587297
+     ],
+     "Z0_branch": [
+      0.5939243932253855,
+      15.315537848130877
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 108,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.930522338975551e-11,
+     "Z0_p": [
+      0.18959170039517045,
+      1.8959170039516975
+     ],
+     "Z0_branch": [
+      1.321695487670232,
+      9.474599244156716
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 109,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0110493829083116e-11,
+     "Z0_p": [
+      0.5927402925424812,
+      5.927402925424813
+     ],
+     "Z0_branch": [
+      15.976571127726423,
+      89.77567467276081
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 110,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.906177602158469e-12,
+     "Z0_p": [
+      0.6233818034058789,
+      6.233818034058786
+     ],
+     "Z0_branch": [
+      2.5563842639683143,
+      13.051098095723809
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 111,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.2143867694516715e-10,
+     "Z0_p": [
+      0.21337491192778435,
+      2.1337491192778217
+     ],
+     "Z0_branch": [
+      2.477384942708,
+      30.849399719023804
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 112,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.3626243052243324e-11,
+     "Z0_p": [
+      0.26890935874577476,
+      2.689093587457744
+     ],
+     "Z0_branch": [
+      0.8036406065300065,
+      10.987698098630732
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 113,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.017944496945063e-13,
+     "Z0_p": [
+      8.413587809284017,
+      84.13587809284013
+     ],
+     "Z0_branch": [
+      4.3432257634507305,
+      109.46125725937463
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 114,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.985404048230385e-11,
+     "Z0_p": [
+      0.27952459573909405,
+      2.7952459573909736
+     ],
+     "Z0_branch": [
+      2.65063825141146,
+      33.621098765207435
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 115,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.772245199399989e-11,
+     "Z0_p": [
+      0.0915345734752165,
+      0.9153457347521611
+     ],
+     "Z0_branch": [
+      0.5402610250529518,
+      5.823463710801811
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 116,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.047449925370785e-12,
+     "Z0_p": [
+      0.3022076224355523,
+      3.0220762243555224
+     ],
+     "Z0_branch": [
+      1.7413515787455587,
+      12.964678475466947
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 117,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.4967854514352747e-11,
+     "Z0_p": [
+      0.13671813980018416,
+      1.3671813980018428
+     ],
+     "Z0_branch": [
+      0.6766533830769786,
+      7.562371250364812
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 118,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.6791182016159072e-10,
+     "Z0_p": [
+      0.06615367640830674,
+      0.6615367640830655
+     ],
+     "Z0_branch": [
+      0.7937733961110245,
+      9.689611705100935
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 119,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.8387265493550972e-11,
+     "Z0_p": [
+      0.3066406786607853,
+      3.066406786607851
+     ],
+     "Z0_branch": [
+      0.6230098953986222,
+      3.734097877458734
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 120,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.976120145122787e-11,
+     "Z0_p": [
+      0.2213605245252918,
+      2.2136052452529147
+     ],
+     "Z0_branch": [
+      6.899791454767503,
+      54.708855849905405
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 121,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.366749353314808e-10,
+     "Z0_p": [
+      0.15789394398880457,
+      1.57893943988805
+     ],
+     "Z0_branch": [
+      1.2591767289465645,
+      11.986777839039881
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 122,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.132883900838997e-11,
+     "Z0_p": [
+      0.5660670799061517,
+      5.660670799061493
+     ],
+     "Z0_branch": [
+      1.441041460938965,
+      26.831998269248135
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 123,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.782691315669586e-12,
+     "Z0_p": [
+      0.6333990788565365,
+      6.333990788565358
+     ],
+     "Z0_branch": [
+      3.523296840010859,
+      29.21235711909291
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 124,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.603851569121162e-13,
+     "Z0_p": [
+      0.5500183052574391,
+      5.500183052574384
+     ],
+     "Z0_branch": [
+      2.2146696526877734,
+      27.17077913899544
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 125,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.8510593672978216e-11,
+     "Z0_p": [
+      0.17751801858427485,
+      1.77518018584273
+     ],
+     "Z0_branch": [
+      10.904926478478183,
+      85.68305385743474
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 126,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.672829431411506e-10,
+     "Z0_p": [
+      0.006801742810286819,
+      0.06801742810286816
+     ],
+     "Z0_branch": [
+      0.03456079766475604,
+      0.5195334715286213
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 127,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.1143279719379352e-11,
+     "Z0_p": [
+      0.2449156537962395,
+      2.4491565379623954
+     ],
+     "Z0_branch": [
+      0.6298566764477335,
+      4.934511870060052
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 128,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.143213247688892e-13,
+     "Z0_p": [
+      1.3236137489061233,
+      13.236137489061246
+     ],
+     "Z0_branch": [
+      3.8892108028196732,
+      32.29412203562554
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 129,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.088098464202266e-11,
+     "Z0_p": [
+      0.045857570200928656,
+      0.4585757020092841
+     ],
+     "Z0_branch": [
+      0.27445553319619487,
+      3.710817351388263
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 130,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.99089885385617e-10,
+     "Z0_p": [
+      0.02820471625789567,
+      0.28204716257895707
+     ],
+     "Z0_branch": [
+      0.0829998001033883,
+      1.5700610915630469
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 131,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.002776019307955e-12,
+     "Z0_p": [
+      1.904949424178109,
+      19.049494241781147
+     ],
+     "Z0_branch": [
+      6.391575234358469,
+      35.74309627246791
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 132,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.640047535341076e-13,
+     "Z0_p": [
+      1.293647029400309,
+      12.936470294003094
+     ],
+     "Z0_branch": [
+      0.9637135890595423,
+      8.337966706222526
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 133,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.219129136171039e-13,
+     "Z0_p": [
+      0.43530337077838305,
+      4.353033707783834
+     ],
+     "Z0_branch": [
+      1.877645658760029,
+      18.035072140823676
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 134,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.1812191765031387e-09,
+     "Z0_p": [
+      0.07455488081646804,
+      0.7455488081646842
+     ],
+     "Z0_branch": [
+      1.1222469578083807,
+      13.587786328806182
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 135,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.9997190356549707e-11,
+     "Z0_p": [
+      0.6274660455704661,
+      6.274660455704672
+     ],
+     "Z0_branch": [
+      1.1208020799004355,
+      12.867696650339955
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 136,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4673316069624667e-09,
+     "Z0_p": [
+      0.035581400927016206,
+      0.3558140092701564
+     ],
+     "Z0_branch": [
+      0.8322454847498051,
+      7.4664771757131305
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 137,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.124591818382377e-10,
+     "Z0_p": [
+      0.1567373964134666,
+      1.5673739641346665
+     ],
+     "Z0_branch": [
+      0.38097856899104215,
+      11.088019959393941
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 138,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.8115006028661806e-10,
+     "Z0_p": [
+      0.21494609922151553,
+      2.149460992215203
+     ],
+     "Z0_branch": [
+      3.8530131887749968,
+      96.17267690694969
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 139,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.477317554584828e-13,
+     "Z0_p": [
+      0.5307425678020089,
+      5.3074256780200875
+     ],
+     "Z0_branch": [
+      1.6066050798783742,
+      14.552767329311948
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 140,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5202154822859582e-11,
+     "Z0_p": [
+      0.3598574588564444,
+      3.598574588564444
+     ],
+     "Z0_branch": [
+      1.068685333528691,
+      19.723196285477734
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 141,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.105255506876401e-12,
+     "Z0_p": [
+      0.8876275222268722,
+      8.876275222268704
+     ],
+     "Z0_branch": [
+      2.972793811641203,
+      28.40869629716874
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 142,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.20293081063038e-10,
+     "Z0_p": [
+      0.228810568295808,
+      2.2881056829580757
+     ],
+     "Z0_branch": [
+      0.9716595052686727,
+      9.060182740867747
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 143,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.556750862798263e-12,
+     "Z0_p": [
+      0.32657754336723177,
+      3.2657754336723257
+     ],
+     "Z0_branch": [
+      1.9487791717070233,
+      18.070495450321648
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 144,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.864503502098092e-13,
+     "Z0_p": [
+      0.2442584637793919,
+      2.4425846377939213
+     ],
+     "Z0_branch": [
+      0.33045081670862436,
+      2.275916956040366
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 145,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.0468484529517306e-11,
+     "Z0_p": [
+      0.4884229869563061,
+      4.88422986956306
+     ],
+     "Z0_branch": [
+      4.635897097166359,
+      31.65443517371096
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 146,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.803604127722166e-11,
+     "Z0_p": [
+      0.4645853818644044,
+      4.645853818644081
+     ],
+     "Z0_branch": [
+      5.877270672860202,
+      62.988891811039856
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 147,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.183285240398025e-12,
+     "Z0_p": [
+      0.40984599256386883,
+      4.098459925638663
+     ],
+     "Z0_branch": [
+      0.7045488961353512,
+      17.444352717864696
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 148,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.5409914479811757e-11,
+     "Z0_p": [
+      0.4039415630808345,
+      4.039415630808345
+     ],
+     "Z0_branch": [
+      0.9108884613972318,
+      16.080727977552844
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 149,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.083162828771954e-12,
+     "Z0_p": [
+      0.6323965487450657,
+      6.323965487450658
+     ],
+     "Z0_branch": [
+      1.2085129890013853,
+      14.483129745020378
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 150,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.756543422264877e-11,
+     "Z0_p": [
+      0.28771053521499135,
+      2.877105352149914
+     ],
+     "Z0_branch": [
+      0.7928481751073948,
+      8.521780495861742
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 151,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.524328653824189e-11,
+     "Z0_p": [
+      0.2669803497186565,
+      2.6698034971865723
+     ],
+     "Z0_branch": [
+      1.590808247262737,
+      16.40130498063334
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 152,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.9063880284757482e-11,
+     "Z0_p": [
+      0.9415861244098338,
+      9.415861244098318
+     ],
+     "Z0_branch": [
+      1.8515267839540626,
+      60.148756933192686
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 153,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.3278328395798688e-11,
+     "Z0_p": [
+      0.5506966618068774,
+      5.506966618068784
+     ],
+     "Z0_branch": [
+      3.2895091521381743,
+      23.549277520169767
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 154,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.5301724091589106e-10,
+     "Z0_p": [
+      0.22016658079411017,
+      2.2016658079411036
+     ],
+     "Z0_branch": [
+      2.9902072476624,
+      39.092508510414135
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 155,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.75012324209466e-11,
+     "Z0_p": [
+      0.07340956073977085,
+      0.7340956073977082
+     ],
+     "Z0_branch": [
+      0.31355755365247984,
+      4.190114381482047
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 156,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.161356180957645e-12,
+     "Z0_p": [
+      1.0298372420567896,
+      10.298372420567842
+     ],
+     "Z0_branch": [
+      4.859413073294849,
+      160.72766640879914
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 157,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.134635703699266e-12,
+     "Z0_p": [
+      0.6382222710542488,
+      6.382222710542487
+     ],
+     "Z0_branch": [
+      2.182894547767825,
+      21.652718023456085
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 158,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4541618447821847e-12,
+     "Z0_p": [
+      0.37853119396164403,
+      3.785311939616442
+     ],
+     "Z0_branch": [
+      0.4600717012860309,
+      11.328667087109745
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 159,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 8.103478521303028e-09,
+     "Z0_p": [
+      0.008368875898475436,
+      0.08368875898475459
+     ],
+     "Z0_branch": [
+      0.42693847235077076,
+      5.003436337825276
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 160,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.793010491419661e-12,
+     "Z0_p": [
+      0.6704112416272825,
+      6.7041124162728245
+     ],
+     "Z0_branch": [
+      0.266115639739582,
+      7.696041864480131
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 161,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.182643238487109e-11,
+     "Z0_p": [
+      0.2621909360538997,
+      2.621909360538986
+     ],
+     "Z0_branch": [
+      2.968850815528926,
+      19.200502210029853
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 162,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.186144158670699e-11,
+     "Z0_p": [
+      0.36870210236885104,
+      3.6870210236885153
+     ],
+     "Z0_branch": [
+      1.053830610201483,
+      13.811526906847812
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 163,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.494756107317927e-12,
+     "Z0_p": [
+      0.13242489655999604,
+      1.3242489655999596
+     ],
+     "Z0_branch": [
+      0.8031561753825976,
+      4.426236915147801
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 164,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0310433798687382e-11,
+     "Z0_p": [
+      0.3487366410118851,
+      3.487366410118845
+     ],
+     "Z0_branch": [
+      0.965825243580626,
+      8.995155404792124
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 165,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.4373105957372862e-11,
+     "Z0_p": [
+      0.4156271834657366,
+      4.156271834657367
+     ],
+     "Z0_branch": [
+      0.7692088812528659,
+      10.838486592301294
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 166,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.474774780638173e-11,
+     "Z0_p": [
+      0.19663054634269742,
+      1.9663054634269788
+     ],
+     "Z0_branch": [
+      2.588418189494768,
+      22.20118062493747
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 167,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.628265200606332e-11,
+     "Z0_p": [
+      0.2175028915480094,
+      2.175028915480107
+     ],
+     "Z0_branch": [
+      4.857291460040697,
+      63.694035927348686
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 168,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.023799883381087e-13,
+     "Z0_p": [
+      6.282054547053372,
+      62.82054547053355
+     ],
+     "Z0_branch": [
+      0.8031475328713399,
+      10.388074488022355
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 169,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 5.987043802990143e-11,
+     "Z0_p": [
+      0.0590085188681257,
+      0.5900851886812567
+     ],
+     "Z0_branch": [
+      0.8775512899524557,
+      3.1731515859998685
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 170,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.1682689220899495e-11,
+     "Z0_p": [
+      0.35372635906647865,
+      3.537263590664775
+     ],
+     "Z0_branch": [
+      1.9848887543415679,
+      38.373207529998375
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 171,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.8852712122484163e-13,
+     "Z0_p": [
+      0.1142543958449664,
+      1.1425439584496637
+     ],
+     "Z0_branch": [
+      0.9192177234086212,
+      7.171507891122043
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 172,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.4534379480721374e-10,
+     "Z0_p": [
+      0.02673201996453031,
+      0.2673201996453028
+     ],
+     "Z0_branch": [
+      0.19510077735767922,
+      1.0103038154946737
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 173,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.2823347273766384e-12,
+     "Z0_p": [
+      0.4250258654740147,
+      4.250258654740152
+     ],
+     "Z0_branch": [
+      1.9894746187907195,
+      19.430130449604782
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 174,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.833072761660136e-12,
+     "Z0_p": [
+      0.6119011114953011,
+      6.119011114953
+     ],
+     "Z0_branch": [
+      1.377232148113717,
+      13.248588753985128
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 175,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.23876344241552e-14,
+     "Z0_p": [
+      3.4996627625004133,
+      34.99662762500415
+     ],
+     "Z0_branch": [
+      2.4967826383188463,
+      30.245481718278654
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 176,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5782429069722957e-10,
+     "Z0_p": [
+      0.24927702470031116,
+      2.492770247003108
+     ],
+     "Z0_branch": [
+      2.3314119852495945,
+      34.91639957485032
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 177,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.184809236683607e-13,
+     "Z0_p": [
+      1.100546099820447,
+      11.005460998204475
+     ],
+     "Z0_branch": [
+      1.5606264183627303,
+      8.437069959516252
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 178,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.1723614581473773e-12,
+     "Z0_p": [
+      0.7497844795379153,
+      7.497844795379158
+     ],
+     "Z0_branch": [
+      1.6627019224700437,
+      9.672039199012163
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 179,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.5090294184049746e-11,
+     "Z0_p": [
+      0.0638588406499847,
+      0.6385884064998452
+     ],
+     "Z0_branch": [
+      1.106307871354473,
+      10.018633376057847
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 180,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.966158918227469e-12,
+     "Z0_p": [
+      2.062582767428343,
+      20.625827674283457
+     ],
+     "Z0_branch": [
+      4.9972422702253,
+      26.070257057129275
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 181,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.5186788970714727e-10,
+     "Z0_p": [
+      0.032454585552064,
+      0.32454585552063797
+     ],
+     "Z0_branch": [
+      0.541473195769303,
+      8.150531248914051
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 182,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.982610233000017e-11,
+     "Z0_p": [
+      0.6806959009152075,
+      6.80695900915206
+     ],
+     "Z0_branch": [
+      0.9942421280727515,
+      24.68406456583454
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 183,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.501915134433359e-11,
+     "Z0_p": [
+      0.2672600631818325,
+      2.67260063181833
+     ],
+     "Z0_branch": [
+      0.9816813855522174,
+      5.429026381400632
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 184,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0645502026181164e-11,
+     "Z0_p": [
+      0.2932555648802436,
+      2.9325556488024347
+     ],
+     "Z0_branch": [
+      3.318109610268873,
+      30.33824091593313
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 185,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.4401191133132647e-12,
+     "Z0_p": [
+      0.2330926836221649,
+      2.330926836221656
+     ],
+     "Z0_branch": [
+      1.25388646408605,
+      5.896119465100066
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 186,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.137234861669965e-12,
+     "Z0_p": [
+      0.6868105972247139,
+      6.868105972247136
+     ],
+     "Z0_branch": [
+      1.9623920760231197,
+      18.9423691358773
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 187,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.0763554256529804e-12,
+     "Z0_p": [
+      0.7280019396416852,
+      7.280019396416856
+     ],
+     "Z0_branch": [
+      3.6607557165873077,
+      27.58609608799323
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 188,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.2439838342042465e-11,
+     "Z0_p": [
+      0.10407670964517995,
+      1.0407670964518023
+     ],
+     "Z0_branch": [
+      3.105170284182583,
+      10.667479415794492
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 189,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 4.921915599491811e-10,
+     "Z0_p": [
+      0.07905191840482682,
+      0.7905191840482696
+     ],
+     "Z0_branch": [
+      0.8485214589222079,
+      6.558756842855107
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 190,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.3824073321191107e-11,
+     "Z0_p": [
+      0.5741142871809463,
+      5.741142871809471
+     ],
+     "Z0_branch": [
+      3.617892867387985,
+      50.423006644446616
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 191,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.454865130540506e-13,
+     "Z0_p": [
+      2.205093722278993,
+      22.050937222789933
+     ],
+     "Z0_branch": [
+      6.043912859635447,
+      51.052577623148466
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 192,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 7.167108666521119e-12,
+     "Z0_p": [
+      0.05936021565024221,
+      0.5936021565024227
+     ],
+     "Z0_branch": [
+      0.532682153012918,
+      2.831616496572064
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 193,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 9.099386826154683e-14,
+     "Z0_p": [
+      4.793729335945289,
+      47.93729335945293
+     ],
+     "Z0_branch": [
+      2.1557755949085617,
+      34.28616256253575
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 194,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 6.656274778901587e-11,
+     "Z0_p": [
+      0.10578567776221796,
+      1.0578567776221792
+     ],
+     "Z0_branch": [
+      0.4323281073746234,
+      5.289666627867528
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 195,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 1.0649226216305086e-11,
+     "Z0_p": [
+      0.3205782264129648,
+      3.205782264129643
+     ],
+     "Z0_branch": [
+      1.677810578712027,
+      8.169235239323854
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 196,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.7009980290801607e-11,
+     "Z0_p": [
+      0.29587057437457126,
+      2.9587057437457123
+     ],
+     "Z0_branch": [
+      2.709408282116218,
+      15.613755335299613
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 197,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.333564013808763e-11,
+     "Z0_p": [
+      0.07664916285271997,
+      0.7664916285272025
+     ],
+     "Z0_branch": [
+      1.1091803197877996,
+      4.887720797042493
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 198,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 3.8777100828451256e-13,
+     "Z0_p": [
+      0.4773136306590935,
+      4.773136306590936
+     ],
+     "Z0_branch": [
+      1.3362560490761801,
+      7.0450478208338705
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "YNd_parallel[max,inv=True]",
+   "idx": 199,
+   "must": false,
+   "records": [
+    {
+     "name": "I1.mobius_fit_point3_residual",
+     "value": 2.4717024686755524e-11,
+     "Z0_p": [
+      0.06749469411107013,
+      0.6749469411106982
+     ],
+     "Z0_branch": [
+      0.6671048478796423,
+      7.140827420215802
+     ]
+    }
+   ]
+  }
+ ],
+ "n_records": 2000,
+ "versions": {
+  "pandapower": "3.4.0",
+  "numpy": "2.3.5",
+  "merge_commit": "0c6a1f0a65273af91dd1d5b854498cd89d457939",
+  "install": "env/pp3016：uv pip install pandapower@git+...@0c6a1f0a（env/setup_pca_py.sh）"
+ },
+ "info": {},
+ "elapsed_seconds": 1506.5,
+ "python": "3.12.13"
+}

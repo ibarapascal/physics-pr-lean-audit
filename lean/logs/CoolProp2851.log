@@ -1,0 +1,10 @@
+⚠ [8924/8924] Built PhysAudit.CoolProp2851 (14s)
+warning: PhysAudit/CoolProp2851.lean:415:10: This simp argument is unused:
+  Pi.single_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [hj]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: PhysAudit/CoolProp2851.lean:438:10: `tendsto_finset_sum` has been deprecated: Use `tendsto_finsetSum` instead
+Build completed successfully (8924 jobs).

@@ -1,0 +1,258 @@
+{
+ "module": "Cantera2107",
+ "merge_commit": "d58a23265414e1789536cf5332d9fb29de095a43",
+ "cantera_version": "4.0.0a1",
+ "cantera_git_commit": "d58a232",
+ "status": "RUN",
+ "A1_lnActCoeff_formula": {
+  "n": 4000,
+  "max_rel_err": 1.1053441148489718e-13,
+  "tol": 1e-10,
+  "pass": true,
+  "worst": {
+   "T": 335.43812153951626,
+   "P": 45092099.349471174,
+   "X_ethanol": 0.9344567294400962,
+   "k": 0
+  }
+ },
+ "A2_vbar_formula": {
+  "n": 4000,
+  "max_rel_err": 6.65956421476035e-16,
+  "tol": 1e-12,
+  "pass": true,
+  "worst": {
+   "T": 287.2606445177524,
+   "P": 18188207.65017598,
+   "X_ethanol": 0.7920074544878739,
+   "k": 1
+  }
+ },
+ "A3_dmu_dP_eq_vbar": {
+  "n": 4000,
+  "max_rel_err": 3.970110491156576e-10,
+  "tol": 1e-06,
+  "pass": true,
+  "worst": {
+   "T": 298.3696522298976,
+   "P": 10366476.201502113,
+   "X_ethanol": 0.7580183674058779,
+   "k": 1
+  }
+ },
+ "A4_neg_dmu_dT_eq_sbar": {
+  "n": 4000,
+  "max_rel_err": 3.631374182535032e-10,
+  "tol": 1e-06,
+  "pass": true,
+  "worst": {
+   "T": 281.7020390575994,
+   "P": 48527411.8239322,
+   "X_ethanol": 0.17426625859471978,
+   "k": 1
+  }
+ },
+ "A5_hbar_eq_mu_plus_Tsbar": {
+  "n": 4000,
+  "max_rel_err": 4.4402774960565543e-16,
+  "tol": 1e-10,
+  "pass": true,
+  "worst": {
+   "T": 359.70887789291635,
+   "P": 41537299.826238826,
+   "X_ethanol": 0.7955654915100553,
+   "k": 0
+  }
+ },
+ "A6_beta_times_V_eq_dVdT": {
+  "n": 2000,
+  "max_rel_err": 1.737461493640122e-09,
+  "tol": 1e-06,
+  "pass": true,
+  "worst": {
+   "T": 306.2160651213354,
+   "P": 8708668.063369798,
+   "X_ethanol": 0.9735860014622505
+  }
+ },
+ "A6_kappa_T_max_abs": 0.0,
+ "A6_cv_minus_cp_max_abs": 0.0,
+ "A6_note": "kappa_T == 0 and beta != 0 for this phase: cv_mole returns cp_mole by convention; no isochoric path exists (margules_no_isochore_when_kappa_zero)",
+ "A7_prePR_counterexample": {
+  "input": {
+   "T": 298.15,
+   "X": [
+    0.5,
+    0.5
+   ]
+  },
+  "rows": [
+   {
+    "P_atm": 1.0,
+    "vbar_native": [
+     0.05740937500000001,
+     0.017248375000000003
+    ],
+    "dmu_dP_native": [
+     0.05740937500596047,
+     0.017248374998569488
+    ],
+    "dmu_dP_prePR": [
+     0.05835000000596047,
+     0.018069999998569487
+    ],
+    "prePR_violation_dmu_dP_minus_vbar": [
+     0.0009406250059604548,
+     0.000821624998569484
+    ],
+    "lean_vbarExcess": [
+     -0.0009406250000000001,
+     -0.0008216250000000001
+    ],
+    "prePR_excess_term_in_mu_RT_lng": [
+     -0.0,
+     -0.0
+    ]
+   },
+   {
+    "P_atm": 100.0,
+    "vbar_native": [
+     0.05740937500000001,
+     0.017248375000000003
+    ],
+    "dmu_dP_native": [
+     0.057409374997019764,
+     0.017248375001549722
+    ],
+    "dmu_dP_prePR": [
+     0.058349999997019765,
+     0.01807000000154972
+    ],
+    "prePR_violation_dmu_dP_minus_vbar": [
+     0.0009406249970197525,
+     0.0008216250015497181
+    ],
+    "lean_vbarExcess": [
+     -0.0009406250000000001,
+     -0.0008216250000000001
+    ],
+    "prePR_excess_term_in_mu_RT_lng": [
+     -9435.573984375,
+     -8241.864159375002
+    ]
+   },
+   {
+    "P_atm": 500.0,
+    "vbar_native": [
+     0.05740937500000001,
+     0.017248375000000003
+    ],
+    "dmu_dP_native": [
+     0.057409374997019764,
+     0.017248374998569488
+    ],
+    "dmu_dP_prePR": [
+     0.058349999997019765,
+     0.018069999998569487
+    ],
+    "prePR_violation_dmu_dP_minus_vbar": [
+     0.0009406249970197525,
+     0.000821624998569484
+    ],
+    "lean_vbarExcess": [
+     -0.0009406250000000001,
+     -0.0008216250000000001
+    ],
+    "prePR_excess_term_in_mu_RT_lng": [
+     -47559.105234375005,
+     -41542.32540937501
+    ]
+   }
+  ],
+  "lean_vbarExcess_ethanol_expected": -0.000940625
+ },
+ "B_cv_eq_test_expression": {
+  "n": 2000,
+  "max_rel_err": 2.0094089781113518e-16,
+  "tol": 1e-10,
+  "pass": true,
+  "worst": {
+   "T": 359.0959547319125,
+   "P": 11021320.837603737,
+   "X_water": 0.9175921893838811
+  }
+ },
+ "B_beta_times_V_eq_dVdT": {
+  "n": 2000,
+  "max_rel_err": 4.467437826771551e-08,
+  "tol": 1e-05,
+  "pass": true,
+  "worst": {
+   "T": 285.42111856286846,
+   "P": 2717674.372451753,
+   "X_water": 0.39188998971267114
+  }
+ },
+ "B_neg_kappa_times_V_eq_dVdP": {
+  "n": 2000,
+  "max_rel_err": 8.639278566561937e-08,
+  "tol": 1e-05,
+  "pass": true,
+  "worst": {
+   "T": 289.4368380215252,
+   "P": 1107031.3368023362,
+   "X_water": 0.6322044806403284
+  }
+ },
+ "B_cv_eq_isochoric_T_dsdT": {
+  "n": 2000,
+  "max_rel_err": 1.5786815222061577e-08,
+  "tol": 0.0001,
+  "pass": true,
+  "worst": {
+   "T": 356.42466770021747,
+   "P": 1479991.1895494577,
+   "X_water": 0.9783657057229478,
+   "cv_native": 70335.64287916463,
+   "cv_isochoric": 70335.64398954045,
+   "cp_native": 76383.80136380057
+  }
+ },
+ "B_isochore_max_rel_volume_residual": 9.401625327045074e-15,
+ "B_kappa_zero_states": 0,
+ "C_status": "SKIP: CanteraError('\\n*******************************************************************************\\nCanteraError thrown by VPStandardStateTP::setState_TP:\\nPressure must be positive. Specified state was T = 300.38457807319475, P = -4545.9089616439305.\\n*******************************************************************************\\n')",
+ "D1_cp_formula_postPR": {
+  "n": 2000,
+  "max_rel_err": 0.0,
+  "tol": 1e-12,
+  "pass": true,
+  "worst": null
+ },
+ "D2_cp_eq_T_dsdT": {
+  "n": 2000,
+  "max_rel_err": 3.757668540218605e-10,
+  "tol": 1e-06,
+  "pass": true,
+  "worst": {
+   "T": 304.01099982261513,
+   "P": 35379954.430111654
+  }
+ },
+ "D3_prePR_formula_max_rel_deviation": 1.9210125624022396,
+ "D3_prePR_counterexample": {
+  "input": {
+   "T": 600.0,
+   "P": 30397500.0,
+   "coeffs": [
+    0.0125,
+    1e-06,
+    1e-08,
+    1e-11
+   ],
+   "cp0_R": 3.6081706512817813
+  },
+  "native_standard_cp_R": 3.485739229462953,
+  "postPR_formula": 3.485739229462953,
+  "prePR_formula": -1014.3433093487182
+ }
+}

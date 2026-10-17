@@ -1,0 +1,119 @@
+{
+  "module": "PyBaMM5889",
+  "pybamm_version": "26.10.1.0",
+  "source_contains_fix": true,
+  "hc_uses_negative_cmax": true,
+  "c_max_positive": 15320.0,
+  "c_e0": 1000.0,
+  "table": {
+    "name": "D_p",
+    "N": 34,
+    "strictly_increasing": true,
+    "all_values_positive": true,
+    "x_first": 131.578947,
+    "x_last": 15197.36842,
+    "y_min": 1.95e-17,
+    "y_max": 2.51e-15,
+    "endpoint_constants_match_float": {
+      "dpX0": "True",
+      "dpY0": "True",
+      "dpX1": "True",
+      "dpY1": "True",
+      "dpX2": "True",
+      "dpXm": "True",
+      "dpYm": "True",
+      "dpXN": "True",
+      "dpYN": "True"
+    }
+  },
+  "native_vs_lean": {
+    "n_points": 2000,
+    "sto_range": [
+      0.0,
+      1.0
+    ],
+    "max_rel_lean_exact_argument": 8.758528301029067e-16,
+    "max_rel_lean_float64_argument": 3.4960490254722566e-16,
+    "worst_point": {
+      "sto": 0.9992274331813706,
+      "native": 1.7591356704627654e-17,
+      "lean": 1.759135670462767e-17
+    }
+  },
+  "interp_at_node_exact_fraction": true,
+  "nvpf_at_node_exact_fraction": true,
+  "nvpf_at_node_native_max_rel": 1.8647430626442222e-16,
+  "nvpf_on_axis": {
+    "sto_interval": [
+      0.00858870411227154,
+      0.9919953276762402
+    ],
+    "native_min": 1.95e-17,
+    "native_max": 2.51e-15,
+    "within_table_range": true,
+    "positive": true
+  },
+  "nvpf_pos_of_sto_le_one": {
+    "native_min_on_[-0.5,1]": 1.7387466637266512e-17,
+    "native_min_on_[0,1]": 1.7387466637266512e-17,
+    "native_at_sto_0": 2.7385714278269387e-15,
+    "native_at_sto_1": 1.7387466637266512e-17,
+    "lean_at_sto_1_exact": 1.738746663726651e-17,
+    "lean_right_segment_value_at_15320_from_constants": 1.738746663726649e-17,
+    "positive": true
+  },
+  "lookup_indep_cmax_max_rel": {
+    "10000.0": 1.0675282935779724e-15,
+    "20000.0": 1.0675282935779724e-15,
+    "22980.0": 1.0675282935779724e-15
+  },
+  "parent_commit": {
+    "native_old_vs_lean_max_rel": 3.911659222800615e-16,
+    "old_uses_first_three_nodes_max_rel": 3.911659222800615e-16,
+    "old_ignores_upper_nodes_max_abs_diff_after_scaling_nodes_3_onward_by_7": 0.0,
+    "old_argument_range": [
+      0.0,
+      1000.0
+    ],
+    "old_argument_max_below_x2": true,
+    "fraction_of_random_sto_with_old_argument_below_axis": 0.135,
+    "sto_threshold_old_below_axis": 0.131578947,
+    "old_over_new_ratio_on_sto_0.01_to_0.99": [
+      1.1006126507037248,
+      61.65801954588982
+    ],
+    "native_old_at_sto_0.5": 1.8699999996525715e-15
+  },
+  "arithmetic": {
+    "extrapolation_margins_sto": [
+      0.00858870411227154,
+      0.9919953276762402
+    ],
+    "new_arg_inside_axis_for_sto_0.01_0.99": true,
+    "old_vs_new_example_sto_0.1": {
+      "old_arg": 100.0,
+      "new_arg": 1532.0,
+      "x0": 131.578947
+    },
+    "cElec0_lt_dpX2": true,
+    "old_reach_fraction": 0.05764192142445186
+  },
+  "pr_test_values": {
+    "0.5": {
+      "native": 8.331702856824365e-17,
+      "expected": 8.3317e-17,
+      "rel": 3.428860118417459e-07
+    },
+    "0.3": {
+      "native": 5.667328000156621e-17,
+      "expected": 5.6673e-17,
+      "rel": 4.940627509345704e-06
+    },
+    "0.9": {
+      "native": 3.5626719998312397e-17,
+      "expected": 3.5627e-17,
+      "rel": 7.859255272697636e-06
+    }
+  },
+  "all_certificate_checks_pass": true
+}

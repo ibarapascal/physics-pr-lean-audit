@@ -1,0 +1,209 @@
+CoolProp/CoolProp|2679|no|None|HAPropsSI input-combination dispatch logic (allowing combinations such as T_dp+RH); changes input validity checks, not the humid-air equations
+CoolProp/CoolProp|2697|no|None|Root brackets and BoundedSecant for Twb/T_db inversion; numerical solver robustness
+CoolProp/CoolProp|2745|yes|Thermodynamic consistency|Changes the Omega coefficients of the SRK/PR cubic EOS from rounded values (0.42747/0.08664, etc.) to exact values, directly changing constants in thermodynamic property functions
+CoolProp/CoolProp|2750|no|None|Special-case branch in PT_flash that directly returns rho_c at the critical point (borderline case, flash algorithm branch, no equation changes)
+CoolProp/CoolProp|2851|yes|Thermodynamic consistency|In mixture first_saturation_deriv, dT/dP_sat no longer uses the pure-substance Clausius-Clapeyron equation and instead uses an expression involving partial derivatives with respect to mixture components
+CoolProp/CoolProp|2857|no|None|Reevaluates alphar using T_converged after HSU_D_flash converges; state consistency/solver finalization (borderline case)
+CoolProp/CoolProp|2858|yes|Thermodynamic consistency|Removes the -ln Z term from PC-SAFT gibbsmolar_residual so that g_res=h_res-T*s_res holds
+CoolProp/CoolProp|2859|no|None|Changes the upper bound for solving wet-bulb temperature to not exceed Tsat; root bracketing
+CoolProp/CoolProp|2865|no|None|Routes REFPROP DmolarSmolar inputs through DSFL1 to respect the imposed phase; backend call dispatch (borderline case)
+CoolProp/CoolProp|2866|no|None|Connects REFPROP DmassQ/DmolarQ inputs to DQFL2; interface wiring
+CoolProp/CoolProp|2907|yes|Thermodynamic consistency|Changes the isothermal compressibility k_T of water in HumidAirProp to use a polynomial fit near the saturation line (accompanied by a T_db inversion fix); changes a property function
+CoolProp/CoolProp|2924|no|None|Uses superancillary to partition phase regions for pure-substance D+T inputs to the cubic EOS; phase determination logic (borderline case)
+CoolProp/CoolProp|2962|yes|Other|Typo in constant n5 in the IF97 R2/R3 boundary (B23) classifier (0.1391883776670e2→0.13918839778870e2); physical constant correction
+CoolProp/CoolProp|2986|no|None|Rejects wet-bulb inputs falling in the water triple-point gap and reports an error; input validation
+CoolProp/CoolProp|3000|no|None|New solution path for HSU_D_flash using the melting line for compressed liquids below the triple point; algorithm robustness (borderline case)
+CoolProp/CoolProp|3006|no|None|Handling of boundary sentinel values in the REFPROP backend calc_melting_line; interface layer
+CoolProp/CoolProp|3009|yes|Unit invariance|Removes the redundant 1/1e6 factor from dg_dp_Ice for vbar_ws in the HAProps_Aux ice branch (unit conversion m3/mol)
+CoolProp/CoolProp|3011|no|None|REFPROP QT flash retains the saturation pressure from SATTP instead of recalculating it with THERMdll; backend call details (borderline case)
+CoolProp/CoolProp|3020|no|None|Fixes _p contamination and reliability in the supercritical cold region for the HSU_P single-phase Brent solver; solver
+CoolProp/CoolProp|3022|no|None|Changes fugacity/chemical_potential in the two-phase region to report an error and makes stability determination use SatL/SatV, without changing formulas (borderline case)
+CoolProp/CoolProp|3026|no|None|Adds Michelsen stability determination and a phase-splitting algorithm to multicomponent TP flash (phase-equilibrium solution algorithms, no changes to the equation of state)
+CoolProp/CoolProp|3031|no|None|Makes the melting-line PT guard respect the DONT_CHECK_PROPERTY_LIMITS configuration; input range checking
+CoolProp/CoolProp|3033|no|None|Melting-line caloric-value seeds for HS flash; adds a mechanism for initial solution guesses
+CoolProp/CoolProp|3036|no|None|Adds melting-line ancillary data for D2O (new data, no modifications to existing equations)
+CoolProp/CoolProp|3041|yes|Thermodynamic consistency|Adds a missing phi.finish() call after constructing GERG2008/exponential departure functions and adds lazy automatic finish; residual Helmholtz terms were uninitialized when this was missing (borderline case)
+CoolProp/CoolProp|3081|no|None|Corrects phase-flag/pressure/density values for SATP in the REFPROP PQ saturation fallback; backend calls
+CoolProp/CoolProp|3140|no|None|Uses Gibbs comparisons to select the stable phase in blind mixture single-phase flash and fixes the phase-envelope closure determination; phase determination algorithm
+CoolProp/CoolProp|3154|yes|Conservation|Legacy PT-flash uses the lever rule beta=(z-x)/(y-x) to calculate the vapor fraction (previously pinned at 0.5); changes the material balance relation (borderline case)
+CoolProp/CoolProp|3170|no|None|Convergence fixes for the Michelsen PT phase-splitting solver; solver
+CoolProp/CoolProp|3174|no|None|Fixes identification of two-phase states near the dew point that were misclassified as single-phase liquid; Rachford-Rice bisection and flash workflow
+CoolProp/CoolProp|3176|no|None|Flash consistency robustness: TOMS748 fallback and REFPROP maximum-density grid; solver fallback
+CoolProp/CoolProp|3180|no|None|D+{H,S,U} supercritical fast path; solution path
+CoolProp/CoolProp|3183|no|None|Corrects wrong roots in PS/HSU flash at supercritical pressures (forces robust density solving); solver root selection
+CoolProp/CoolProp|3187|no|None|Overflow protection and density rollback for two-phase density solving; solver
+CoolProp/CoolProp|3196|no|None|Fixes crashes and nonconvergence in mixture PQ/QT flash with a phase envelope; Newton solver step-size control
+CoolProp/CoolProp|3197|no|None|Changes HAPropsSI inversion to report errors for out-of-range inputs; input validation
+CoolProp/CoolProp|3246|no|None|Makes mixture PT flash respect the imposed phase after constructing a phase envelope; workflow logic
+CoolProp/CoolProp|3255|no|None|Adds the third derivative of mixture ideal-gas Helmholtz energy (nDelta=3), which previously directly threw an error; a new capability rather than a change to existing outputs (borderline case)
+CoolProp/CoolProp|3262|no|None|fugacity_coefficient returns the saturated-state value when Q=0/1, where it previously threw an error; a new capability (borderline case)
+CoolProp/CoolProp|3263|no|None|Adds two-phase analytical derivatives of the vapor fraction Q/Qmass; new functionality
+CoolProp/CoolProp|3272|no|None|Restores near-pure phase splitting for wide-boiling-range mixtures; flash solver fallback
+CoolProp/CoolProp|3278|no|None|Adds Beckmüller-2021 hydrogen binary mixture model data; new data
+CoolProp/CoolProp|3284|no|None|Spurious-root determination in the subcooled-liquid intermediate branch of mixture PT flash; root selection
+CoolProp/CoolProp|3288|yes|Thermodynamic consistency|PR/SRK cubic EOS entropy: restores Tc/Tr and rhor/rhoc chain-rule scaling in ideal-gas alpha0 derivatives, correcting entropy values
+CoolProp/CoolProp|3294|no|None|Numerical handling of the pole at T==Tbase for incompressible fluids and removal of unfitted placeholder coefficients; numerical/data cleanup
+CoolProp/CoolProp|3297|no|None|Adds a Chebyshev thermodynamic backend and runtime registration for incompressible fluids; new functionality
+CoolProp/CoolProp|3322|no|None|GERG backend temperature-range values and removal of the hs_anchor mechanism; range limits/solution aids
+CoolProp/CoolProp|3339|yes|Other|Changes the hardcoded x=2 in the logistic crossover function of the rhosr-CS viscosity correlation to x_crossover specified in the fluid file; corrects the viscosity constitutive correlation
+CoolProp/CoolProp|3353|yes|Thermodynamic consistency|Péneloux volume translation for cubic EOS: fixes the pure-substance path and extends it to mixtures (changes the EOS term c_translation)
+CoolProp/CoolProp|3357|yes|Thermodynamic consistency|Fixes the dln_fugacity_dxj derivative expression under XN_INDEPENDENT (MixtureDerivatives), together with phase-splitting convergence
+CoolProp/CoolProp|3376|no|None|Rewrites newton_raphson_twophase in lnK form and separates PQ/QT paths; solver refactoring
+CoolProp/CoolProp|3386|yes|Unit invariance|Incompressible fluids: fixes a factor-of-100 error in PCL viscosity, adds the MITSW freezing-point curve, and restores ice-slurry transport data (data coefficient corrections; borderline case)
+CoolProp/CoolProp|3415|yes|Other|Replaces the 2007 hardcoded heavy-water viscosity/thermal-conductivity correlations with new IAPWS R17-20/R18-21 correlations; changes transport constitutive relations
+CoolProp/CoolProp|3416|yes|Thermodynamic consistency|Fixes errors in the HEOS -SRK path that ignored the Mathias-Copeman alpha function and defaulted R_u to 0 (giving a pressure of 0), and checks that alpha0 uses a shared reduced temperature
+CoolProp/CoolProp|3426|no|None|Adds a Gibbs-explicit spline backend for liquid water; new functionality
+CoolProp/CoolProp|3447|no|None|Changes two-phase-state viscosity/thermal conductivity to throw errors; input validity
+CoolProp/CoolProp|3459|no|None|Changes PC-SAFT kij reading to use double instead of atof; data parsing
+CoolProp/CoolProp|3493|no|None|DQ/HQ/QS flash no longer leaves behind the imposed two-phase flag; state flags
+CoolProp/CoolProp|3148|no|None|Adds mixture HSU_P/DHSU_T/HSU_D flash; new solver functionality
+CoolProp/CoolProp|3167|no|None|Robustness of cubic/Michelsen flash paths (avoiding nonpositive density)
+CoolProp/CoolProp|2725|yes|Other|[Data level] Updates the existing R-1234yf EOS and adds mixture models (modifies existing fluid JSON, not purely additions)
+CoolProp/CoolProp|2729|no|None|Adds a pure-fluid EOS and superancillary for chlorine (purely new data)
+CoolProp/CoolProp|2768|yes|Other|[Data level] Batch update of 10 multiparameter EOS, of which 1 modifies an existing fluid file and 9 are additions (borderline case)
+CoolProp/CoolProp|2780|yes|Other|[Data level] Updates R-1243zf to a third-generation EOS and unifies source_eos_hash in 130 fluid JSON files; modifies an existing fluid equation
+CoolProp/CoolProp|2781|no|None|Adds the R-1336mzz(Z) pure fluid and NIST IR 8570 mixture pairs; purely new data
+CoolProp/CoolProp|3118|no|None|Adds Tkaczuk helium-neon-argon binary mixture models; purely new data
+CoolProp/CoolProp|3153|no|None|Adds melting lines for OrthoHydrogen/deuterium isotopes; new data
+CoolProp/CoolProp|3164|yes|Thermodynamic consistency|[Data level] Corrects the neon melting line (fit constrained by Clausius-Clapeyron); changes existing melting-line data
+CoolProp/CoolProp|3248|no|None|Adds the R-1132a pure fluid; purely new data
+CoolProp/CoolProp|3334|yes|Other|[Data level] Replaces ethylene/propylene glycol/THF/krypton viscosity correlations with DSL data (modifies existing fluid JSON)
+CoolProp/CoolProp|3352|yes|Other|[Data level] Converts 11 viscosity correlations to expression data, with three correcting the original equations (modifies existing fluid JSON)
+CoolProp/CoolProp|3402|yes|Other|[Data level] Writes ethylene/propylene/cyclohexane thermal-conductivity correlations into existing fluid files, changing transport property outputs
+CoolProp/CoolProp|3403|yes|Other|[Data level] Writes R245fa/Novec649/R1233zd(E) thermal-conductivity correlations into existing fluid files
+CoolProp/CoolProp|3404|yes|Other|[Data level] Writes ammonia/n-undecane/THF thermal-conductivity correlations into existing fluid files
+CoolProp/CoolProp|3406|yes|Other|[Data level] Writes xenon and nitrogen thermal-conductivity correlations and the nitrogen viscosity correlation into existing fluid files
+CoolProp/CoolProp|2744|no|None|Adds Chebyshev superancillary for SRK/PR cubic EOS; new acceleration structures
+CoolProp/CoolProp|2835|no|None|Branch selection and T-guessing mechanisms for HQ/SQ/DQ flash; solution workflow
+CoolProp/CoolProp|2840|no|None|Adds mass-based vapor fraction Qmass inputs and conversions; new functionality (borderline case)
+CoolProp/CoolProp|2849|no|None|Coding defects identified by cppcheck, including assignment operators/initialization; not physical equations
+CoolProp/CoolProp|2852|no|None|Saturation ancillary returns NaN when T is above the reducing temperature; safeguard
+CoolProp/CoolProp|2990|no|None|Adds saturated-state property and two-phase derivative interfaces to REFPROP; new functionality
+CoolProp/CoolProp|2995|no|None|Superancillary fast path for D+{H,S,U} flash; solution acceleration
+CoolProp/CoolProp|2999|no|None|Superancillary fast path for H,S flash; solution acceleration
+CoolProp/CoolProp|3333|no|None|State-variable mechanism for the transport-property expression DSL; infrastructure
+CoolProp/CoolProp|3410|no|None|Binds rhosr-CS vapor coefficients by reference (avoiding copies); code style correction
+CoolProp/CoolProp|3185|no|None|Adds a runtime expression DSL for transport correlations; infrastructure
+CoolProp/CoolProp|2800|no|None|Thread-safe lazy initialization of the fluid library; concurrency
+CoolProp/CoolProp|2831|no|None|thread_local for humid-air Water/Air backends; concurrency
+CoolProp/CoolProp|2716|no|None|Caching of humid-air virial/alpha0 coefficients; performance
+CoolProp/CoolProp|2681|no|None|Changes superancillary storage to shared_ptr; performance
+CoolProp/CoolProp|3419|no|None|Unifies vapor-fraction input validation in a single helper function; input validation
+CoolProp/CoolProp|3412|no|None|set_reference_stateS reports errors for unsupported backends; interface behavior
+CoolProp/CoolProp|3141|no|None|Caches ECS reference fluids; performance
+CliMA/Oceananigans.jl|5437|yes|Conservation|Adds curvature metric terms for flux-form momentum advection on curvilinear grids (U_dot_∇u_metric, etc.), with the aim of fixing energy conservation
+CliMA/Oceananigans.jl|5733|yes|Conservation|Changes implicit vertical advection to density weighting (mass-flux form); changes the diagonal terms of implicit advection
+CliMA/Oceananigans.jl|5742|no|None|Corrects construction types for closure fields of IsopycnalSkewSymmetricDiffusivity under explicit time discretization; code level
+CliMA/Oceananigans.jl|5903|no|None|Completes ZFaceField handling for implicit vertical advection and refactors the implicit solver; solver implementation (borderline case)
+CliMA/Oceananigans.jl|5972|no|None|Splits the z-star scaling update into two kernels; implementation reorganization
+CliMA/Oceananigans.jl|6008|no|None|Corrects stage Δt and RK3 coefficient summation for AVID+RK3; time-stepping implementation
+CliMA/Oceananigans.jl|6009|no|None|Split RK evaluates forcing and boundary conditions at stage times (clock advancement); time stepping
+CliMA/Oceananigans.jl|6013|yes|Conservation|PartialCellBottom grid-face spacing Δz uses the wrong node above partial cells (k versus k-1 offset); changes discrete geometric metrics (borderline case)
+CliMA/Oceananigans.jl|6024|yes|Other|Corrects the definition of the CATKE bottom mixing-length coefficient Cᵇ (relationship to the von Kármán constant in similarity theory); changes a turbulence closure parameter
+CliMA/Oceananigans.jl|6037|no|None|Corrects the sign of the regularization term -ε₂ in the bound-preserving limiter; numerical limiter (nonphysical term; borderline case)
+CliMA/Oceananigans.jl|6038|no|None|Tuple expansion for CATKE top TKE flux with more than 4 closures; dispatch completion
+CliMA/Oceananigans.jl|6051|yes|Other|Restores the vertical viscous term (2ν) in the w equation for 3D closures when using vertically implicit treatment; changes a viscous term
+CliMA/Oceananigans.jl|6060|yes|Conservation|Makes w satisfy w=0 (no penetration) at the bottom and immersed surfaces during vertically implicit solving; changes the implicit coefficient mask and boundary fluxes (borderline case)
+CliMA/Oceananigans.jl|6062|yes|Conservation|Adds η forcing Fη to the right-hand side of the FFT implicit free-surface solve, supplying the missing forcing term in the free-surface equation
+CliMA/Oceananigans.jl|6083|yes|Other|Includes drift velocities (biogeochemical drift, closure auxiliary velocities) in the implicit part of adaptive implicit tracer advection; changes the composition of the advection velocity (borderline case)
+CliMA/Oceananigans.jl|6142|no|None|Changes horizontal regridding weights to use the length in the direction being regridded; postprocessing tool
+CliMA/Oceananigans.jl|6213|yes|Conservation|Changes centered momentum fluxes to interpolate transport quantities (discrete form of the U*u flux); changes discrete advection terms (borderline case)
+CliMA/Oceananigans.jl|5370|no|None|Corrects inconsistent field indexing in ContinuousForcing; model construction
+CliMA/Oceananigans.jl|5491|no|None|Constant shift of WENO smoothness indicators under Float32; numerical stability
+CliMA/Oceananigans.jl|6015|no|None|Rescales ZWENO α weights to prevent Float32 overflow; numerical stability
+CliMA/Oceananigans.jl|5991|no|None|Masks nonfinite values in immersed cells during implicit column solving; NaN isolation
+CliMA/Oceananigans.jl|5982|no|None|Advances the clock in split-explicit barotropic substeps; time bookkeeping
+CliMA/Oceananigans.jl|5954|no|None|Updates last_Δt at each SplitRK step; clock bookkeeping
+CliMA/Oceananigans.jl|5970|no|None|Adds tidal astronomy, equilibrium-tide forcing, and boundary conditions; new functionality
+CliMA/Oceananigans.jl|5723|no|None|Variable vertical grid node returns physical z instead of reference coordinate r; query interface
+CliMA/Oceananigans.jl|5408|no|None|Adjusts the folded-row position of RightFaceFolded on tripolar grids; grid topology/halo
+CliMA/Oceananigans.jl|6157|no|None|Open-boundary filling of connected halos during split-explicit substeps; boundary implementation
+CliMA/Oceananigans.jl|5314|no|None|Adds density and gravity-wave speed parameters for PerturbationAdvection open boundaries; new functionality
+CliMA/Oceananigans.jl|5352|no|None|Moves velocity halo filling into rk3/ab2 steps; workflow refactoring
+CliMA/Oceananigans.jl|6005|no|None|Corrects the implementation of Lagrangian particle reflection at immersed boundaries; particle tracking
+CliMA/Oceananigans.jl|5950|no|None|Corrects particle stepping order; time-stepping workflow
+CliMA/Oceananigans.jl|6217|no|None|Tripolar-grid reductions respect the condition parameter; reduction tools
+CliMA/Oceananigans.jl|6012|no|None|CG solver applies the linear operator only once per iteration; performance
+CliMA/Oceananigans.jl|5822|no|None|Interpolation reads the wrong cell on fine Float32 grids; interpolation indexing
+CliMA/Oceananigans.jl|5887|no|None|Centers the longitude-wrapping window on bounded grids; interpolation
+SciML/ModelingToolkit.jl|4364|no|None|Prohibits MassActionJump with rescale_rates_on_update from entering System (requires rate expressions to be scaled beforehand); input validation (borderline case)
+SciML/ModelingToolkitStandardLibrary.jl|433|no|None|Renames Element1D/ConvectiveElement1D initialization parameters to *_guess to resolve overdetermined initialization; initialization interface rather than constitutive relations
+SciML/ModelingToolkitStandardLibrary.jl|413|no|None|Removes @deprecate Pipe Tube (Julia 1.12 deprecation warning); interface
+idaholab/moose|33307|yes|Other|Uses log10 in subchannel (SCM) closures such as friction and updates transient flow-regime Re criteria (including the Updated→Upgraded Cheng-Todreas friction correlation); changes closure correlations
+idaholab/moose|33775|yes|Conservation|Fixes the missing coordinate transformation factor in axisymmetric (RZ) dual mortar integration weights (JxW multiplied by coord); changes geometric weights in discrete integration
+idaholab/moose|34009|yes|Other|Changes the CZM primary-side deformation gradient to use the neighbor-side displacement gradient (adCoupledNeighborGradient); corrects cohesive-zone kinematic quantities
+idaholab/moose|34016|yes|Other|Passes tangential slip velocity to mortar function_friction instead of the old array; corrects friction-law inputs
+idaholab/moose|34020|yes|Other|Passes nodal slip rates to dynamic mortar function_friction (and requires mu>0); corrects friction-law inputs
+idaholab/moose|33781|no|None|Changes mixed mortar residual assembly from addJacobian to addResidualsAndJacobian; assembly calls (borderline case)
+idaholab/moose|33703|no|None|Adds a temperature-dependent fluid unit-weight option unit_weight_fp for Peaceman boreholes; new optional functionality (borderline case)
+idaholab/moose|33743|no|None|Adds a surface-radiation object option to LinearFV conjugate heat transfer; new functionality
+idaholab/moose|32406|no|None|Adds LinearFV radiation boundary conditions; new functionality
+idaholab/moose|33995|no|None|AD porous-flow Darcy uses the AD version of JxW for the Jacobian on displaced meshes; derivative correctness
+idaholab/moose|33731|no|None|State restoration for dynamic mortar contact/penalty friction during --restep; time-step retry
+idaholab/moose|33758|no|None|ActuallyExplicitEuler recalculates the cached mass matrix after --recover; restart
+idaholab/moose|33449|no|None|Adds porous-flow aquifer Robin boundary conditions; new functionality
+idaholab/moose|33572|no|None|Scaling of nodal Lagrange multipliers dropped at mortar edges (improves conditioning); numerics
+pybamm-team/PyBaMM|5451|no|None|Fixes DomainError for hysteresis/MSMR OCP with particle-size distributions; variable aliasing and shape handling (borderline case)
+pybamm-team/PyBaMM|5486|yes|Unit invariance|Changes EIS impedance scale z_scale to be calculated using V_scale/I_scale of the transformed model; corrects dimensional scaling of impedance
+pybamm-team/PyBaMM|5755|no|None|Changes finite-volume node-to-edge shifting on nonuniform grids to use actual node spacing for extrapolation; discrete interpolation weights (borderline case)
+pybamm-team/PyBaMM|5774|no|None|Unstructured TPFA weights no longer impose a lower bound on cosθ; numerical weights
+pybamm-team/PyBaMM|5775|yes|Unit invariance|Adds the L_y factor to the BasicDFN2D full-cell lithium-amount integral to express it in mol, and fixes the a_j label (diagnostic quantity units; borderline case)
+pybamm-team/PyBaMM|5776|yes|Other|BasicDFN2D specific surface area a=3·eps_s/R uses the local active-material volume fraction instead of the average
+pybamm-team/PyBaMM|5805|yes|Other|Changes the total specific surface area of multiphase active materials to the sum of the specific surface areas of the individual phases; changes the relation
+pybamm-team/PyBaMM|5813|no|None|Symbolic splitting criterion in x_average for products varying with x; symbolic operations
+pybamm-team/PyBaMM|5826|yes|Conservation|Changes tab boundary conditions for current-collector potential to use the single-electrode-pair current j·L_y·L_z instead of the total current A_cc
+pybamm-team/PyBaMM|5835|no|None|Unstructured finite volume supports div(K grad u) with anisotropic K; new functionality
+pybamm-team/PyBaMM|5839|no|None|Boundary extrapolation in FiniteVolume2D with fewer than 3 nodes; discretization implementation
+pybamm-team/PyBaMM|5842|no|None|Includes surface values in maximum/minimum particle-concentration diagnostic variables; diagnostic quantities
+pybamm-team/PyBaMM|5858|no|None|Fixes effective-resistance postprocessing returning NaN for t>0; postprocessing
+pybamm-team/PyBaMM|5865|no|None|Changes BasicDFN2D voltage to an integral average along the positive-electrode face boundary; output diagnostic definition (borderline case)
+pybamm-team/PyBaMM|5869|yes|Sign convention|Changes the sign of ECM diffusion overpotential to the loss sign and includes it in heat generation Q_irr; sign-convention correction
+pybamm-team/PyBaMM|5872|yes|Sign convention|Unifies the sign of the Marcus kinetics exponential term and the dimensions of λ and η (F/RT scaling); corrects signs and units
+pybamm-team/PyBaMM|5888|yes|Unit invariance|Converts the Ai2020 electrolyte diffusion coefficient from cm2/s to m2/s
+pybamm-team/PyBaMM|5889|yes|Other|Changes the maximum concentration in the Chayambuka2022 NVPF diffusion coefficient to the solid-phase maximum concentration instead of the initial electrolyte concentration
+pybamm-team/PyBaMM|5893|yes|Other|Adds the missing particle radius R in coefficient B of the quartic polynomial particle-concentration profile
+pybamm-team/PyBaMM|5701|no|None|Electrode SOH model passes through model options; interface
+pybamm-team/PyBaMM|5600|no|None|RegulariseSqrtAndPower no longer rewrites state-independent bases; symbolic regularization
+pybamm-team/PyBaMM|5418|no|None|Rebuilds initial conditions when inputs change while SOC remains unchanged; simulation workflow
+pybamm-team/PyBaMM|5507|no|None|BPX 1.1 hysteresis parameter mapping (initial hysteresis state); parameter import mapping (borderline case)
+CliMA/ClimaAtmos.jl|4637|yes|Conservation|SGS fluxes give ρ and ρq_tot the same tendency synchronously to ensure tracer mass continuity, and fix upper-boundary handling
+CliMA/ClimaAtmos.jl|4648|yes|Conservation|Energy bookkeeping for EDMF sedimentation fluxes: sedimenting water species carry e_int+Φ+Kin, making the grid-mean sedimentation energy flux equal to the sum of the updraft and environment contributions
+CliMA/ClimaAtmos.jl|4647|yes|Other|Refactors the EDMF SGS inversion to make it aware of vertical scale and stable; changes the subgrid closure (borderline case)
+CliMA/ClimaAtmos.jl|4822|yes|Other|Changes horizontal gradients of SGS variance to be calculated along isentropic surfaces (changes the subgrid variance closure formula)
+CliMA/ClimaAtmos.jl|4837|yes|Other|Adds a Richardson-number stability weight to the geometric SGS variance term (changes the subgrid closure)
+CliMA/ClimaAtmos.jl|4869|yes|Other|Changes cloud fraction to single-domain cloud cover determined by grid-mean condensate (changes the cloud-fraction closure)
+CliMA/ClimaAtmos.jl|4887|yes|Other|Changes geometric SGS variance to a conditional displacement form on θ_li surfaces (changes the subgrid variance closure)
+CliMA/ClimaAtmos.jl|4898|yes|Other|Changes along-surface depth and turbulent displacement in SGS variance to use their maximum instead of their sum (changes the subgrid variance closure)
+CliMA/ClimaAtmos.jl|4850|yes|Other|Introduces uniform fractions ξ_liq/ξ_ice into SGS quadrature condensate reconstruction (changes microphysical subgrid reconstruction; borderline case)
+CliMA/ClimaAtmos.jl|4653|no|None|Jacobian linearization and entrainment relaxation for Exner-form PGF; preconditioner/Jacobian only, no changes to tendency equations
+Cantera/cantera|2107|yes|Thermodynamic consistency|Fixes thermodynamic consistency: cv=cp-T·V·β²/κ, isothermal compressibility, and thermal expansion coefficients for VPSS phases such as Margules, and HKFT molar volume
+Cantera/cantera|2101|yes|Thermodynamic consistency|PlasmaPhase rewrites two-temperature (gas/electron) thermodynamic properties; changes the thermodynamic functions of PlasmaPhase (borderline case, includes new functionality)
+Cantera/cantera|2116|no|None|Multiphase equilibrium solver fixes (handling missing moles, VCS step sizes); solution algorithms
+Cantera/cantera|2122|no|None|Fixes constant-TP failure modes in MultiPhaseEquil; solution algorithms
+Cantera/cantera|2124|no|None|Convergence of the VCS constant-TP solver; solution algorithms
+Cantera/cantera|2126|no|None|Interaction between constant HP/SP and temperature limits in MultiPhaseEquil; solution algorithms
+Cantera/cantera|2164|no|None|Handling of indeterminate element potentials in ChemEquil; solution algorithms
+e2nIEE/pandapower|3016|yes|Other|Adds neutral grounding impedance resistance rn_ohm to zero-sequence short-circuit calculations, Z_N=rn+jxn, with 3·Z_N placed in series with the zero-sequence impedance (including zigzag grounding transformers); changes the zero-sequence network model
+e2nIEE/pandapower|3060|no|None|Changes the default upper and lower voltage limits for gen to use bus limits; OPF constraint data defaults (borderline case)
+e2nIEE/pandapower|3041|no|None|dev→v4 branch merge PR; AI attribution comes from individual merged commits, while the PR itself is branch synchronization (attribution uncertain)
+e2nIEE/pandapower|3054|no|None|Synchronization PR merging dev into v4; AI attribution comes from individual merged commits (attribution uncertain)
+e2nIEE/pandapower|3076|no|None|Synchronization PR merging develop into release/v4.0.0; AI attribution comes from individual merged commits (attribution uncertain)
+e2nIEE/pandapower|3107|no|None|Synchronization PR merging develop into release/v4.0.0; AI attribution comes from individual merged commits (attribution uncertain)
+pvlib/pvlib-python|2820|no|None|Corrects date normalization (time zones) in sun_rise_set_transit_spa, without changing solar-position equations
+pvlib/pvlib-python|2826|no|None|Division-by-zero protection in perez for dhi=0; numerical protection
+modelica/ModelicaStandardLibrary|4818|no|None|Changes rpm speed conversion to use from_rpm, numerically equivalent to the original expression 1425*2π/60 (borderline case, refactoring of unit-conversion notation)
+CoolProp/CoolProp|3029|yes|Unit invariance|[Data level] Corrects the scaling of viscosity coefficients for incompressible fluid MPG2 (previously too small by a factor of 10)
+CoolProp/CoolProp|2771|yes|Thermodynamic consistency|[Data level] Aligns the chlorine EOS with the REFPROP reference implementation (changes numerical constants for reference-state h/s; borderline case)
+CoolProp/CoolProp|2784|yes|Thermodynamic consistency|[Data level] Refreshes h/s in hs_anchor after changing ideal-gas a1/a2 for R-1336mzz(Z) (magnitude changes from 3.2e4 to 8.6e4, borderline case)
+CoolProp/CoolProp|3326|yes|Other|[Data level] Corrects critical molar densities and molar masses in the cubic EOS fluid library that differ from published values (rhomolarc, molemass)
+CoolProp/CoolProp|3335|yes|Other|[Data level] Restores the R1233zd(E) viscosity model mistakenly deleted by #2768 and refits its constants
+CoolProp/CoolProp|3399|yes|Other|[Data level] Writes thermal-conductivity correlations (Assael/Huber/Perkins) for 12 fluids into existing fluid files
+CoolProp/CoolProp|3428|no|None|Deletes ECS viscosity entries that cannot be independently verified; data deletion rather than equation changes (borderline case)
+CoolProp/CoolProp|3337|no|None|Refits superancillary using corrected critical densities; exports fitted data
+CoolProp/CoolProp|2782|no|None|Adds a SUPERANCILLARY block for R-1336mzz(Z); acceleration data
+CoolProp/CoolProp|3166|no|None|Adds air melting-line data; new data
+CoolProp/CoolProp|3295|no|None|Simplifies the incompressible-fluid fitting pipeline and audits reference data; data pipeline
+CoolProp/CoolProp|3296|no|None|Chebyshev caloric-value fitter and generated data for incompressible fluids; data pipeline
+CoolProp/CoolProp|3390|no|None|Regenerates the incompressible-fluid json corpus and fixes the rounding contract; data pipeline
+CoolProp/CoolProp|3309|no|None|Adds ATcT standard enthalpy of formation HFORMATION; new functionality
+CliMA/Oceananigans.jl|6061|yes|Other|Misalignment in the positional order of metrics such as Δx and Az during distributed-grid reconstruction (swapped order of Δxᶠᶜᵃ/Δxᶜᶜᵃ, etc.); discrete geometric metrics were incorrectly assigned (borderline case)

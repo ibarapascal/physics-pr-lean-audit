@@ -1,0 +1,1380 @@
+Reading additional input from stdin...
+OpenAI Codex v0.162.0
+--------
+workdir: <workdir>/CoolProp_CoolProp_2851
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: detailed
+session id: <removed>
+--------
+user
+You are an "invariant writer" for an audit of physics software (one of two independent tracks; the other track cannot see you, and you may not look at it). For one GitHub PR that has been merged into a physics/engineering simulation library, write down the library-level invariants this change **should satisfy** physically, and how to check them numerically through the merged public API. The purpose is to test later, by random spot checks and formal proofs, whether these changes are physically right.
+
+## Input and output
+- Input: ./input/pr.json (repo, number, url, title, body, commits, files, merge commit) and ./input/pr.diff.
+- Output: ./spec.md in the current directory, one section following the template below.
+- **Independence rule**: read only ./input and GitHub (the PR page, the diff, the source at the merge commit, PR/issue discussion, the cited literature), e.g. https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>. Do not read any file on this computer outside the current working directory.
+
+## Template
+```
+## <repo>#<number> <title>
+- What changed (1–3 sentences, naming files and formulas):
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+- Common operating domain (range of each input, with the basis):
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+```
+- The invariants should target **the physics this change touches**; prefer narrow and checkable over a generic "energy is conserved". If a PR has several relevant invariants, list the most important 1–3 and mark which are primary and which secondary.
+- If you think no numerically checkable invariant can be written for this change, say why; do not force one.
+
+## Rules
+- Read GitHub public information only: no comments, issues, forks, or any write operation.
+- Do not clone the whole repository, and do not install, compile, or run any code.
+- When done, stop.
+codex
+我会只读取 `input` 中的材料和 GitHub 上对应合并版本的公开信息，提炼可通过公共 API 检查的物理不变量，并写入 `spec.md`；不会安装、编译或运行项目代码。
+exec
+/bin/zsh -lc 'cat input/pr.json' in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 0ms:
+{"author":{"id":"MDQ6VXNlcjE4NTk5NDc=","is_bot":false,"login":"ibell","name":"Ian Bell"},"baseRefOid":"b3360b8c6e540e88f8425a47086a93554870ed56","body":"## Summary\n\nFixes #2091.\n\nThe mixture branch of `HelmholtzEOSMixtureBackend::calc_first_saturation_deriv` was using the pure-fluid Clapeyron expression `dT/dp_sat = T·(1/ρ_V − 1/ρ_L) / (h_V − h_L)`, which silently returned wrong values for mixtures. For mixtures the bubble (Q=0) and dew (Q=1) curves are distinct, and the derivative depends on which curve is being followed.\n\nImplemented the formulation from Gernert thesis 3.96/3.97 (the same fix sketched in the issue body): the fugacity-coefficient derivatives are weighted by the mole fractions of the *other* phase, switching weights based on Q.\n\nBehavior changes:\n- Pure/pseudo-pure fluids: unchanged (still uses the Clapeyron expression)\n- Mixtures at Q=0 or Q=1: now correct\n- Mixtures at intermediate Q: now throws (was silently wrong)\n\nAlso collapsed the two overloads — the no-arg version now delegates to the SatL/SatV-arg version, single source of truth.\n\n## Test plan\n- [x] New `[2091]` test: mixture dT/dP at bubble point matches finite-difference along Q=0 to ~0.5%\n- [x] New `[2091]` test: mixture call at intermediate Q throws (was wrong before, now caught)\n- [x] Existing `[first_saturation_partial_deriv]`, `[second_saturation_partial_deriv]`, `[derivatives]` regression tests still pass (53 assertions, 4 test cases)\n- [x] Both new tests fail on master, pass with the fix (TDD red→green)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)","commits":[{"authoredDate":"2026-05-03T03:14:43Z","authors":[{"email":"<email>","id":"MDQ6VXNlcjE4NTk5NDc=","login":"ibell","name":"Ian Bell"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Opus 4.7 (1M context)"}],"committedDate":"2026-05-05T12:08:27Z","messageBody":"The mixture branch of HelmholtzEOSMixtureBackend::calc_first_saturation_deriv\nused the pure-fluid Clapeyron-style expression\n  dT/dp_sat = T * (1/rho_V - 1/rho_L) / (h_V - h_L)\nwhich is only valid for a single component. For mixtures the bubble\nand dew curves are different and the derivative depends on which\nsaturation curve is being followed; the previous code returned a\nsilently incorrect single value.\n\nImplement the mixture formulation from Gernert thesis 3.96/3.97:\nweight the fugacity-coefficient derivatives by the mole fractions of\nthe OTHER phase, switching weights based on whether the state is on\nthe bubble (Q==0) or dew (Q==1) curve. Throw for intermediate Q since\nthe derivative is undefined there. Pure / pseudo-pure fluids continue\nto use the existing Clapeyron expression.\n\nCollapse the two overloads so the no-arg version delegates to the\nSatL/SatV-arg version (single source of truth).\n\nAdd Catch2 regression tests:\n- mixture dT/dP at the bubble point matches a finite-difference\n  along Q=0 to ~0.5%\n- mixture call at intermediate Q throws\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>","messageHeadline":"fix(HEOS): correct first_saturation_deriv for mixtures (#2091)","oid":"96a79275e4d1b0aebbd7f7a67c54986916f88959"},{"authoredDate":"2026-05-03T11:57:14Z","authors":[{"email":"<email>","id":"MDQ6VXNlcjE4NTk5NDc=","login":"ibell","name":"Ian Bell"}],"committedDate":"2026-05-05T12:08:27Z","messageBody":"","messageHeadline":"style: apply clang-format (CI fix)","oid":"4b09733e60c7b03d9709b83c7e3acd947d90e943"},{"authoredDate":"2026-05-03T17:41:37Z","authors":[{"email":"<email>","id":"MDQ6VXNlcjE4NTk5NDc=","login":"ibell","name":"Ian Bell"}],"committedDate":"2026-05-05T12:08:27Z","messageBody":"","messageHeadline":"fix(test): unbreak after rebase merge mishap (missing outer TEST_CASE })","oid":"fe243a916ce3f9936d45b2f61cddc0278a13e308"}],"files":[{"path":"src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp","additions":35,"deletions":22},{"path":"src/Tests/CoolProp-Tests.cpp","additions":36,"deletions":0}],"headRefOid":"fe243a916ce3f9936d45b2f61cddc0278a13e308","mergeCommit":{"oid":"54a2e32764bfa0ae81877e835c33ccd13ba8f853"},"mergedAt":"2026-05-05T12:08:51Z","number":2851,"title":"fix(HEOS): correct first_saturation_deriv for mixtures (#2091)","url":"https://github.com/CoolProp/CoolProp/pull/2851"}
+
+exec
+/bin/zsh -lc 'cat input/pr.diff' in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 0ms:
+diff --git a/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp b/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp
+index 8dbf2d287e..06d4be9cc3 100644
+--- a/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp
++++ b/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp
+@@ -3646,7 +3646,40 @@ CoolPropDbl HelmholtzEOSMixtureBackend::calc_d3alpha0_dTau3(void) {
+ CoolPropDbl HelmholtzEOSMixtureBackend::calc_first_saturation_deriv(parameters Of1, parameters Wrt1, HelmholtzEOSMixtureBackend& SatL,
+                                                                     HelmholtzEOSMixtureBackend& SatV) {
+     // Derivative of temperature w.r.t. pressure ALONG the saturation curve
+-    CoolPropDbl dTdP_sat = T() * (1 / SatV.rhomolar() - 1 / SatL.rhomolar()) / (SatV.hmolar() - SatL.hmolar());
++    CoolPropDbl dTdP_sat;
++    if (is_pure_or_pseudopure) {
++        dTdP_sat = T() * (1 / SatV.rhomolar() - 1 / SatL.rhomolar()) / (SatV.hmolar() - SatL.hmolar());
++    } else {
++        // Mixture: dT/dP along the bubble (Q=0) or dew (Q=1) curve
++        // (Gernert thesis 3.96 and 3.97). The compositions used as
++        // weights are those of the OTHER phase.
++        std::vector<CoolPropDbl> x = SatL.get_mole_fractions();
++        std::vector<CoolPropDbl> y = SatV.get_mole_fractions();
++        CoolPropDbl dQ_dPsat = 0, dQ_dTsat = 0;
++        x_N_dependency_flag xN_flag = XN_DEPENDENT;
++        if (_Q == 0) {
++            for (std::size_t i = 0; i < N; ++i) {
++                dQ_dPsat += y[i]
++                            * (MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatL, i, xN_flag)
++                               - MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatV, i, xN_flag));
++                dQ_dTsat += y[i]
++                            * (MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatL, i, xN_flag)
++                               - MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatV, i, xN_flag));
++            }
++        } else if (_Q == 1) {
++            for (std::size_t i = 0; i < N; ++i) {
++                dQ_dPsat += x[i]
++                            * (MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatL, i, xN_flag)
++                               - MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatV, i, xN_flag));
++                dQ_dTsat += x[i]
++                            * (MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatL, i, xN_flag)
++                               - MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatV, i, xN_flag));
++            }
++        } else {
++            throw ValueError(format("calc_first_saturation_deriv requires Q==0 (bubble) or Q==1 (dew) for mixtures; got Q=%g", _Q));
++        }
++        dTdP_sat = -dQ_dPsat / dQ_dTsat;
++    }
+ 
+     // "Trivial" inputs
+     if (Of1 == iT && Wrt1 == iP) {
+@@ -3668,27 +3701,7 @@ CoolPropDbl HelmholtzEOSMixtureBackend::calc_first_saturation_deriv(parameters O
+ }
+ CoolPropDbl HelmholtzEOSMixtureBackend::calc_first_saturation_deriv(parameters Of1, parameters Wrt1) {
+     if (!this->SatL || !this->SatV) throw ValueError(format("The saturation properties are needed for calc_first_saturation_deriv"));
+-
+-    // Derivative of temperature w.r.t. pressure ALONG the saturation curve
+-    CoolPropDbl dTdP_sat = T() * (1 / SatV->rhomolar() - 1 / SatL->rhomolar()) / (SatV->hmolar() - SatL->hmolar());
+-
+-    // "Trivial" inputs
+-    if (Of1 == iT && Wrt1 == iP) {
+-        return dTdP_sat;
+-    } else if (Of1 == iP && Wrt1 == iT) {
+-        return 1 / dTdP_sat;
+-    }
+-    // Derivative taken with respect to T
+-    else if (Wrt1 == iT) {
+-        return first_partial_deriv(Of1, iT, iP) + first_partial_deriv(Of1, iP, iT) / dTdP_sat;
+-    }
+-    // Derivative taken with respect to p
+-    else if (Wrt1 == iP) {
+-        return first_partial_deriv(Of1, iP, iT) + first_partial_deriv(Of1, iT, iP) * dTdP_sat;
+-    } else {
+-        throw ValueError(
+-          format("Not possible to take first saturation derivative with respect to %s", get_parameter_information(Wrt1, "short").c_str()));
+-    }
++    return calc_first_saturation_deriv(Of1, Wrt1, this->get_SatL(), this->get_SatV());
+ }
+ CoolPropDbl HelmholtzEOSMixtureBackend::calc_second_saturation_deriv(parameters Of1, parameters Wrt1, parameters Wrt2) {
+     if (!this->SatL || !this->SatV) throw ValueError(format("The saturation properties are needed for calc_second_saturation_deriv"));
+diff --git a/src/Tests/CoolProp-Tests.cpp b/src/Tests/CoolProp-Tests.cpp
+index 323d71eae0..9c3b280681 100644
+--- a/src/Tests/CoolProp-Tests.cpp
++++ b/src/Tests/CoolProp-Tests.cpp
+@@ -4812,6 +4812,42 @@ TEST_CASE("Water HS_INPUTS flash near H=3133800, S=6777 is smooth (no spike to 5
+         CHECK(std::abs(p - 2.97e6) / 2.97e6 < 0.02);
+     }
+ }
++TEST_CASE("first_saturation_deriv mixture: dT/dP via Gernert vs finite-difference along bubble curve", "[first_saturation_deriv][2091]") {
++    // Issue #2091: the mixture path used the pure-fluid Clapeyron
++    // expression (T*Δv / Δh) and silently returned wrong values.
++    // The fix uses Gernert thesis 3.96/3.97 weighted by the OTHER
++    // phase's compositions.
++    auto AS = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Methane&Ethane"));
++    AS->set_mole_fractions({0.7, 0.3});
++
++    double T = 180.0;
++    AS->update(CoolProp::QT_INPUTS, 0.0, T);
++    double dTdP = AS->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
++
++    // Finite difference along Q=0 (bubble) curve
++    auto AS2 = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Methane&Ethane"));
++    AS2->set_mole_fractions({0.7, 0.3});
++    double dT = 0.05;
++    AS2->update(CoolProp::QT_INPUTS, 0.0, T + dT);
++    double pP = AS2->p();
++    AS2->update(CoolProp::QT_INPUTS, 0.0, T - dT);
++    double pM = AS2->p();
++    double dTdP_fd = (2 * dT) / (pP - pM);
++
++    CAPTURE(dTdP);
++    CAPTURE(dTdP_fd);
++    CHECK(dTdP > 0);
++    CHECK(std::abs(dTdP - dTdP_fd) / std::abs(dTdP_fd) < 5e-3);
++}
++
++TEST_CASE("first_saturation_deriv mixture: throws at intermediate Q", "[first_saturation_deriv][2091]") {
++    // Two-phase intermediate quality is not on a single saturation curve
++    // for mixtures; the new code throws (was previously silently wrong).
++    auto AS = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Methane&Ethane"));
++    AS->set_mole_fractions({0.7, 0.3});
++    AS->update(CoolProp::QT_INPUTS, 0.5, 180.0);
++    CHECK_THROWS(AS->first_saturation_deriv(CoolProp::iT, CoolProp::iP));
++}
+ 
+ TEST_CASE("HAPropsSI Twb at high T (T > Tsat) returns the physical root (#2255)", "[HAPropsSI][2255]") {
+     // Issue #2255: HAPropsSI('Twb','T',200+273.15,'W',0.2,'P',1000E3)
+
+web search: 
+web search: https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp
+exec
+/bin/zsh -lc "curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp -o /tmp/cp2851-backend.cpp && sed -n '3640,3720p' /tmp/cp2851-backend.cpp" in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 172ms:
+    return calc_alpha0_deriv_nocache(nTau, nDelta, mole_fractions, _tau, _delta, _reducing.T, _reducing.rhomolar);
+}
+CoolPropDbl HelmholtzEOSMixtureBackend::calc_d3alpha0_dTau3(void) {
+    const int nTau = 3, nDelta = 0;
+    return calc_alpha0_deriv_nocache(nTau, nDelta, mole_fractions, _tau, _delta, _reducing.T, _reducing.rhomolar);
+}
+CoolPropDbl HelmholtzEOSMixtureBackend::calc_first_saturation_deriv(parameters Of1, parameters Wrt1, HelmholtzEOSMixtureBackend& SatL,
+                                                                    HelmholtzEOSMixtureBackend& SatV) {
+    // Derivative of temperature w.r.t. pressure ALONG the saturation curve
+    CoolPropDbl dTdP_sat;
+    if (is_pure_or_pseudopure) {
+        dTdP_sat = T() * (1 / SatV.rhomolar() - 1 / SatL.rhomolar()) / (SatV.hmolar() - SatL.hmolar());
+    } else {
+        // Mixture: dT/dP along the bubble (Q=0) or dew (Q=1) curve
+        // (Gernert thesis 3.96 and 3.97). The compositions used as
+        // weights are those of the OTHER phase.
+        std::vector<CoolPropDbl> x = SatL.get_mole_fractions();
+        std::vector<CoolPropDbl> y = SatV.get_mole_fractions();
+        CoolPropDbl dQ_dPsat = 0, dQ_dTsat = 0;
+        x_N_dependency_flag xN_flag = XN_DEPENDENT;
+        if (_Q == 0) {
+            for (std::size_t i = 0; i < N; ++i) {
+                dQ_dPsat += y[i]
+                            * (MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatL, i, xN_flag)
+                               - MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatV, i, xN_flag));
+                dQ_dTsat += y[i]
+                            * (MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatL, i, xN_flag)
+                               - MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatV, i, xN_flag));
+            }
+        } else if (_Q == 1) {
+            for (std::size_t i = 0; i < N; ++i) {
+                dQ_dPsat += x[i]
+                            * (MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatL, i, xN_flag)
+                               - MixtureDerivatives::dln_fugacity_coefficient_dp__constT_n(SatV, i, xN_flag));
+                dQ_dTsat += x[i]
+                            * (MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatL, i, xN_flag)
+                               - MixtureDerivatives::dln_fugacity_coefficient_dT__constp_n(SatV, i, xN_flag));
+            }
+        } else {
+            throw ValueError(format("calc_first_saturation_deriv requires Q==0 (bubble) or Q==1 (dew) for mixtures; got Q=%g", _Q));
+        }
+        dTdP_sat = -dQ_dPsat / dQ_dTsat;
+    }
+
+    // "Trivial" inputs
+    if (Of1 == iT && Wrt1 == iP) {
+        return dTdP_sat;
+    } else if (Of1 == iP && Wrt1 == iT) {
+        return 1 / dTdP_sat;
+    }
+    // Derivative taken with respect to T
+    else if (Wrt1 == iT) {
+        return first_partial_deriv(Of1, iT, iP) + first_partial_deriv(Of1, iP, iT) / dTdP_sat;
+    }
+    // Derivative taken with respect to p
+    else if (Wrt1 == iP) {
+        return first_partial_deriv(Of1, iP, iT) + first_partial_deriv(Of1, iT, iP) * dTdP_sat;
+    } else {
+        throw ValueError(
+          format("Not possible to take first saturation derivative with respect to %s", get_parameter_information(Wrt1, "short").c_str()));
+    }
+}
+CoolPropDbl HelmholtzEOSMixtureBackend::calc_first_saturation_deriv(parameters Of1, parameters Wrt1) {
+    if (!this->SatL || !this->SatV) throw ValueError(format("The saturation properties are needed for calc_first_saturation_deriv"));
+    return calc_first_saturation_deriv(Of1, Wrt1, this->get_SatL(), this->get_SatV());
+}
+CoolPropDbl HelmholtzEOSMixtureBackend::calc_second_saturation_deriv(parameters Of1, parameters Wrt1, parameters Wrt2) {
+    if (!this->SatL || !this->SatV) throw ValueError(format("The saturation properties are needed for calc_second_saturation_deriv"));
+    if (Wrt1 == iP && Wrt2 == iP) {
+        CoolPropDbl dydT_constp = this->first_partial_deriv(Of1, iT, iP);
+        CoolPropDbl d2ydTdp = this->second_partial_deriv(Of1, iT, iP, iP, iT);
+        CoolPropDbl d2ydp2_constT = this->second_partial_deriv(Of1, iP, iT, iP, iT);
+        CoolPropDbl d2ydT2_constp = this->second_partial_deriv(Of1, iT, iP, iT, iP);
+
+        CoolPropDbl dTdp_along_sat = calc_first_saturation_deriv(iT, iP);
+        CoolPropDbl dvdrhoL = -1 / POW2(SatL->rhomolar());
+        CoolPropDbl dvdrhoV = -1 / POW2(SatV->rhomolar());
+        CoolPropDbl DELTAv = 1 / SatV->rhomolar() - 1 / SatL->rhomolar();
+        CoolPropDbl dDELTAv_dT_constp = dvdrhoV * SatV->first_partial_deriv(iDmolar, iT, iP) - dvdrhoL * SatL->first_partial_deriv(iDmolar, iT, iP);
+        CoolPropDbl dDELTAv_dp_constT = dvdrhoV * SatV->first_partial_deriv(iDmolar, iP, iT) - dvdrhoL * SatL->first_partial_deriv(iDmolar, iP, iT);
+        CoolPropDbl DELTAh = SatV->hmolar() - SatL->hmolar();
+
+**Checking weighted formula**
+exec
+/bin/zsh -lc "curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/include/AbstractState.h | rg -n -A 8 -B 4 'first_saturation_deriv|mole_fractions_liquid|mole_fractions_vapor|fugacity_coefficient|saturated_liquid_keyed_output'" in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 96ms:
+127-
+128-    /// Ancillary values
+129-    CAE _rhoLanc = cache.next(), _rhoVanc = cache.next(), _pLanc = cache.next(), _pVanc = cache.next(), _TLanc = cache.next(), _TVanc = cache.next();
+130-
+131:    CachedElement _fugacity_coefficient;
+132-
+133-    /// Smoothing values
+134-    CAE _rho_spline = cache.next(), _drho_spline_dh__constp = cache.next(), _drho_spline_dp__consth = cache.next();
+135-
+136-    /// Cached low-level elements for in-place calculation of other properties
+137-    CAE _alpha0 = cache.next(), _dalpha0_dTau = cache.next(), _dalpha0_dDelta = cache.next(), _d2alpha0_dTau2 = cache.next(),
+138-        _d2alpha0_dDelta_dTau = cache.next(), _d2alpha0_dDelta2 = cache.next(), _d3alpha0_dTau3 = cache.next(), _d3alpha0_dDelta_dTau2 = cache.next(),
+139-        _d3alpha0_dDelta2_dTau = cache.next(), _d3alpha0_dDelta3 = cache.next(), _alphar = cache.next(), _dalphar_dTau = cache.next(),
+--
+245-    virtual CoolPropDbl calc_gas_constant(void) {
+246-        throw NotImplementedError("calc_gas_constant is not implemented for this backend");
+247-    };
+248-    /// Using this backend, calculate the fugacity coefficient (dimensionless)
+249:    virtual CoolPropDbl calc_fugacity_coefficient(std::size_t i) {
+250:        throw NotImplementedError("calc_fugacity_coefficient is not implemented for this backend");
+251-    };
+252-    /// Using this backend, calculate the fugacity in Pa
+253:    virtual std::vector<CoolPropDbl> calc_fugacity_coefficients() {
+254:        throw NotImplementedError("calc_fugacity_coefficients is not implemented for this backend");
+255-    };
+256-    /// Using this backend, calculate the fugacity in Pa
+257-    virtual CoolPropDbl calc_fugacity(std::size_t i) {
+258-        throw NotImplementedError("calc_fugacity is not implemented for this backend");
+259-    };
+260-    /// Using this backend, calculate the chemical potential in J/mol
+261-    virtual CoolPropDbl calc_chemical_potential(std::size_t i) {
+262-        throw NotImplementedError("calc_chemical_potential is not implemented for this backend");
+--
+621-    virtual const CoolProp::PhaseEnvelopeData& calc_phase_envelope_data(void) {
+622-        throw NotImplementedError("calc_phase_envelope_data is not implemented for this backend");
+623-    };
+624-
+625:    virtual std::vector<CoolPropDbl> calc_mole_fractions_liquid(void) {
+626:        throw NotImplementedError("calc_mole_fractions_liquid is not implemented for this backend");
+627-    };
+628:    virtual std::vector<CoolPropDbl> calc_mole_fractions_vapor(void) {
+629:        throw NotImplementedError("calc_mole_fractions_vapor is not implemented for this backend");
+630-    };
+631-    virtual const std::vector<CoolPropDbl> calc_mass_fractions(void) {
+632-        throw NotImplementedError("calc_mass_fractions is not implemented for this backend");
+633-    };
+634-
+635-    /// Get the minimum fraction (mole, mass, volume) for incompressible fluid
+636-    virtual CoolPropDbl calc_fraction_min(void) {
+637-        throw NotImplementedError("calc_fraction_min is not implemented for this backend");
+--
+643-    virtual CoolPropDbl calc_T_freeze(void) {
+644-        throw NotImplementedError("calc_T_freeze is not implemented for this backend");
+645-    };
+646-
+647:    virtual CoolPropDbl calc_first_saturation_deriv(parameters Of1, parameters Wrt1) {
+648:        throw NotImplementedError("calc_first_saturation_deriv is not implemented for this backend");
+649-    };
+650-    virtual CoolPropDbl calc_second_saturation_deriv(parameters Of1, parameters Wrt1, parameters Wrt2) {
+651-        throw NotImplementedError("calc_second_saturation_deriv is not implemented for this backend");
+652-    };
+653-    virtual CoolPropDbl calc_first_two_phase_deriv(parameters Of, parameters Wrt, parameters Constant) {
+654-        throw NotImplementedError("calc_first_two_phase_deriv is not implemented for this backend");
+655-    };
+656-    virtual CoolPropDbl calc_second_two_phase_deriv(parameters Of, parameters Wrt, parameters Constant, parameters Wrt2, parameters Constant2) {
+--
+659-    virtual CoolPropDbl calc_first_two_phase_deriv_splined(parameters Of, parameters Wrt, parameters Constant, CoolPropDbl x_end) {
+660-        throw NotImplementedError("calc_first_two_phase_deriv_splined is not implemented for this backend");
+661-    };
+662-
+663:    virtual CoolPropDbl calc_saturated_liquid_keyed_output(parameters key) {
+664:        throw NotImplementedError("calc_saturated_liquid_keyed_output is not implemented for this backend");
+665-    };
+666-    virtual CoolPropDbl calc_saturated_vapor_keyed_output(parameters key) {
+667-        throw NotImplementedError("calc_saturated_vapor_keyed_output is not implemented for this backend");
+668-    };
+669-    virtual void calc_ideal_curve(const std::string& type, std::vector<double>& T, std::vector<double>& p) {
+670-        throw NotImplementedError("calc_ideal_curve is not implemented for this backend");
+671-    };
+672-
+--
+836-    };
+837-#endif
+838-
+839-    /// Get the mole fractions of the equilibrium liquid phase
+840:    std::vector<CoolPropDbl> mole_fractions_liquid(void) {
+841:        return calc_mole_fractions_liquid();
+842-    };
+843-    /// Get the mole fractions of the equilibrium liquid phase (but as a double for use in SWIG wrapper)
+844:    std::vector<double> mole_fractions_liquid_double(void) {
+845:        std::vector<CoolPropDbl> x = calc_mole_fractions_liquid();
+846-        return std::vector<double>(x.begin(), x.end());
+847-    };
+848-
+849-    /// Get the mole fractions of the equilibrium vapor phase
+850:    std::vector<CoolPropDbl> mole_fractions_vapor(void) {
+851:        return calc_mole_fractions_vapor();
+852-    };
+853-    /// Get the mole fractions of the equilibrium vapor phase (but as a double for use in SWIG wrapper)
+854:    std::vector<double> mole_fractions_vapor_double(void) {
+855:        std::vector<CoolPropDbl> y = calc_mole_fractions_vapor();
+856-        return std::vector<double>(y.begin(), y.end());
+857-    };
+858-
+859-    /// Get the mole fractions of the fluid
+860-    virtual const std::vector<CoolPropDbl>& get_mole_fractions(void) = 0;
+861-    /// Get the mass fractions of the fluid
+862-    virtual const std::vector<CoolPropDbl> get_mass_fractions(void) {
+863-        return this->calc_mass_fractions();
+--
+1073-    double keyed_output(parameters key);
+1074-    /// A trivial keyed output like molar mass that does not depend on the state
+1075-    double trivial_keyed_output(parameters key);
+1076-    /// Get an output from the saturated liquid state by key
+1077:    double saturated_liquid_keyed_output(parameters key) {
+1078:        return calc_saturated_liquid_keyed_output(key);
+1079-    };
+1080-    /// Get an output from the saturated vapor state by key
+1081-    double saturated_vapor_keyed_output(parameters key) {
+1082-        return calc_saturated_vapor_keyed_output(key);
+1083-    };
+1084-
+1085-    /// Return the temperature in K
+1086-    double T(void) {
+--
+1236-    double isobaric_expansion_coefficient(void);
+1237-    /// Return the isentropic expansion coefficient \f$ \kappa_s = -\frac{c_p}{c_v}\frac{v}{p}\left.\frac{\partial p}{\partial v}\right|_T = \frac{\rho}{p}\left.\frac{\partial p}{\partial \rho}\right|_s\f$
+1238-    double isentropic_expansion_coefficient(void);
+1239-    /// Return the fugacity coefficient of the i-th component of the mixture
+1240:    double fugacity_coefficient(std::size_t i);
+1241-    /// Return a vector of the fugacity coefficients for all components in the mixture
+1242:    std::vector<double> fugacity_coefficients();
+1243-    /// Return the fugacity of the i-th component of the mixture
+1244-    double fugacity(std::size_t i);
+1245-    /// Return the chemical potential of the i-th component of the mixture
+1246-    double chemical_potential(std::size_t i);
+1247-    /** \brief Return the fundamental derivative of gas dynamics \f$ \Gamma \f$
+1248-     *
+1249-     * see also Colonna et al, FPE, 2010
+1250-     *
+--
+1333-     *
+1334-     * @param Of1 The parameter that the derivative is taken of
+1335-     * @param Wrt1 The parameter that the derivative is taken with respect to
+1336-     */
+1337:    CoolPropDbl first_saturation_deriv(parameters Of1, parameters Wrt1) {
+1338:        return calc_first_saturation_deriv(Of1, Wrt1);
+1339-    };
+1340-
+1341-    /** \brief The second partial derivative along the saturation curve
+1342-     *
+1343-     * Implementing the algorithms and ideas of:
+1344-     * Matthis Thorade, Ali Saadat, "Partial derivatives of thermodynamic state properties for dynamic simulation",
+1345-     * Environmental Earth Sciences, December 2013, Volume 70, Issue 8, pp 3497-3503
+1346-     *
+1347:     * Like with \ref first_saturation_deriv, we can express the derivative as
+1348-     * \f[ \left(\frac{\partial y}{\partial T}\right)_{\sigma} = \left(\frac{\partial y}{\partial T}\right)+\left(\frac{\partial y}{\partial p}\right)\left(\frac{\partial p}{\partial T}\right)_{\sigma} \f]
+1349-     *
+1350-     * where \f$ y \f$ is already a saturation derivative. So you might end up with something like
+1351-     *
+1352-     * \f[ \left(\frac{\partial \left(\frac{\partial T}{\partial p}\right)_{\sigma}}{\partial T}\right)_{\sigma} = \left(\frac{\partial \left(\frac{\partial T}{\partial p}\right)_{\sigma}}{\partial T}\right)+\left(\frac{\partial \left(\frac{\partial T}{\partial p}\right)_{\sigma}}{\partial p}\right)\left(\frac{\partial p}{\partial T}\right)_{\sigma} \f]
+1353-     *
+1354-     * @param Of1 The parameter that the first derivative is taken of
+1355-     * @param Wrt1 The parameter that the first derivative is taken with respect to
+
+exec
+/bin/zsh -lc "curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Tests/CoolProp-Tests.cpp | rg -n -A 85 -B 5 'TEST_CASE.*saturation.*deriv|TEST_CASE.*saturation.*partial'" in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 149ms:
+2406-};
+2407-TEST_CASE_METHOD(FixedStateFixture, "Test that enthalpies and entropies are correct for fixed states for all reference states", "[fixed_states]") {
+2408-    run_checks();
+2409-};  // !!!! check this
+2410-
+2411:TEST_CASE("Check the first partial derivatives", "[first_saturation_partial_deriv]") {
+2412-    const int number_of_pairs = 10;
+2413-    struct pair
+2414-    {
+2415-        parameters p1, p2;
+2416-    };
+2417-    pair pairs[number_of_pairs] = {{iP, iT}, {iDmolar, iT}, {iHmolar, iT}, {iSmolar, iT}, {iUmolar, iT},
+2418-                                   {iT, iP}, {iDmolar, iP}, {iHmolar, iP}, {iSmolar, iP}, {iUmolar, iP}};
+2419-    shared_ptr<CoolProp::AbstractState> AS(CoolProp::AbstractState::factory("HEOS", "n-Propane"));
+2420-    for (std::size_t i = 0; i < number_of_pairs; ++i) {
+2421-        // See https://groups.google.com/forum/?fromgroups#!topic/catch-forum/mRBKqtTrITU
+2422-        std::ostringstream ss1;
+2423-        ss1 << "Check first partial derivative for d(" << get_parameter_information(pairs[i].p1, "short") << ")/d("
+2424-            << get_parameter_information(pairs[i].p2, "short") << ")|sat";
+2425-        SECTION(ss1.str(), "") {
+2426-            AS->update(QT_INPUTS, 1, 300);
+2427-            CoolPropDbl p = AS->p();
+2428-            CoolPropDbl analytical = AS->first_saturation_deriv(pairs[i].p1, pairs[i].p2);
+2429-            CAPTURE(analytical);
+2430-            CoolPropDbl numerical;
+2431-            if (pairs[i].p2 == iT) {
+2432-                AS->update(QT_INPUTS, 1, 300 + 1e-5);
+2433-                CoolPropDbl v1 = AS->keyed_output(pairs[i].p1);
+2434-                AS->update(QT_INPUTS, 1, 300 - 1e-5);
+2435-                CoolPropDbl v2 = AS->keyed_output(pairs[i].p1);
+2436-                numerical = (v1 - v2) / (2e-5);
+2437-            } else if (pairs[i].p2 == iP) {
+2438-                AS->update(PQ_INPUTS, p + 1e-2, 1);
+2439-                CoolPropDbl v1 = AS->keyed_output(pairs[i].p1);
+2440-                AS->update(PQ_INPUTS, p - 1e-2, 1);
+2441-                CoolPropDbl v2 = AS->keyed_output(pairs[i].p1);
+2442-                numerical = (v1 - v2) / (2e-2);
+2443-            } else {
+2444-                throw ValueError();
+2445-            }
+2446-            CAPTURE(numerical);
+2447-            CHECK(std::abs(numerical / analytical - 1) < 1e-4);
+2448-        }
+2449-    }
+2450-}
+2451-
+2452:TEST_CASE("Check the second saturation derivatives", "[second_saturation_partial_deriv]") {
+2453-    const int number_of_pairs = 5;
+2454-    struct pair
+2455-    {
+2456-        parameters p1, p2, p3;
+2457-    };
+2458-    pair pairs[number_of_pairs] = {{iT, iP, iP}, {iDmolar, iP, iP}, {iHmolar, iP, iP}, {iSmolar, iP, iP}, {iUmolar, iP, iP}};
+2459-    shared_ptr<CoolProp::AbstractState> AS(CoolProp::AbstractState::factory("HEOS", "n-Propane"));
+2460-    for (std::size_t i = 0; i < number_of_pairs; ++i) {
+2461-        // See https://groups.google.com/forum/?fromgroups#!topic/catch-forum/mRBKqtTrITU
+2462-        std::ostringstream ss1;
+2463-        ss1 << "Check second saturation derivative for d2(" << get_parameter_information(pairs[i].p1, "short") << ")/d("
+2464-            << get_parameter_information(pairs[i].p2, "short") << ")2|sat";
+2465-        SECTION(ss1.str(), "") {
+2466-            AS->update(QT_INPUTS, 1, 300);
+2467-            CoolPropDbl p = AS->p();
+2468-            CoolPropDbl analytical = AS->second_saturation_deriv(pairs[i].p1, pairs[i].p2, pairs[i].p3);
+2469-            CAPTURE(analytical);
+2470-            CoolPropDbl numerical;
+2471-            if (pairs[i].p2 == iT) {
+2472-                throw NotImplementedError();
+2473-            } else if (pairs[i].p2 == iP) {
+2474-                AS->update(PQ_INPUTS, p + 1e-2, 1);
+2475-                CoolPropDbl v1 = AS->first_saturation_deriv(pairs[i].p1, pairs[i].p2);
+2476-                AS->update(PQ_INPUTS, p - 1e-2, 1);
+2477-                CoolPropDbl v2 = AS->first_saturation_deriv(pairs[i].p1, pairs[i].p2);
+2478-                numerical = (v1 - v2) / (2e-2);
+2479-            } else {
+2480-                throw ValueError();
+2481-            }
+2482-            CAPTURE(numerical);
+2483-            CHECK(std::abs(numerical / analytical - 1) < 1e-4);
+2484-        }
+2485-    }
+2486-}
+2487-
+2488-TEST_CASE("Check the first two-phase derivative", "[first_two_phase_deriv]") {
+2489-    const int number_of_pairs = 4;
+2490-    struct pair
+2491-    {
+2492-        parameters p1, p2, p3;
+2493-    };
+2494-    pair pairs[number_of_pairs] = {{iDmass, iP, iHmass}, {iDmolar, iP, iHmolar}, {iDmolar, iHmolar, iP}, {iDmass, iHmass, iP}};
+2495-    shared_ptr<CoolProp::HelmholtzEOSBackend> AS = std::make_shared<CoolProp::HelmholtzEOSBackend>("n-Propane");
+2496-    for (std::size_t i = 0; i < number_of_pairs; ++i) {
+2497-        // See https://groups.google.com/forum/?fromgroups#!topic/catch-forum/mRBKqtTrITU
+2498-        std::ostringstream ss1;
+2499-        ss1 << "for (" << get_parameter_information(pairs[i].p1, "short") << ", " << get_parameter_information(pairs[i].p2, "short") << ", "
+2500-            << get_parameter_information(pairs[i].p3, "short") << ")";
+2501-        SECTION(ss1.str(), "") {
+2502-            AS->update(QT_INPUTS, 0.3, 300);
+2503-            CoolPropDbl numerical;
+2504-            CoolPropDbl analytical = AS->first_two_phase_deriv(pairs[i].p1, pairs[i].p2, pairs[i].p3);
+2505-            CAPTURE(analytical);
+2506-
+2507-            CoolPropDbl out1, out2;
+2508-            CoolPropDbl v2base, v3base;
+2509-            v2base = AS->keyed_output(pairs[i].p2);
+2510-            v3base = AS->keyed_output(pairs[i].p3);
+2511-            CoolPropDbl v2plus = v2base * 1.001;
+2512-            CoolPropDbl v2minus = v2base * 0.999;
+2513-            CoolProp::input_pairs input_pair1 = generate_update_pair(pairs[i].p2, v2plus, pairs[i].p3, v3base, out1, out2);
+2514-            AS->update(input_pair1, out1, out2);
+2515-            CoolPropDbl v1 = AS->keyed_output(pairs[i].p1);
+2516-            CoolProp::input_pairs input_pair2 = generate_update_pair(pairs[i].p2, v2minus, pairs[i].p3, v3base, out1, out2);
+2517-            AS->update(input_pair2, out1, out2);
+2518-            CoolPropDbl v2 = AS->keyed_output(pairs[i].p1);
+2519-
+2520-            numerical = (v1 - v2) / (v2plus - v2minus);
+2521-            CAPTURE(numerical);
+2522-            CHECK(std::abs(numerical / analytical - 1) < 1e-4);
+2523-        }
+2524-    }
+2525-}
+2526-
+2527-TEST_CASE("Check the second two-phase derivative", "[second_two_phase_deriv]") {
+2528-    SECTION("d2rhodhdp", "") {
+2529-        shared_ptr<CoolProp::HelmholtzEOSBackend> AS = std::make_shared<CoolProp::HelmholtzEOSBackend>("n-Propane");
+2530-        AS->update(QT_INPUTS, 0.3, 300);
+2531-        CoolPropDbl analytical = AS->second_two_phase_deriv(iDmolar, iHmolar, iP, iP, iHmolar);
+2532-        CAPTURE(analytical);
+2533-        CoolPropDbl pplus = AS->p() * 1.001, pminus = AS->p() * 0.999, h = AS->hmolar();
+2534-        AS->update(HmolarP_INPUTS, h, pplus);
+2535-        CoolPropDbl v1 = AS->first_two_phase_deriv(iDmolar, iHmolar, iP);
+2536-        AS->update(HmolarP_INPUTS, h, pminus);
+2537-        CoolPropDbl v2 = AS->first_two_phase_deriv(iDmolar, iHmolar, iP);
+--
+4810-        CHECK(p > 0);
+4811-        CHECK(p < 1e8);
+4812-        CHECK(std::abs(p - 2.97e6) / 2.97e6 < 0.02);
+4813-    }
+4814-}
+4815:TEST_CASE("first_saturation_deriv mixture: dT/dP via Gernert vs finite-difference along bubble curve", "[first_saturation_deriv][2091]") {
+4816-    // Issue #2091: the mixture path used the pure-fluid Clapeyron
+4817-    // expression (T*Δv / Δh) and silently returned wrong values.
+4818-    // The fix uses Gernert thesis 3.96/3.97 weighted by the OTHER
+4819-    // phase's compositions.
+4820-    auto AS = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Methane&Ethane"));
+4821-    AS->set_mole_fractions({0.7, 0.3});
+4822-
+4823-    double T = 180.0;
+4824-    AS->update(CoolProp::QT_INPUTS, 0.0, T);
+4825-    double dTdP = AS->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
+4826-
+4827-    // Finite difference along Q=0 (bubble) curve
+4828-    auto AS2 = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Methane&Ethane"));
+4829-    AS2->set_mole_fractions({0.7, 0.3});
+4830-    double dT = 0.05;
+4831-    AS2->update(CoolProp::QT_INPUTS, 0.0, T + dT);
+4832-    double pP = AS2->p();
+4833-    AS2->update(CoolProp::QT_INPUTS, 0.0, T - dT);
+4834-    double pM = AS2->p();
+4835-    double dTdP_fd = (2 * dT) / (pP - pM);
+4836-
+4837-    CAPTURE(dTdP);
+4838-    CAPTURE(dTdP_fd);
+4839-    CHECK(dTdP > 0);
+4840-    CHECK(std::abs(dTdP - dTdP_fd) / std::abs(dTdP_fd) < 5e-3);
+4841-}
+4842-
+4843:TEST_CASE("first_saturation_deriv mixture: throws at intermediate Q", "[first_saturation_deriv][2091]") {
+4844-    // Two-phase intermediate quality is not on a single saturation curve
+4845-    // for mixtures; the new code throws (was previously silently wrong).
+4846-    auto AS = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Methane&Ethane"));
+4847-    AS->set_mole_fractions({0.7, 0.3});
+4848-    AS->update(CoolProp::QT_INPUTS, 0.5, 180.0);
+4849-    CHECK_THROWS(AS->first_saturation_deriv(CoolProp::iT, CoolProp::iP));
+4850-}
+4851-
+4852-TEST_CASE("HAPropsSI Twb at high T (T > Tsat) returns the physical root (#2255)", "[HAPropsSI][2255]") {
+4853-    // Issue #2255: HAPropsSI('Twb','T',200+273.15,'W',0.2,'P',1000E3)
+4854-    // returned 180.7241 C (essentially Tsat at 1 MPa) instead of the
+4855-    // correct ~131 C. The wet-bulb residual function is meaningless
+4856-    // for Twb > Tsat(p) (W_s_wb goes negative), and the Brent solver
+4857-    // converged to a spurious "root" at the upper bracket.
+4858-    const double Twb_K = HumidAir::HAPropsSI("Twb", "T", 200 + 273.15, "W", 0.2, "P", 1.0e6);
+4859-    const double Twb_C = Twb_K - 273.15;
+4860-    CAPTURE(Twb_C);
+4861-    // Expected physical root is ~130-131 C; the buggy value was 180.72 C
+4862-    CHECK(Twb_C > 125.0);
+4863-    CHECK(Twb_C < 135.0);
+4864-
+4865-    // Smoothness across the discontinuity reported by the second commenter:
+4866-    // Sweep T at fixed W=0.05, P=1 atm and verify Twb is monotonic and finite.
+4867-    double prev = -1.0;
+4868-    for (double T_C : {100.0, 105.0, 110.0, 115.0, 120.0, 130.0, 150.0, 200.0, 250.0, 300.0}) {
+4869-        const double Twb = HumidAir::HAPropsSI("Twb", "T", T_C + 273.15, "W", 0.05, "P", 101325.0) - 273.15;
+4870-        CAPTURE(T_C);
+4871-        CAPTURE(Twb);
+4872-        CHECK(std::isfinite(Twb));
+4873-        CHECK(Twb > 0);
+4874-        CHECK(Twb < T_C);  // wet bulb must be below dry bulb
+4875-        if (prev > 0) {
+4876-            // monotone increasing across the sweep (within fp tolerance)
+4877-            CHECK(Twb >= prev - 1e-6);
+4878-        }
+4879-        prev = Twb;
+4880-    }
+4881-}
+4882-TEST_CASE("Out-of-range Q in update() does not corrupt cached state (#2195)", "[update][2195]") {
+4883-    // Issue #2195: PQ_INPUTS / QT_INPUTS / etc. assigned _Q = value
+4884-    // BEFORE validating the range, so a thrown OutOfRangeError left _Q at
+4885-    // the bad value (e.g. 1.1). A subsequent hmass() call then computed
+4886-    //   _hmolar = _Q * SatV->hmolar() + (1 - _Q) * SatL->hmolar()
+4887-    // with _Q = 1.1, returning a meaningless extrapolated number that
+4888-    // looked plausible. The fix validates first; on throw the state is
+4889-    // either left clean or surfaces NaN, never a misleading finite value.
+4890-    auto AS = std::shared_ptr<CoolProp::AbstractState>(CoolProp::AbstractState::factory("HEOS", "Water"));
+4891-    AS->update(CoolProp::PQ_INPUTS, 10e6, 0.5);
+4892-    const double h_legal = AS->hmass();
+4893-    CHECK(std::isfinite(h_legal));
+4894-    CHECK(h_legal > 1e6);
+4895-
+4896-    CHECK_THROWS(AS->update(CoolProp::PQ_INPUTS, 10e6, 1.1));
+4897-    // After the failed update, hmass must NOT silently return a finite
+4898-    // value computed from the bad Q. NaN is acceptable (cleared cache);
+4899-    // the legal cached value is also acceptable.
+4900-    const double h_after = AS->hmass();
+4901-    CAPTURE(h_after);
+4902-    CHECK((!std::isfinite(h_after) || h_after == h_legal));
+4903-
+4904-    CHECK_THROWS(AS->update(CoolProp::PQ_INPUTS, 10e6, -0.1));
+4905-    CHECK_THROWS(AS->update(CoolProp::QT_INPUTS, 1.5, 400.0));
+4906-    CHECK_THROWS(AS->update(CoolProp::QT_INPUTS, -0.5, 400.0));
+4907-}
+4908-TEST_CASE("Water below 0 C at atmospheric pressure is not silently labelled liquid (#1098)", "[water_phase][1098]") {
+4909-    // Issue #1098 (2017): PhaseSI returned "liquid" for water at T=-5 C,
+4910-    // P=1 atm. The HEOS solid path is not implemented but the response
+4911-    // should at least not be a misleading "liquid". On current master
+4912-    // PhaseSI returns "unknown: ..." with a helpful "T below Tmelt(p)"
+4913-    // message and PropsSI("Phase",...) throws. Pin both behaviours so
+4914-    // the original silent-"liquid" failure mode cannot return.
+4915-    const std::string phase = CoolProp::PhaseSI("T", 273.15 - 5, "P", 101325.0, "Water");
+4916-    CAPTURE(phase);
+4917-    CHECK(phase != "liquid");
+4918-    CHECK(phase != "twophase");
+4919-    CHECK(phase != "gas");
+4920-    // PropsSI("Phase", ...) catches the underlying ValueError and surfaces
+4921-    // it as a non-finite return + populated errstring (Cython then raises).
+4922-    const double v = CoolProp::PropsSI("Phase", "T", 273.15 - 5, "P", 101325.0, "Water");
+4923-    CHECK(!ValidNumber(v));
+4924-}
+4925-
+4926-TEST_CASE("DmassSmass round-trip on the dew curve preserves enthalpy (#1907)", "[water_flash][1907]") {
+4927-    // Issue #1907: looping along the saturated-vapor curve and
+4928-    // re-flashing each (D, S) pair produced wildly inconsistent
+
+exec
+/bin/zsh -lc "curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/wrappers/Python/CoolProp/AbstractState.pyx | rg -n -A 6 -B 2 'first_saturation_deriv|mole_fractions_liquid|mole_fractions_vapor|fugacity_coefficient|saturated_liquid_keyed_output'" in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 106ms:
+235-        """ Get a trivial keyed output not requiring any iteration :cpapi:`CoolProp::AbstractState::trivial_keyed_output(parameters key)` """
+236-        return self.thisptr.trivial_keyed_output(iOutput)
+237:    cpdef double saturated_liquid_keyed_output(self, parameters iOutput) except *:
+238:        """ Get a trivial output for the saturated liquid :cpapi:`CoolProp::AbstractState::saturated_liquid_keyed_output(parameters key)` """
+239:        return self.thisptr.saturated_liquid_keyed_output(iOutput)
+240-    cpdef double saturated_vapor_keyed_output(self, parameters iOutput) except *:
+241-        """ Get a trivial output for the saturated vapor :cpapi:`CoolProp::AbstractState::saturated_vapor_keyed_output(parameters key)` """
+242-        return self.thisptr.saturated_vapor_keyed_output(iOutput)
+243-
+244-    cpdef double T(self) except *:
+245-        """ Get the temperature in K - wrapper of c++ function :cpapi:`CoolProp::AbstractState::T(void)` """
+--
+359-        """ Get the fugacity of the i-th component - wrapper of c++ function :cpapi:`CoolProp::AbstractState::fugacity(std::size_t)` """
+360-        return self.thisptr.fugacity(i)
+361:    cpdef double fugacity_coefficient(self, size_t i) except *:
+362:        """ Get the fugacity coefficient of the i-th component - wrapper of c++ function :cpapi:`CoolProp::AbstractState::fugacity_coefficient(std::size_t)` """
+363:        return self.thisptr.fugacity_coefficient(i)
+364-    cpdef double chemical_potential(self, size_t i) except *:
+365-        """ Get the chemical potential of the i-th component - wrapper of c++ function :cpapi:`CoolProp::AbstractState::chemical_potential(std::size_t)` """
+366-        return self.thisptr.chemical_potential(i)
+367-
+368:    cpdef mole_fractions_liquid(self):
+369:        """ Get the mole fractions of the liquid phase - wrapper of c++ function :cpapi:`CoolProp::AbstractState::mole_fractions_liquid(void)` """
+370:        return self.thisptr.mole_fractions_liquid()
+371:    cpdef mole_fractions_vapor(self):
+372:        """ Get the mole fractions of the vapor phase - wrapper of c++ function :cpapi:`CoolProp::AbstractState::mole_fractions_vapor(void)` """
+373:        return self.thisptr.mole_fractions_vapor()
+374-
+375-    cpdef tuple true_critical_point(self):
+376-        """ Get the "true" critical point where dp/drho|T = 0 & d2p/drho^2|T = 0 - wrapper of c++ function :cpapi:`CoolProp::AbstractState::true_critical_point` """
+377-        cdef double T = 1e99, rho = 1e99
+378-        self.thisptr.true_critical_point(T, rho)
+379-        return T, rho
+--
+475-        """ Get the second partial derivative - wrapper of c++ function :cpapi:`CoolProp::AbstractState::second_partial_deriv` """
+476-        return self.thisptr.second_partial_deriv(OF, WRT1, CONSTANT1, WRT2, CONSTANT2)
+477:    cpdef CoolPropDbl first_saturation_deriv(self, constants_header.parameters OF , constants_header.parameters WRT) except *:
+478:        """ Get the first derivative along the saturation curve - wrapper of c++ function :cpapi:`CoolProp::AbstractState::first_saturation_deriv` """
+479:        return self.thisptr.first_saturation_deriv(OF, WRT)
+480-    cpdef CoolPropDbl second_saturation_deriv(self, constants_header.parameters OF1 , constants_header.parameters WRT1, constants_header.parameters WRT2) except *:
+481-        """ Get the second derivative along the saturation curve - wrapper of c++ function :cpapi:`CoolProp::AbstractState::second_saturation_deriv` """
+482-        return self.thisptr.second_saturation_deriv(OF1, WRT1, WRT2)
+483-    cpdef double first_two_phase_deriv(self, constants_header.parameters Of, constants_header.parameters Wrt, constants_header.parameters Constant) except *:
+484-        """ Get the first two-phase derivative - wrapper of C++ function :cpapi:`CoolProp::AbstractState::first_two_phase_deriv` """
+485-        return self.thisptr.first_two_phase_deriv(Of, Wrt, Constant)
+
+codex
+已核对合并版本的实现和测试：新增测试只覆盖一个泡点状态，露点分支没有对应的数值差分检查。我会把固定总组成下泡点、露点曲线的切线作为主不变量，并补充端点物性导数和纯流体 Clapeyron 一致性；中间品质抛异常则单独作为 API 边界说明。
+exec
+/bin/zsh -lc 'curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/wrappers/Python/pyproject.toml' in <workdir>/CoolProp_CoolProp_2851
+ exited 56 in 171ms:
+exec
+/bin/zsh -lc "curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/CMakeLists.txt | rg -n 'CXX_STANDARD|cmake_minimum|CATCH|EIGEN|FMT|submodule|externals'" in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 86ms:
+1:cmake_minimum_required(VERSION 3.14)
+9:# Dependency management via CPM.cmake (replaces git submodules).
+88:set(CMAKE_CXX_STANDARD 17)
+284:list(APPEND APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/externals/miniz-3.1.1/miniz.c")
+304:list(APPEND APP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/externals/miniz-3.1.1")
+305:list(APPEND APP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/externals/nlohmann-json")
+306:list(APPEND APP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/externals/incbin")
+675:    message(STATUS "EIGEN WORKAROUND ACTIVE!!")
+679:      PROPERTY COMPILE_FLAGS " -DEIGEN_DONT_VECTORIZE")
+1289:  add_definitions(-DNO_ERROR_CATCHING)
+1398:  add_definitions(-DNO_ERROR_CATCHING)
+1486:  add_definitions(-DNO_ERROR_CATCHING)
+1550:  add_definitions(-DNO_ERROR_CATCHING)
+1605:  add_definitions(-DNO_ERROR_CATCHING)
+1746:  add_definitions(-DNO_ERROR_CATCHING)
+1898:  add_definitions(-sDISABLE_EXCEPTION_CATCHING=0)
+1908:      "-lembind ${EMSCRIPTEN_INIT_FLAG} -s ASSERTIONS=1 -s DISABLE_EXCEPTION_CATCHING=0 -sALLOW_MEMORY_GROWTH=1 -s EXPORT_ES6=1 -s MODULARIZE=1"
+2058:                                          "${COMPILE_FLAGS} -DENABLE_CATCH")
+2067:if(COOLPROP_CATCH_MODULE)
+2074:  # CATCH TEST, compile everything with catch and set test entry point
+2079:  target_compile_definitions(CatchTestRunner PRIVATE ENABLE_CATCH)
+2181:  # CATCH TEST, compile everything with catch and set test entry point
+2185:    CatchTestRunner PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DENABLE_CATCH")
+2224:# `if(COOLPROP_MAIN_MODULE)`; CatchTestRunner inside `if(COOLPROP_CATCH_MODULE)`.
+
+exec
+/bin/zsh -lc 'curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/CMakeLists.txt | head -n 95' in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 0ms:
+cmake_minimum_required(VERSION 3.14)
+
+# Always export compile_commands.json for clang-tidy, IWYU, and editor LSPs
+# (CoolProp-2uw.7). Honored by Makefile and Ninja generators; harmless on others.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(CheckIncludeFileCXX)
+
+# Dependency management via CPM.cmake (replaces git submodules).
+# Set CPM_SOURCE_CACHE (e.g. ~/.cache/CPM) to share downloads across worktrees.
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPM.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies.cmake")
+
+if(DEFINED COOLPROP_INSTALL_PREFIX)
+  #set(COOLPROP_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install_root)
+  message(STATUS "COOLPROP_INSTALL_PREFIX=${COOLPROP_INSTALL_PREFIX}")
+else()
+  set(COOLPROP_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install_root)
+  message(STATUS "COOLPROP_INSTALL_PREFIX=${COOLPROP_INSTALL_PREFIX}")
+endif()
+
+set(CMAKE_INSTALL_PREFIX
+    ${COOLPROP_INSTALL_PREFIX}
+    CACHE PATH "default install path" FORCE)
+
+#######################################
+#           BUILD OPTIONS             #
+#-------------------------------------#
+# These options are available to be   #
+# modified in the build process.      #
+# packages may want to modify these   #
+# to suit, or just leave as defaults. #
+#######################################
+
+option(COOLPROP_STATIC_LIBRARY "Build CoolProp as a static library (.lib, .a)"
+       OFF)
+
+option(COOLPROP_SHARED_LIBRARY "Build CoolProp as a shared library (.dll, .so)"
+       OFF)
+
+option(COOLPROP_OBJECT_LIBRARY
+       "Build CoolProp objects, but do not link them (.obj, .o)" OFF)
+
+option(COOLPROP_EES_MODULE "Build the EES module" OFF)
+
+option(COOLPROP_WINDOWS_PACKAGE "Build the Windows installer" OFF)
+
+option(BUILD_TESTING "Enable testing for this given builder" OFF)
+
+option(FORCE_BITNESS_32 "Force a 32bit build regardless of the host" OFF)
+
+option(FORCE_BITNESS_64 "Force a 64bit build regardless of the host" OFF)
+
+option(FORCE_BITNESS_NATIVE
+       "Force a native bitness build regardless of the host" OFF)
+
+option(COOLPROP_RELEASE "Optimize the builds with the release specs" OFF)
+
+option(COOLPROP_DEBUG "Make a debug build" OFF)
+
+option(COOLPROP_SMATH_WORK_INPLACE "Build SMath wrapper in source directory"
+       OFF)
+
+option(
+  COOLPROP_MSVC_STATIC
+  "Statically link Microsoft Standard library removes dependency on MSVCRXXX.dll."
+  OFF)
+
+option(
+  COOLPROP_MSVC_DYNAMIC
+  "Dynamically link Microsoft Standard library to integrate with other builds."
+  OFF)
+
+option(
+  COOLPROP_MSVC_DEBUG
+  "Link the debug version of Microsoft Standard library to the debug builds."
+  ON)
+
+option(COOLPROP_NO_EXAMPLES
+       "Do not generate example code, does only apply to some wrappers." OFF)
+
+#option (DARWIN_USE_LIBCPP
+#        "On Darwin systems, compile and link with -std=libc++ instead of the default -std=libstdc++"
+#        ON)
+
+# Force C++11 since lambdas are used in CPStrings.h
+# In the future, we may want to force C++14 since std::make_unique is used in DataStructures.cpp
+set(CMAKE_CXX_STANDARD 17)
+
+
+# Define -DCOOLPROP_ASAN=ON to enable the option of using address sanitizer of clang
+if (COOLPROP_ASAN)
+
+  # https://stackoverflow.com/a/64294837 (CC BY-SA 4.0)
+  if(isMultiConfig)
+
+exec
+/bin/zsh -lc 'curl -L --fail --silent https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/cmake/dependencies.cmake | head -n 180' in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 130ms:
+# Dependencies for CoolProp managed via CPM.cmake
+# CPM_SOURCE_CACHE can be overridden via environment variable (e.g. ~/.cache/CPM)
+# to share the download cache across git worktrees and build directories.
+# Without a stable cache location, FetchContent re-runs on every cmake configure,
+# touching header timestamps and forcing a complete C++ rebuild each time.
+if(NOT DEFINED CPM_SOURCE_CACHE AND "$ENV{CPM_SOURCE_CACHE}" STREQUAL "")
+  set(CPM_SOURCE_CACHE "${CMAKE_CURRENT_LIST_DIR}/../.cpm_cache" CACHE PATH "CPM source cache")
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/CPM.cmake")
+
+# ── Core header-only deps ──────────────────────────────────────────────────
+
+CPMAddPackage(
+  NAME Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        5.0.1
+  DOWNLOAD_ONLY  YES   # header-only; skip Eigen's own CMake targets
+)
+
+CPMAddPackage(
+  NAME msgpack-c
+  GIT_REPOSITORY https://github.com/msgpack/msgpack-c
+  GIT_TAG        919908742b4fdbc575e77fe1a8657e70c9573c44
+  DOWNLOAD_ONLY  YES
+)
+
+CPMAddPackage(
+  NAME rapidjson
+  GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+  GIT_TAG        24b5e7a8b27f42fa16b96fc70aade9106cf7102f
+  DOWNLOAD_ONLY  YES
+)
+
+CPMAddPackage(
+  NAME IF97
+  GIT_REPOSITORY https://github.com/CoolProp/IF97
+  GIT_TAG        7aaced024a702f0985474bf293cdaae9c8d06521
+  DOWNLOAD_ONLY  YES
+)
+
+CPMAddPackage(
+  NAME REFPROP_headers
+  GIT_REPOSITORY https://github.com/CoolProp/REFPROP-headers.git
+  GIT_TAG        b4faab1b73911c32c4b69c526c7e92f74edb67de
+  DOWNLOAD_ONLY  YES
+)
+
+CPMAddPackage(
+  NAME boost_headers
+  GIT_REPOSITORY https://github.com/CoolProp/boost-headers.git
+  GIT_TAG        c68104660ca4bd80d0d5cb34c4eba0cf5bab3f73
+  DOWNLOAD_ONLY  YES
+)
+
+CPMAddPackage(
+  NAME multicomplex
+  GIT_REPOSITORY https://github.com/usnistgov/multicomplex
+  GIT_TAG        39bf9ca52c7882ff0788bb9087c7548ebd8fba4c
+  DOWNLOAD_ONLY  YES
+)
+
+# ── fmt (header-only use; disable fmt's own tests/docs) ───────────────────
+
+CPMAddPackage(
+  NAME fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG        12.0.0
+  OPTIONS
+    "FMT_INSTALL OFF"
+    "FMT_TEST OFF"
+    "FMT_DOC OFF"
+  DOWNLOAD_ONLY  YES   # CoolProp uses fmt in header-only mode via FMT_HEADER_ONLY
+)
+
+# ── Catch2 (testing only) ──────────────────────────────────────────────────
+# Fetched and add_subdirectory'd only when COOLPROP_CATCH_MODULE is ON.
+
+if(COOLPROP_CATCH_MODULE)
+  CPMAddPackage(
+    NAME Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2
+    GIT_TAG        v3.8.0
+  )
+endif()
+
+# ── Windows packaging helpers (optional) ──────────────────────────────────
+
+if(COOLPROP_WINDOWS_PACKAGE)
+  CPMAddPackage(
+    NAME ExcelAddinInstaller
+    GIT_REPOSITORY https://github.com/CoolProp/ExcelAddinInstaller.git
+    GIT_TAG        db8ce41cdb02079a2d9242ea08f3633e8a1d38b0
+    DOWNLOAD_ONLY  YES
+  )
+endif()
+
+# ── Mathematica (optional) ─────────────────────────────────────────────────
+
+if(COOLPROP_MATHEMATICA_MODULE)
+  CPMAddPackage(
+    NAME FindMathematica
+    GIT_REPOSITORY https://github.com/sakra/FindMathematica
+    GIT_TAG        4.2.0
+    DOWNLOAD_ONLY  YES
+  )
+endif()
+
+apply patch
+patch: completed
+<workdir>/CoolProp_CoolProp_2851/spec.md
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a972886446ddb29006100128cbf0f831e480fa3e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,85 @@
++## CoolProp/CoolProp#2851 fix(HEOS): correct first_saturation_deriv for mixtures (#2091)
++
++- What changed (1–3 sentences, naming files and formulas):
++  `src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp` 将混合物饱和切线从纯流体公式 `dT/dp = T(vV−vL)/(hV−hL)` 改为 `−A/B`，其中 A、B 是两相 ln(逸度系数) 对压力、温度偏导之差，泡点用气相组成加权、露点用液相组成加权。混合物仅接受 Q=0 或 Q=1，无参数饱和相重载委托给显式 SatL/SatV 重载；纯流体及 pseudo-pure 分支保留原式。`src/Tests/CoolProp-Tests.cpp` 新增一个泡点差分测试和一个中间 Q 抛异常测试。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++
++  约定所有组成为摩尔分数：总组成 z，液相 x，气相 y，均归一化且分量为正；Q 是气相摩尔品质。T 用 K，p 用 Pa，h 用 J/mol，ρ 用 mol/m³，v=1/ρ；相差统一为气相减液相。固定 z，令 q∈{0,1}，`p_q(T;z)` 为同一连续汽液平衡端点分支：q=0 时 x=z，q=1 时 y=z。限于两相可区分、EOS 光滑、平衡解局部唯一、相关导数分母非零的状态；不含临界点、相分支跳跃、固相或三相平衡。
++
++  1. **Primary — 混合物相平衡切线。** 令 Dq=`first_saturation_deriv(iT,iP)`，Eq=`first_saturation_deriv(iP,iT)`。应有
++     \[
++     E_q=\frac{d p_q}{dT}\bigg|_z,\qquad D_q E_q=1.
++     \]
++     更具体地，令 φᵅᵢ(T,p,cᵅ) 为相 α 的逸度系数，偏导时保持该相组成不变，定义
++     \[
++     A_q=\sum_i w_i^{(q)}[(\partial_p\ln\phi_i^L)_{T,x}-(\partial_p\ln\phi_i^V)_{T,y}],\quad
++     B_q=\sum_i w_i^{(q)}[(\partial_T\ln\phi_i^L)_{p,x}-(\partial_T\ln\phi_i^V)_{p,y}],
++     \]
++     其中 w⁽⁰⁾=y，w⁽¹⁾=x。则 **Aq+Bq Dq=0**，等价于 Dq=−Aq/Bq。A 的单位为 Pa⁻¹，B 为 K⁻¹，D 为 K/Pa。不能要求泡点与露点斜率相等，也不能对所有混合物强加正斜率；正斜率只作为本 PR 的指定普通状态的局部检查。
++
++  2. **Secondary — 固定组成端点物性的总导数。** 对 F∈{hmolar, smolar, rhomolar}，令 Fq(T;z) 为 `update(QT_INPUTS,q,T)` 后主状态的 F（泡点的主体液相或露点的主体气相）。在这些端点，主体组成 z 不随 T 改变，因此
++     \[
++     \operatorname{satderiv}(F,T)=\frac{dF_q}{dT}
++       =(\partial_T F)_{p,z}+(\partial_p F)_{T,z}E_q,
++     \qquad
++     \operatorname{satderiv}(F,p)=D_q\frac{dF_q}{dT}.
++     \]
++     这里不声称泡点的微量气相物性或露点的微量液相物性满足这个无组成项公式：这些相的组成会随曲线变化。该不变量覆盖本 PR 新斜率进入既有物性链式求导分支后的实际公共 API 行为。
++
++  3. **Secondary — 真正纯流体的 Clapeyron 一致性及单组分约化。** 对真正纯流体、同温同压的平衡液气相，Δh=hV−hL，Δv=vV−vL，应有
++     \[
++     D_q\Delta h=T\Delta v,\qquad
++     E_q=\frac{\Delta h}{T\Delta v},\qquad D_0=D_1.
++     \]
++     普通汽液平衡区 Δh>0、Δv>0，故 Dq>0。混合物切线在光滑单组分极限应约化为该式；不强制含零摩尔分数的混合物 API 可用。**不把 pseudo-pure 的保留行为直接解释为严格物理定理**：有温度滑移的拟纯模型未必代表同温同压的真实单组分两相平衡。
++
++  API 范围补充（不计作物理不变量）：混合物成功更新到 0<Q<1 后，本方法应抛异常，不能冒充泡点/露点切线。这不表示固定中间 Q 的曲线在数学上不存在，只表示该 API 未实现那种导数。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++
++  主不变量可直接从相平衡 `x_i φ_i^L p = y_i φ_i^V p` 推导，不依赖将新实现本身当作正确性标准。对其对数微分：泡点 dx=0，乘以 yᵢ 求和；利用 Σdyᵢ=0 及气相在固定 T,p 下的 Gibbs–Duhem 关系 Σyᵢ d_composition lnφᵢV=0，得到 A₀dp+B₀dT=0。露点 dy=0，改乘 xᵢ 后利用液相的同一关系，得到 A₁dp+B₁dT=0。该推导要求逸度来自热力学一致的混合物模型。
++
++  第二项来自固定组成链式法则；第三项来自 dμ=−s dT+v dp、两相 μ 相等及 Δh=TΔs。单组分时 ∂p lnφ=v/(RT)−1/p，∂T lnφ=−hᵣ/(RT²)，因此 A=−Δv/(RT)、B=Δh/(RT²)，给出同一 Clapeyron 式。
++
++  输入 PR 将混合物式归于 Gernert 学位论文 3.96/3.97；本审计未独立取得论文原文，不把该编号当作已核实的外部证据。已读取的固定版本依据为 [HEOS 实现](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp)、[公共 AbstractState 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/include/AbstractState.h) 和 [Python 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/wrappers/Python/CoolProp/AbstractState.pyx)。未读取其他独立审计轨道、评论、issue 或 fork。
++
++- Common operating domain (range of each input, with the basis):
++
++  首轮取 `HEOS`, `Methane&Ethane`，z=(a,1−a)，a∈[0.6,0.8]，T∈[170,190] K，q 分别取 0、1。基准是 PR 明确测试的 a=0.7、T=180 K、q=0；区间是围绕该点的保守抽样建议，**尚未运行验证，也不是文献保证的整个可用范围**。p 是 QT flash 输出而非独立输入，初筛 10³≤p≤10⁷ Pa；只接纳中心和差分邻点都收敛、保持同一平衡分支的样本。
++
++  额外要求所有相分数为正且归一化，ρL>ρV>0，(ρL−ρV)/ρL>0.05 以避开相密度合并；检查两相逸度一致性，而不单凭 flash 返回就认定平衡正确。此密度门只是数值筛选，不是临界区的严格充分判据。记录失败/未收敛样本，不将其计为不变量通过。中间 Q 异常检查使用原测试点 T=180 K、a=0.7、Q=0.5，可再抽 Q∈[0.1,0.9]。
++
++  纯流体回归用 `HEOS`, `n-Propane`，T∈[280,320] K、q∈{0,1}，以已有回归测试的 300 K 为中心；同样要求平衡与非退化条件。纯组分不是把二元 z 数值置零的调用。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++
++  使用该合并提交的 C++ `AbstractState::factory("HEOS","Methane&Ethane")`、`set_mole_fractions({a,1-a})`、`update(QT_INPUTS,q,T)`、`p()`、`first_saturation_deriv`、`keyed_output`。Python 同名 AbstractState 包装也可实现检查。对中心和邻点使用独立状态或每次重设状态，保存中心解析值后再移动 flash 状态。所有差分保持 **z 和 q** 不变，不锁定微量相的组成。
++
++  **主检查：** 计算 C(h)=[p_q(T+h)−p_q(T−h)]/(2h)，比较 Eq 与 C，以及 Dq·C 与 1；另外检查 Dq·Eq≈1，但这一代数检查不能替代独立 flash 差分。使用 h=0.1、0.05、0.025、0.0125 K 的阶梯，在平滑区寻找二阶收敛；可用 [4C(h/2)−C(h)]/3 外推。建议差分稳定到相对 10⁻⁴ 后要求解析值相对误差≤10⁻³（原 PR 仅要求 5×10⁻³）。若继续减小 h 后误差反增，采用稳定平台；若无平台，标记数值未决，不自动放宽到通过。互逆的代数检查可用 |DqEq−1|≤10⁻¹⁰。接近零斜率、转折或分母退化的样本移出本次非奇异域，另行记录。
++
++  **可选的主检查交叉证据：** 从 `mole_fractions_liquid()`、`mole_fractions_vapor()` 取得 x、y，为两相分别创建单相状态并固定各自组成，用 `specify_phase(iphase_liquid/iphase_gas)` 和 `update(PT_INPUTS,p,T)` 保持相根；以 `fugacity_coefficient(i)` 的对数中心差分构造 A、B。初始温度步长 0.05 K、压力步长 max(1 Pa,10⁻⁴p)，分别反复减半寻找平台；这些偏导不能沿 QT 曲线差分。先要求重建相密度与饱和相密度相对一致至约 10⁻⁶，且 maxᵢ|ln(xᵢφᵢL/(yᵢφᵢV))|≤10⁻⁷；否则判为参考状态构造失败。检查 |A+BDq|/(|A|+|BDq|)≤10⁻³，分母须非零。这条路径交叉验证固定组成的逸度导数与权重，主判据仍为独立 flash 曲线切线。
++
++  **端点物性检查：** 同一组 QT 邻点读取 hmolar、smolar、rhomolar，构造 CF(h)=[Fq(T+h)−Fq(T−h)]/(2h)，比较 `first_saturation_deriv(iF,iT)` 与 CF、`first_saturation_deriv(iF,iP)` 与 CF/C。采用同样的步长平台和 10⁻³ 相对容差。若导数近零，用混合误差界 10⁻³·max(|参考导数|,10⁻⁶SF)，其中温度导数的 SF=max(|F中心|,Funit)/T，Funit 分别为 1 J/mol、1 J/(mol K)、1 mol/m³；压力导数的尺度改为 SF/|C|。这些是待验证的数值容差，不是实验物性精度声明。
++
++  **纯流体检查：** 通过 `saturated_liquid_keyed_output(iHmolar/iDmolar)` 与 `saturated_vapor_keyed_output(...)` 构造 Δh、Δv，比较 |DΔh−TΔv|/max(|DΔh|,|TΔv|)≤10⁻¹⁰；同时独立 QT 差分，建议 10⁻⁴ 相对容差，以防只检查了实现的原式。相同 T 下的 Q=0、1 切线以相对 10⁻⁸ 比较。中间 Q 另检查调用确实抛出异常。所有建议均为后续执行规范；本次没有运行代码或生成数值结果。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++
++  **Primary：partial。** 合并版本 `src/Tests/CoolProp-Tests.cpp:4815–4840` 的 `[first_saturation_deriv][2091]` 只检查 Methane/Ethane=(0.7,0.3)、T=180 K、Q=0，步长 0.05 K；断言 D>0，且与反演压力差分的相对误差<5e−3。没有露点、组成扫描、步长收敛、逸度残差或直接 Eq 检查。
++
++  **端点物性：partial。** 同文件 `:2411–2449` 的 `[first_saturation_partial_deriv]` 对纯 n-Propane、300 K、Q=1 检查 P、T、Dmolar、Hmolar、Smolar、Umolar 的十组温度/压力导数，要求 |numerical/analytical−1|<1e−4；未覆盖新混合物分支的物性导数。
++
++  **纯流体 Clapeyron：partial。** 上述旧测试间接检查纯流体的饱和切线，但未直接断言潜热关系，也未比较 Q=0 与 Q=1。`:4843–4849` 对 Q=0.5 的 `first_saturation_deriv(iT,iP)` 使用 `CHECK_THROWS`，完整覆盖该单一状态的新增异常行为。PR 描述声称相关回归通过；本审计只核对测试源码，未复跑。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++
++  **satisfies（推测，限上述非退化域）。** 新的对侧组成权重和负号与相平衡微分及 Gibbs–Duhem 消元一致，端点主体组成固定也支持保留的链式法则，纯流体公式未变。露点与混合物物性导数缺乏本 PR 的直接测试，因此仍需数值验证；对奇异区及 pseudo-pure 的严格物理一致性保持 uncertain。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++
++  SHA：`54a2e32764bfa0ae81877e835c33ccd13ba8f853`。建议以 C++ 公共 API 为基准；[CMakeLists.txt](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/CMakeLists.txt) 指定 C++17、CMake≥3.14，依赖通过 CPM 管理。[cmake/dependencies.cmake](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/cmake/dependencies.cmake) 列出 Eigen 5.0.1、fmt 12.0.0、msgpack、rapidjson、IF97、REFPROP headers、boost headers、multicomplex；运行原生测试还需 Catch2 3.8.0。这里只用 HEOS，不需要 REFPROP 的专有运行库。Python 可作为可选驱动，但须绑定到此 SHA；Python 包构建依赖未完整核实，不能以任意已安装版本代替。预计搭建难度 **medium**：需要精确版本本地构建与依赖解析。本次未安装、编译或运行任何项目代码，未克隆仓库。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++
++  **可以。** 固定有限组分数 N，以正实数 T,p 及单纯形内部 x,y 为变量，以光滑实函数 lnφᵢᵅ 和局部平衡路径表示 EOS；假设逸度相等、归一化、Gibbs–Duhem、固定主体组成及非零分母，即可形式化推导 A dp+B dT=0、反函数斜率、物性链式法则和单组分约化。主要障碍是从实际多参数 Helmholtz EOS 证明这些热力学一致性前提、用隐函数定理证明局部平衡解存在且唯一、处理临界点及相选择，以及将实数证明连接到浮点计算/flash 求解器误差；证明代数公式并不能证明求解器找到了物理稳定相。中间 Q 抛异常属于程序契约，需独立的程序语义证明，不是实数热力学命题。
+
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a972886446ddb29006100128cbf0f831e480fa3e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,85 @@
++## CoolProp/CoolProp#2851 fix(HEOS): correct first_saturation_deriv for mixtures (#2091)
++
++- What changed (1–3 sentences, naming files and formulas):
++  `src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp` 将混合物饱和切线从纯流体公式 `dT/dp = T(vV−vL)/(hV−hL)` 改为 `−A/B`，其中 A、B 是两相 ln(逸度系数) 对压力、温度偏导之差，泡点用气相组成加权、露点用液相组成加权。混合物仅接受 Q=0 或 Q=1，无参数饱和相重载委托给显式 SatL/SatV 重载；纯流体及 pseudo-pure 分支保留原式。`src/Tests/CoolProp-Tests.cpp` 新增一个泡点差分测试和一个中间 Q 抛异常测试。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++
++  约定所有组成为摩尔分数：总组成 z，液相 x，气相 y，均归一化且分量为正；Q 是气相摩尔品质。T 用 K，p 用 Pa，h 用 J/mol，ρ 用 mol/m³，v=1/ρ；相差统一为气相减液相。固定 z，令 q∈{0,1}，`p_q(T;z)` 为同一连续汽液平衡端点分支：q=0 时 x=z，q=1 时 y=z。限于两相可区分、EOS 光滑、平衡解局部唯一、相关导数分母非零的状态；不含临界点、相分支跳跃、固相或三相平衡。
++
++  1. **Primary — 混合物相平衡切线。** 令 Dq=`first_saturation_deriv(iT,iP)`，Eq=`first_saturation_deriv(iP,iT)`。应有
++     \[
++     E_q=\frac{d p_q}{dT}\bigg|_z,\qquad D_q E_q=1.
++     \]
++     更具体地，令 φᵅᵢ(T,p,cᵅ) 为相 α 的逸度系数，偏导时保持该相组成不变，定义
++     \[
++     A_q=\sum_i w_i^{(q)}[(\partial_p\ln\phi_i^L)_{T,x}-(\partial_p\ln\phi_i^V)_{T,y}],\quad
++     B_q=\sum_i w_i^{(q)}[(\partial_T\ln\phi_i^L)_{p,x}-(\partial_T\ln\phi_i^V)_{p,y}],
++     \]
++     其中 w⁽⁰⁾=y，w⁽¹⁾=x。则 **Aq+Bq Dq=0**，等价于 Dq=−Aq/Bq。A 的单位为 Pa⁻¹，B 为 K⁻¹，D 为 K/Pa。不能要求泡点与露点斜率相等，也不能对所有混合物强加正斜率；正斜率只作为本 PR 的指定普通状态的局部检查。
++
++  2. **Secondary — 固定组成端点物性的总导数。** 对 F∈{hmolar, smolar, rhomolar}，令 Fq(T;z) 为 `update(QT_INPUTS,q,T)` 后主状态的 F（泡点的主体液相或露点的主体气相）。在这些端点，主体组成 z 不随 T 改变，因此
++     \[
++     \operatorname{satderiv}(F,T)=\frac{dF_q}{dT}
++       =(\partial_T F)_{p,z}+(\partial_p F)_{T,z}E_q,
++     \qquad
++     \operatorname{satderiv}(F,p)=D_q\frac{dF_q}{dT}.
++     \]
++     这里不声称泡点的微量气相物性或露点的微量液相物性满足这个无组成项公式：这些相的组成会随曲线变化。该不变量覆盖本 PR 新斜率进入既有物性链式求导分支后的实际公共 API 行为。
++
++  3. **Secondary — 真正纯流体的 Clapeyron 一致性及单组分约化。** 对真正纯流体、同温同压的平衡液气相，Δh=hV−hL，Δv=vV−vL，应有
++     \[
++     D_q\Delta h=T\Delta v,\qquad
++     E_q=\frac{\Delta h}{T\Delta v},\qquad D_0=D_1.
++     \]
++     普通汽液平衡区 Δh>0、Δv>0，故 Dq>0。混合物切线在光滑单组分极限应约化为该式；不强制含零摩尔分数的混合物 API 可用。**不把 pseudo-pure 的保留行为直接解释为严格物理定理**：有温度滑移的拟纯模型未必代表同温同压的真实单组分两相平衡。
++
++  API 范围补充（不计作物理不变量）：混合物成功更新到 0<Q<1 后，本方法应抛异常，不能冒充泡点/露点切线。这不表示固定中间 Q 的曲线在数学上不存在，只表示该 API 未实现那种导数。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++
++  主不变量可直接从相平衡 `x_i φ_i^L p = y_i φ_i^V p` 推导，不依赖将新实现本身当作正确性标准。对其对数微分：泡点 dx=0，乘以 yᵢ 求和；利用 Σdyᵢ=0 及气相在固定 T,p 下的 Gibbs–Duhem 关系 Σyᵢ d_composition lnφᵢV=0，得到 A₀dp+B₀dT=0。露点 dy=0，改乘 xᵢ 后利用液相的同一关系，得到 A₁dp+B₁dT=0。该推导要求逸度来自热力学一致的混合物模型。
++
++  第二项来自固定组成链式法则；第三项来自 dμ=−s dT+v dp、两相 μ 相等及 Δh=TΔs。单组分时 ∂p lnφ=v/(RT)−1/p，∂T lnφ=−hᵣ/(RT²)，因此 A=−Δv/(RT)、B=Δh/(RT²)，给出同一 Clapeyron 式。
++
++  输入 PR 将混合物式归于 Gernert 学位论文 3.96/3.97；本审计未独立取得论文原文，不把该编号当作已核实的外部证据。已读取的固定版本依据为 [HEOS 实现](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp)、[公共 AbstractState 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/include/AbstractState.h) 和 [Python 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/wrappers/Python/CoolProp/AbstractState.pyx)。未读取其他独立审计轨道、评论、issue 或 fork。
++
++- Common operating domain (range of each input, with the basis):
++
++  首轮取 `HEOS`, `Methane&Ethane`，z=(a,1−a)，a∈[0.6,0.8]，T∈[170,190] K，q 分别取 0、1。基准是 PR 明确测试的 a=0.7、T=180 K、q=0；区间是围绕该点的保守抽样建议，**尚未运行验证，也不是文献保证的整个可用范围**。p 是 QT flash 输出而非独立输入，初筛 10³≤p≤10⁷ Pa；只接纳中心和差分邻点都收敛、保持同一平衡分支的样本。
++
++  额外要求所有相分数为正且归一化，ρL>ρV>0，(ρL−ρV)/ρL>0.05 以避开相密度合并；检查两相逸度一致性，而不单凭 flash 返回就认定平衡正确。此密度门只是数值筛选，不是临界区的严格充分判据。记录失败/未收敛样本，不将其计为不变量通过。中间 Q 异常检查使用原测试点 T=180 K、a=0.7、Q=0.5，可再抽 Q∈[0.1,0.9]。
++
++  纯流体回归用 `HEOS`, `n-Propane`，T∈[280,320] K、q∈{0,1}，以已有回归测试的 300 K 为中心；同样要求平衡与非退化条件。纯组分不是把二元 z 数值置零的调用。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++
++  使用该合并提交的 C++ `AbstractState::factory("HEOS","Methane&Ethane")`、`set_mole_fractions({a,1-a})`、`update(QT_INPUTS,q,T)`、`p()`、`first_saturation_deriv`、`keyed_output`。Python 同名 AbstractState 包装也可实现检查。对中心和邻点使用独立状态或每次重设状态，保存中心解析值后再移动 flash 状态。所有差分保持 **z 和 q** 不变，不锁定微量相的组成。
++
++  **主检查：** 计算 C(h)=[p_q(T+h)−p_q(T−h)]/(2h)，比较 Eq 与 C，以及 Dq·C 与 1；另外检查 Dq·Eq≈1，但这一代数检查不能替代独立 flash 差分。使用 h=0.1、0.05、0.025、0.0125 K 的阶梯，在平滑区寻找二阶收敛；可用 [4C(h/2)−C(h)]/3 外推。建议差分稳定到相对 10⁻⁴ 后要求解析值相对误差≤10⁻³（原 PR 仅要求 5×10⁻³）。若继续减小 h 后误差反增，采用稳定平台；若无平台，标记数值未决，不自动放宽到通过。互逆的代数检查可用 |DqEq−1|≤10⁻¹⁰。接近零斜率、转折或分母退化的样本移出本次非奇异域，另行记录。
++
++  **可选的主检查交叉证据：** 从 `mole_fractions_liquid()`、`mole_fractions_vapor()` 取得 x、y，为两相分别创建单相状态并固定各自组成，用 `specify_phase(iphase_liquid/iphase_gas)` 和 `update(PT_INPUTS,p,T)` 保持相根；以 `fugacity_coefficient(i)` 的对数中心差分构造 A、B。初始温度步长 0.05 K、压力步长 max(1 Pa,10⁻⁴p)，分别反复减半寻找平台；这些偏导不能沿 QT 曲线差分。先要求重建相密度与饱和相密度相对一致至约 10⁻⁶，且 maxᵢ|ln(xᵢφᵢL/(yᵢφᵢV))|≤10⁻⁷；否则判为参考状态构造失败。检查 |A+BDq|/(|A|+|BDq|)≤10⁻³，分母须非零。这条路径交叉验证固定组成的逸度导数与权重，主判据仍为独立 flash 曲线切线。
++
++  **端点物性检查：** 同一组 QT 邻点读取 hmolar、smolar、rhomolar，构造 CF(h)=[Fq(T+h)−Fq(T−h)]/(2h)，比较 `first_saturation_deriv(iF,iT)` 与 CF、`first_saturation_deriv(iF,iP)` 与 CF/C。采用同样的步长平台和 10⁻³ 相对容差。若导数近零，用混合误差界 10⁻³·max(|参考导数|,10⁻⁶SF)，其中温度导数的 SF=max(|F中心|,Funit)/T，Funit 分别为 1 J/mol、1 J/(mol K)、1 mol/m³；压力导数的尺度改为 SF/|C|。这些是待验证的数值容差，不是实验物性精度声明。
++
++  **纯流体检查：** 通过 `saturated_liquid_keyed_output(iHmolar/iDmolar)` 与 `saturated_vapor_keyed_output(...)` 构造 Δh、Δv，比较 |DΔh−TΔv|/max(|DΔh|,|TΔv|)≤10⁻¹⁰；同时独立 QT 差分，建议 10⁻⁴ 相对容差，以防只检查了实现的原式。相同 T 下的 Q=0、1 切线以相对 10⁻⁸ 比较。中间 Q 另检查调用确实抛出异常。所有建议均为后续执行规范；本次没有运行代码或生成数值结果。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++
++  **Primary：partial。** 合并版本 `src/Tests/CoolProp-Tests.cpp:4815–4840` 的 `[first_saturation_deriv][2091]` 只检查 Methane/Ethane=(0.7,0.3)、T=180 K、Q=0，步长 0.05 K；断言 D>0，且与反演压力差分的相对误差<5e−3。没有露点、组成扫描、步长收敛、逸度残差或直接 Eq 检查。
++
++  **端点物性：partial。** 同文件 `:2411–2449` 的 `[first_saturation_partial_deriv]` 对纯 n-Propane、300 K、Q=1 检查 P、T、Dmolar、Hmolar、Smolar、Umolar 的十组温度/压力导数，要求 |numerical/analytical−1|<1e−4；未覆盖新混合物分支的物性导数。
++
++  **纯流体 Clapeyron：partial。** 上述旧测试间接检查纯流体的饱和切线，但未直接断言潜热关系，也未比较 Q=0 与 Q=1。`:4843–4849` 对 Q=0.5 的 `first_saturation_deriv(iT,iP)` 使用 `CHECK_THROWS`，完整覆盖该单一状态的新增异常行为。PR 描述声称相关回归通过；本审计只核对测试源码，未复跑。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++
++  **satisfies（推测，限上述非退化域）。** 新的对侧组成权重和负号与相平衡微分及 Gibbs–Duhem 消元一致，端点主体组成固定也支持保留的链式法则，纯流体公式未变。露点与混合物物性导数缺乏本 PR 的直接测试，因此仍需数值验证；对奇异区及 pseudo-pure 的严格物理一致性保持 uncertain。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++
++  SHA：`54a2e32764bfa0ae81877e835c33ccd13ba8f853`。建议以 C++ 公共 API 为基准；[CMakeLists.txt](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/CMakeLists.txt) 指定 C++17、CMake≥3.14，依赖通过 CPM 管理。[cmake/dependencies.cmake](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/cmake/dependencies.cmake) 列出 Eigen 5.0.1、fmt 12.0.0、msgpack、rapidjson、IF97、REFPROP headers、boost headers、multicomplex；运行原生测试还需 Catch2 3.8.0。这里只用 HEOS，不需要 REFPROP 的专有运行库。Python 可作为可选驱动，但须绑定到此 SHA；Python 包构建依赖未完整核实，不能以任意已安装版本代替。预计搭建难度 **medium**：需要精确版本本地构建与依赖解析。本次未安装、编译或运行任何项目代码，未克隆仓库。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++
++  **可以。** 固定有限组分数 N，以正实数 T,p 及单纯形内部 x,y 为变量，以光滑实函数 lnφᵢᵅ 和局部平衡路径表示 EOS；假设逸度相等、归一化、Gibbs–Duhem、固定主体组成及非零分母，即可形式化推导 A dp+B dT=0、反函数斜率、物性链式法则和单组分约化。主要障碍是从实际多参数 Helmholtz EOS 证明这些热力学一致性前提、用隐函数定理证明局部平衡解存在且唯一、处理临界点及相选择，以及将实数证明连接到浮点计算/flash 求解器误差；证明代数公式并不能证明求解器找到了物理稳定相。中间 Q 抛异常属于程序契约，需独立的程序语义证明，不是实数热力学命题。
+
+**Verifying simple counts**
+exec
+/bin/zsh -lc "rg -n '"'^## |''^- '"' spec.md" in <workdir>/CoolProp_CoolProp_2851
+ succeeded in 0ms:
+1:## CoolProp/CoolProp#2851 fix(HEOS): correct first_saturation_deriv for mixtures (#2091)
+3:- What changed (1–3 sentences, naming files and formulas):
+6:- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+39:- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+47:- Common operating domain (range of each input, with the basis):
+55:- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+67:- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+75:- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+79:- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+83:- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a972886446ddb29006100128cbf0f831e480fa3e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,85 @@
++## CoolProp/CoolProp#2851 fix(HEOS): correct first_saturation_deriv for mixtures (#2091)
++
++- What changed (1–3 sentences, naming files and formulas):
++  `src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp` 将混合物饱和切线从纯流体公式 `dT/dp = T(vV−vL)/(hV−hL)` 改为 `−A/B`，其中 A、B 是两相 ln(逸度系数) 对压力、温度偏导之差，泡点用气相组成加权、露点用液相组成加权。混合物仅接受 Q=0 或 Q=1，无参数饱和相重载委托给显式 SatL/SatV 重载；纯流体及 pseudo-pure 分支保留原式。`src/Tests/CoolProp-Tests.cpp` 新增一个泡点差分测试和一个中间 Q 抛异常测试。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++
++  约定所有组成为摩尔分数：总组成 z，液相 x，气相 y，均归一化且分量为正；Q 是气相摩尔品质。T 用 K，p 用 Pa，h 用 J/mol，ρ 用 mol/m³，v=1/ρ；相差统一为气相减液相。固定 z，令 q∈{0,1}，`p_q(T;z)` 为同一连续汽液平衡端点分支：q=0 时 x=z，q=1 时 y=z。限于两相可区分、EOS 光滑、平衡解局部唯一、相关导数分母非零的状态；不含临界点、相分支跳跃、固相或三相平衡。
++
++  1. **Primary — 混合物相平衡切线。** 令 Dq=`first_saturation_deriv(iT,iP)`，Eq=`first_saturation_deriv(iP,iT)`。应有
++     \[
++     E_q=\frac{d p_q}{dT}\bigg|_z,\qquad D_q E_q=1.
++     \]
++     更具体地，令 φᵅᵢ(T,p,cᵅ) 为相 α 的逸度系数，偏导时保持该相组成不变，定义
++     \[
++     A_q=\sum_i w_i^{(q)}[(\partial_p\ln\phi_i^L)_{T,x}-(\partial_p\ln\phi_i^V)_{T,y}],\quad
++     B_q=\sum_i w_i^{(q)}[(\partial_T\ln\phi_i^L)_{p,x}-(\partial_T\ln\phi_i^V)_{p,y}],
++     \]
++     其中 w⁽⁰⁾=y，w⁽¹⁾=x。则 **Aq+Bq Dq=0**，等价于 Dq=−Aq/Bq。A 的单位为 Pa⁻¹，B 为 K⁻¹，D 为 K/Pa。不能要求泡点与露点斜率相等，也不能对所有混合物强加正斜率；正斜率只作为本 PR 的指定普通状态的局部检查。
++
++  2. **Secondary — 固定组成端点物性的总导数。** 对 F∈{hmolar, smolar, rhomolar}，令 Fq(T;z) 为 `update(QT_INPUTS,q,T)` 后主状态的 F（泡点的主体液相或露点的主体气相）。在这些端点，主体组成 z 不随 T 改变，因此
++     \[
++     \operatorname{satderiv}(F,T)=\frac{dF_q}{dT}
++       =(\partial_T F)_{p,z}+(\partial_p F)_{T,z}E_q,
++     \qquad
++     \operatorname{satderiv}(F,p)=D_q\frac{dF_q}{dT}.
++     \]
++     这里不声称泡点的微量气相物性或露点的微量液相物性满足这个无组成项公式：这些相的组成会随曲线变化。该不变量覆盖本 PR 新斜率进入既有物性链式求导分支后的实际公共 API 行为。
++
++  3. **Secondary — 真正纯流体的 Clapeyron 一致性及单组分约化。** 对真正纯流体、同温同压的平衡液气相，Δh=hV−hL，Δv=vV−vL，应有
++     \[
++     D_q\Delta h=T\Delta v,\qquad
++     E_q=\frac{\Delta h}{T\Delta v},\qquad D_0=D_1.
++     \]
++     普通汽液平衡区 Δh>0、Δv>0，故 Dq>0。混合物切线在光滑单组分极限应约化为该式；不强制含零摩尔分数的混合物 API 可用。**不把 pseudo-pure 的保留行为直接解释为严格物理定理**：有温度滑移的拟纯模型未必代表同温同压的真实单组分两相平衡。
++
++  API 范围补充（不计作物理不变量）：混合物成功更新到 0<Q<1 后，本方法应抛异常，不能冒充泡点/露点切线。这不表示固定中间 Q 的曲线在数学上不存在，只表示该 API 未实现那种导数。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++
++  主不变量可直接从相平衡 `x_i φ_i^L p = y_i φ_i^V p` 推导，不依赖将新实现本身当作正确性标准。对其对数微分：泡点 dx=0，乘以 yᵢ 求和；利用 Σdyᵢ=0 及气相在固定 T,p 下的 Gibbs–Duhem 关系 Σyᵢ d_composition lnφᵢV=0，得到 A₀dp+B₀dT=0。露点 dy=0，改乘 xᵢ 后利用液相的同一关系，得到 A₁dp+B₁dT=0。该推导要求逸度来自热力学一致的混合物模型。
++
++  第二项来自固定组成链式法则；第三项来自 dμ=−s dT+v dp、两相 μ 相等及 Δh=TΔs。单组分时 ∂p lnφ=v/(RT)−1/p，∂T lnφ=−hᵣ/(RT²)，因此 A=−Δv/(RT)、B=Δh/(RT²)，给出同一 Clapeyron 式。
++
++  输入 PR 将混合物式归于 Gernert 学位论文 3.96/3.97；本审计未独立取得论文原文，不把该编号当作已核实的外部证据。已读取的固定版本依据为 [HEOS 实现](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp)、[公共 AbstractState 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/include/AbstractState.h) 和 [Python 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/wrappers/Python/CoolProp/AbstractState.pyx)。未读取其他独立审计轨道、评论、issue 或 fork。
++
++- Common operating domain (range of each input, with the basis):
++
++  首轮取 `HEOS`, `Methane&Ethane`，z=(a,1−a)，a∈[0.6,0.8]，T∈[170,190] K，q 分别取 0、1。基准是 PR 明确测试的 a=0.7、T=180 K、q=0；区间是围绕该点的保守抽样建议，**尚未运行验证，也不是文献保证的整个可用范围**。p 是 QT flash 输出而非独立输入，初筛 10³≤p≤10⁷ Pa；只接纳中心和差分邻点都收敛、保持同一平衡分支的样本。
++
++  额外要求所有相分数为正且归一化，ρL>ρV>0，(ρL−ρV)/ρL>0.05 以避开相密度合并；检查两相逸度一致性，而不单凭 flash 返回就认定平衡正确。此密度门只是数值筛选，不是临界区的严格充分判据。记录失败/未收敛样本，不将其计为不变量通过。中间 Q 异常检查使用原测试点 T=180 K、a=0.7、Q=0.5，可再抽 Q∈[0.1,0.9]。
++
++  纯流体回归用 `HEOS`, `n-Propane`，T∈[280,320] K、q∈{0,1}，以已有回归测试的 300 K 为中心；同样要求平衡与非退化条件。纯组分不是把二元 z 数值置零的调用。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++
++  使用该合并提交的 C++ `AbstractState::factory("HEOS","Methane&Ethane")`、`set_mole_fractions({a,1-a})`、`update(QT_INPUTS,q,T)`、`p()`、`first_saturation_deriv`、`keyed_output`。Python 同名 AbstractState 包装也可实现检查。对中心和邻点使用独立状态或每次重设状态，保存中心解析值后再移动 flash 状态。所有差分保持 **z 和 q** 不变，不锁定微量相的组成。
++
++  **主检查：** 计算 C(h)=[p_q(T+h)−p_q(T−h)]/(2h)，比较 Eq 与 C，以及 Dq·C 与 1；另外检查 Dq·Eq≈1，但这一代数检查不能替代独立 flash 差分。使用 h=0.1、0.05、0.025、0.0125 K 的阶梯，在平滑区寻找二阶收敛；可用 [4C(h/2)−C(h)]/3 外推。建议差分稳定到相对 10⁻⁴ 后要求解析值相对误差≤10⁻³（原 PR 仅要求 5×10⁻³）。若继续减小 h 后误差反增，采用稳定平台；若无平台，标记数值未决，不自动放宽到通过。互逆的代数检查可用 |DqEq−1|≤10⁻¹⁰。接近零斜率、转折或分母退化的样本移出本次非奇异域，另行记录。
++
++  **可选的主检查交叉证据：** 从 `mole_fractions_liquid()`、`mole_fractions_vapor()` 取得 x、y，为两相分别创建单相状态并固定各自组成，用 `specify_phase(iphase_liquid/iphase_gas)` 和 `update(PT_INPUTS,p,T)` 保持相根；以 `fugacity_coefficient(i)` 的对数中心差分构造 A、B。初始温度步长 0.05 K、压力步长 max(1 Pa,10⁻⁴p)，分别反复减半寻找平台；这些偏导不能沿 QT 曲线差分。先要求重建相密度与饱和相密度相对一致至约 10⁻⁶，且 maxᵢ|ln(xᵢφᵢL/(yᵢφᵢV))|≤10⁻⁷；否则判为参考状态构造失败。检查 |A+BDq|/(|A|+|BDq|)≤10⁻³，分母须非零。这条路径交叉验证固定组成的逸度导数与权重，主判据仍为独立 flash 曲线切线。
++
++  **端点物性检查：** 同一组 QT 邻点读取 hmolar、smolar、rhomolar，构造 CF(h)=[Fq(T+h)−Fq(T−h)]/(2h)，比较 `first_saturation_deriv(iF,iT)` 与 CF、`first_saturation_deriv(iF,iP)` 与 CF/C。采用同样的步长平台和 10⁻³ 相对容差。若导数近零，用混合误差界 10⁻³·max(|参考导数|,10⁻⁶SF)，其中温度导数的 SF=max(|F中心|,Funit)/T，Funit 分别为 1 J/mol、1 J/(mol K)、1 mol/m³；压力导数的尺度改为 SF/|C|。这些是待验证的数值容差，不是实验物性精度声明。
++
++  **纯流体检查：** 通过 `saturated_liquid_keyed_output(iHmolar/iDmolar)` 与 `saturated_vapor_keyed_output(...)` 构造 Δh、Δv，比较 |DΔh−TΔv|/max(|DΔh|,|TΔv|)≤10⁻¹⁰；同时独立 QT 差分，建议 10⁻⁴ 相对容差，以防只检查了实现的原式。相同 T 下的 Q=0、1 切线以相对 10⁻⁸ 比较。中间 Q 另检查调用确实抛出异常。所有建议均为后续执行规范；本次没有运行代码或生成数值结果。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++
++  **Primary：partial。** 合并版本 `src/Tests/CoolProp-Tests.cpp:4815–4840` 的 `[first_saturation_deriv][2091]` 只检查 Methane/Ethane=(0.7,0.3)、T=180 K、Q=0，步长 0.05 K；断言 D>0，且与反演压力差分的相对误差<5e−3。没有露点、组成扫描、步长收敛、逸度残差或直接 Eq 检查。
++
++  **端点物性：partial。** 同文件 `:2411–2449` 的 `[first_saturation_partial_deriv]` 对纯 n-Propane、300 K、Q=1 检查 P、T、Dmolar、Hmolar、Smolar、Umolar 的十组温度/压力导数，要求 |numerical/analytical−1|<1e−4；未覆盖新混合物分支的物性导数。
++
++  **纯流体 Clapeyron：partial。** 上述旧测试间接检查纯流体的饱和切线，但未直接断言潜热关系，也未比较 Q=0 与 Q=1。`:4843–4849` 对 Q=0.5 的 `first_saturation_deriv(iT,iP)` 使用 `CHECK_THROWS`，完整覆盖该单一状态的新增异常行为。PR 描述声称相关回归通过；本审计只核对测试源码，未复跑。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++
++  **satisfies（推测，限上述非退化域）。** 新的对侧组成权重和负号与相平衡微分及 Gibbs–Duhem 消元一致，端点主体组成固定也支持保留的链式法则，纯流体公式未变。露点与混合物物性导数缺乏本 PR 的直接测试，因此仍需数值验证；对奇异区及 pseudo-pure 的严格物理一致性保持 uncertain。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++
++  SHA：`54a2e32764bfa0ae81877e835c33ccd13ba8f853`。建议以 C++ 公共 API 为基准；[CMakeLists.txt](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/CMakeLists.txt) 指定 C++17、CMake≥3.14，依赖通过 CPM 管理。[cmake/dependencies.cmake](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/cmake/dependencies.cmake) 列出 Eigen 5.0.1、fmt 12.0.0、msgpack、rapidjson、IF97、REFPROP headers、boost headers、multicomplex；运行原生测试还需 Catch2 3.8.0。这里只用 HEOS，不需要 REFPROP 的专有运行库。Python 可作为可选驱动，但须绑定到此 SHA；Python 包构建依赖未完整核实，不能以任意已安装版本代替。预计搭建难度 **medium**：需要精确版本本地构建与依赖解析。本次未安装、编译或运行任何项目代码，未克隆仓库。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++
++  **可以。** 固定有限组分数 N，以正实数 T,p 及单纯形内部 x,y 为变量，以光滑实函数 lnφᵢᵅ 和局部平衡路径表示 EOS；假设逸度相等、归一化、Gibbs–Duhem、固定主体组成及非零分母，即可形式化推导 A dp+B dT=0、反函数斜率、物性链式法则和单组分约化。主要障碍是从实际多参数 Helmholtz EOS 证明这些热力学一致性前提、用隐函数定理证明局部平衡解存在且唯一、处理临界点及相选择，以及将实数证明连接到浮点计算/flash 求解器误差；证明代数公式并不能证明求解器找到了物理稳定相。中间 Q 抛异常属于程序契约，需独立的程序语义证明，不是实数热力学命题。
+
+codex
+已完成 [spec.md](./spec.md)，包含模板要求的全部九项内容，并明确列出三项可检查的不变量：
+
+- **主要：** 固定总组成的泡点、露点曲线切线与相平衡微分一致。
+- **次要：** 端点焓、熵、密度的饱和导数满足固定组成链式法则。
+- **次要：** 真正纯流体满足 Clapeyron 关系，且泡点、露点切线一致。
+
+文档给出了合并版本公共 API、抽样范围、差分步长策略、建议容差及原测试覆盖缺口。对尚未验证的范围和正确性预期均作了标注；没有安装、编译或运行项目代码。
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a972886446ddb29006100128cbf0f831e480fa3e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,85 @@
++## CoolProp/CoolProp#2851 fix(HEOS): correct first_saturation_deriv for mixtures (#2091)
++
++- What changed (1–3 sentences, naming files and formulas):
++  `src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp` 将混合物饱和切线从纯流体公式 `dT/dp = T(vV−vL)/(hV−hL)` 改为 `−A/B`，其中 A、B 是两相 ln(逸度系数) 对压力、温度偏导之差，泡点用气相组成加权、露点用液相组成加权。混合物仅接受 Q=0 或 Q=1，无参数饱和相重载委托给显式 SatL/SatV 重载；纯流体及 pseudo-pure 分支保留原式。`src/Tests/CoolProp-Tests.cpp` 新增一个泡点差分测试和一个中间 Q 抛异常测试。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++
++  约定所有组成为摩尔分数：总组成 z，液相 x，气相 y，均归一化且分量为正；Q 是气相摩尔品质。T 用 K，p 用 Pa，h 用 J/mol，ρ 用 mol/m³，v=1/ρ；相差统一为气相减液相。固定 z，令 q∈{0,1}，`p_q(T;z)` 为同一连续汽液平衡端点分支：q=0 时 x=z，q=1 时 y=z。限于两相可区分、EOS 光滑、平衡解局部唯一、相关导数分母非零的状态；不含临界点、相分支跳跃、固相或三相平衡。
++
++  1. **Primary — 混合物相平衡切线。** 令 Dq=`first_saturation_deriv(iT,iP)`，Eq=`first_saturation_deriv(iP,iT)`。应有
++     \[
++     E_q=\frac{d p_q}{dT}\bigg|_z,\qquad D_q E_q=1.
++     \]
++     更具体地，令 φᵅᵢ(T,p,cᵅ) 为相 α 的逸度系数，偏导时保持该相组成不变，定义
++     \[
++     A_q=\sum_i w_i^{(q)}[(\partial_p\ln\phi_i^L)_{T,x}-(\partial_p\ln\phi_i^V)_{T,y}],\quad
++     B_q=\sum_i w_i^{(q)}[(\partial_T\ln\phi_i^L)_{p,x}-(\partial_T\ln\phi_i^V)_{p,y}],
++     \]
++     其中 w⁽⁰⁾=y，w⁽¹⁾=x。则 **Aq+Bq Dq=0**，等价于 Dq=−Aq/Bq。A 的单位为 Pa⁻¹，B 为 K⁻¹，D 为 K/Pa。不能要求泡点与露点斜率相等，也不能对所有混合物强加正斜率；正斜率只作为本 PR 的指定普通状态的局部检查。
++
++  2. **Secondary — 固定组成端点物性的总导数。** 对 F∈{hmolar, smolar, rhomolar}，令 Fq(T;z) 为 `update(QT_INPUTS,q,T)` 后主状态的 F（泡点的主体液相或露点的主体气相）。在这些端点，主体组成 z 不随 T 改变，因此
++     \[
++     \operatorname{satderiv}(F,T)=\frac{dF_q}{dT}
++       =(\partial_T F)_{p,z}+(\partial_p F)_{T,z}E_q,
++     \qquad
++     \operatorname{satderiv}(F,p)=D_q\frac{dF_q}{dT}.
++     \]
++     这里不声称泡点的微量气相物性或露点的微量液相物性满足这个无组成项公式：这些相的组成会随曲线变化。该不变量覆盖本 PR 新斜率进入既有物性链式求导分支后的实际公共 API 行为。
++
++  3. **Secondary — 真正纯流体的 Clapeyron 一致性及单组分约化。** 对真正纯流体、同温同压的平衡液气相，Δh=hV−hL，Δv=vV−vL，应有
++     \[
++     D_q\Delta h=T\Delta v,\qquad
++     E_q=\frac{\Delta h}{T\Delta v},\qquad D_0=D_1.
++     \]
++     普通汽液平衡区 Δh>0、Δv>0，故 Dq>0。混合物切线在光滑单组分极限应约化为该式；不强制含零摩尔分数的混合物 API 可用。**不把 pseudo-pure 的保留行为直接解释为严格物理定理**：有温度滑移的拟纯模型未必代表同温同压的真实单组分两相平衡。
++
++  API 范围补充（不计作物理不变量）：混合物成功更新到 0<Q<1 后，本方法应抛异常，不能冒充泡点/露点切线。这不表示固定中间 Q 的曲线在数学上不存在，只表示该 API 未实现那种导数。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++
++  主不变量可直接从相平衡 `x_i φ_i^L p = y_i φ_i^V p` 推导，不依赖将新实现本身当作正确性标准。对其对数微分：泡点 dx=0，乘以 yᵢ 求和；利用 Σdyᵢ=0 及气相在固定 T,p 下的 Gibbs–Duhem 关系 Σyᵢ d_composition lnφᵢV=0，得到 A₀dp+B₀dT=0。露点 dy=0，改乘 xᵢ 后利用液相的同一关系，得到 A₁dp+B₁dT=0。该推导要求逸度来自热力学一致的混合物模型。
++
++  第二项来自固定组成链式法则；第三项来自 dμ=−s dT+v dp、两相 μ 相等及 Δh=TΔs。单组分时 ∂p lnφ=v/(RT)−1/p，∂T lnφ=−hᵣ/(RT²)，因此 A=−Δv/(RT)、B=Δh/(RT²)，给出同一 Clapeyron 式。
++
++  输入 PR 将混合物式归于 Gernert 学位论文 3.96/3.97；本审计未独立取得论文原文，不把该编号当作已核实的外部证据。已读取的固定版本依据为 [HEOS 实现](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/src/Backends/Helmholtz/HelmholtzEOSMixtureBackend.cpp)、[公共 AbstractState 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/include/AbstractState.h) 和 [Python 接口](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/wrappers/Python/CoolProp/AbstractState.pyx)。未读取其他独立审计轨道、评论、issue 或 fork。
++
++- Common operating domain (range of each input, with the basis):
++
++  首轮取 `HEOS`, `Methane&Ethane`，z=(a,1−a)，a∈[0.6,0.8]，T∈[170,190] K，q 分别取 0、1。基准是 PR 明确测试的 a=0.7、T=180 K、q=0；区间是围绕该点的保守抽样建议，**尚未运行验证，也不是文献保证的整个可用范围**。p 是 QT flash 输出而非独立输入，初筛 10³≤p≤10⁷ Pa；只接纳中心和差分邻点都收敛、保持同一平衡分支的样本。
++
++  额外要求所有相分数为正且归一化，ρL>ρV>0，(ρL−ρV)/ρL>0.05 以避开相密度合并；检查两相逸度一致性，而不单凭 flash 返回就认定平衡正确。此密度门只是数值筛选，不是临界区的严格充分判据。记录失败/未收敛样本，不将其计为不变量通过。中间 Q 异常检查使用原测试点 T=180 K、a=0.7、Q=0.5，可再抽 Q∈[0.1,0.9]。
++
++  纯流体回归用 `HEOS`, `n-Propane`，T∈[280,320] K、q∈{0,1}，以已有回归测试的 300 K 为中心；同样要求平衡与非退化条件。纯组分不是把二元 z 数值置零的调用。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++
++  使用该合并提交的 C++ `AbstractState::factory("HEOS","Methane&Ethane")`、`set_mole_fractions({a,1-a})`、`update(QT_INPUTS,q,T)`、`p()`、`first_saturation_deriv`、`keyed_output`。Python 同名 AbstractState 包装也可实现检查。对中心和邻点使用独立状态或每次重设状态，保存中心解析值后再移动 flash 状态。所有差分保持 **z 和 q** 不变，不锁定微量相的组成。
++
++  **主检查：** 计算 C(h)=[p_q(T+h)−p_q(T−h)]/(2h)，比较 Eq 与 C，以及 Dq·C 与 1；另外检查 Dq·Eq≈1，但这一代数检查不能替代独立 flash 差分。使用 h=0.1、0.05、0.025、0.0125 K 的阶梯，在平滑区寻找二阶收敛；可用 [4C(h/2)−C(h)]/3 外推。建议差分稳定到相对 10⁻⁴ 后要求解析值相对误差≤10⁻³（原 PR 仅要求 5×10⁻³）。若继续减小 h 后误差反增，采用稳定平台；若无平台，标记数值未决，不自动放宽到通过。互逆的代数检查可用 |DqEq−1|≤10⁻¹⁰。接近零斜率、转折或分母退化的样本移出本次非奇异域，另行记录。
++
++  **可选的主检查交叉证据：** 从 `mole_fractions_liquid()`、`mole_fractions_vapor()` 取得 x、y，为两相分别创建单相状态并固定各自组成，用 `specify_phase(iphase_liquid/iphase_gas)` 和 `update(PT_INPUTS,p,T)` 保持相根；以 `fugacity_coefficient(i)` 的对数中心差分构造 A、B。初始温度步长 0.05 K、压力步长 max(1 Pa,10⁻⁴p)，分别反复减半寻找平台；这些偏导不能沿 QT 曲线差分。先要求重建相密度与饱和相密度相对一致至约 10⁻⁶，且 maxᵢ|ln(xᵢφᵢL/(yᵢφᵢV))|≤10⁻⁷；否则判为参考状态构造失败。检查 |A+BDq|/(|A|+|BDq|)≤10⁻³，分母须非零。这条路径交叉验证固定组成的逸度导数与权重，主判据仍为独立 flash 曲线切线。
++
++  **端点物性检查：** 同一组 QT 邻点读取 hmolar、smolar、rhomolar，构造 CF(h)=[Fq(T+h)−Fq(T−h)]/(2h)，比较 `first_saturation_deriv(iF,iT)` 与 CF、`first_saturation_deriv(iF,iP)` 与 CF/C。采用同样的步长平台和 10⁻³ 相对容差。若导数近零，用混合误差界 10⁻³·max(|参考导数|,10⁻⁶SF)，其中温度导数的 SF=max(|F中心|,Funit)/T，Funit 分别为 1 J/mol、1 J/(mol K)、1 mol/m³；压力导数的尺度改为 SF/|C|。这些是待验证的数值容差，不是实验物性精度声明。
++
++  **纯流体检查：** 通过 `saturated_liquid_keyed_output(iHmolar/iDmolar)` 与 `saturated_vapor_keyed_output(...)` 构造 Δh、Δv，比较 |DΔh−TΔv|/max(|DΔh|,|TΔv|)≤10⁻¹⁰；同时独立 QT 差分，建议 10⁻⁴ 相对容差，以防只检查了实现的原式。相同 T 下的 Q=0、1 切线以相对 10⁻⁸ 比较。中间 Q 另检查调用确实抛出异常。所有建议均为后续执行规范；本次没有运行代码或生成数值结果。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++
++  **Primary：partial。** 合并版本 `src/Tests/CoolProp-Tests.cpp:4815–4840` 的 `[first_saturation_deriv][2091]` 只检查 Methane/Ethane=(0.7,0.3)、T=180 K、Q=0，步长 0.05 K；断言 D>0，且与反演压力差分的相对误差<5e−3。没有露点、组成扫描、步长收敛、逸度残差或直接 Eq 检查。
++
++  **端点物性：partial。** 同文件 `:2411–2449` 的 `[first_saturation_partial_deriv]` 对纯 n-Propane、300 K、Q=1 检查 P、T、Dmolar、Hmolar、Smolar、Umolar 的十组温度/压力导数，要求 |numerical/analytical−1|<1e−4；未覆盖新混合物分支的物性导数。
++
++  **纯流体 Clapeyron：partial。** 上述旧测试间接检查纯流体的饱和切线，但未直接断言潜热关系，也未比较 Q=0 与 Q=1。`:4843–4849` 对 Q=0.5 的 `first_saturation_deriv(iT,iP)` 使用 `CHECK_THROWS`，完整覆盖该单一状态的新增异常行为。PR 描述声称相关回归通过；本审计只核对测试源码，未复跑。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++
++  **satisfies（推测，限上述非退化域）。** 新的对侧组成权重和负号与相平衡微分及 Gibbs–Duhem 消元一致，端点主体组成固定也支持保留的链式法则，纯流体公式未变。露点与混合物物性导数缺乏本 PR 的直接测试，因此仍需数值验证；对奇异区及 pseudo-pure 的严格物理一致性保持 uncertain。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++
++  SHA：`54a2e32764bfa0ae81877e835c33ccd13ba8f853`。建议以 C++ 公共 API 为基准；[CMakeLists.txt](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/CMakeLists.txt) 指定 C++17、CMake≥3.14，依赖通过 CPM 管理。[cmake/dependencies.cmake](https://raw.githubusercontent.com/CoolProp/CoolProp/54a2e32764bfa0ae81877e835c33ccd13ba8f853/cmake/dependencies.cmake) 列出 Eigen 5.0.1、fmt 12.0.0、msgpack、rapidjson、IF97、REFPROP headers、boost headers、multicomplex；运行原生测试还需 Catch2 3.8.0。这里只用 HEOS，不需要 REFPROP 的专有运行库。Python 可作为可选驱动，但须绑定到此 SHA；Python 包构建依赖未完整核实，不能以任意已安装版本代替。预计搭建难度 **medium**：需要精确版本本地构建与依赖解析。本次未安装、编译或运行任何项目代码，未克隆仓库。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++
++  **可以。** 固定有限组分数 N，以正实数 T,p 及单纯形内部 x,y 为变量，以光滑实函数 lnφᵢᵅ 和局部平衡路径表示 EOS；假设逸度相等、归一化、Gibbs–Duhem、固定主体组成及非零分母，即可形式化推导 A dp+B dT=0、反函数斜率、物性链式法则和单组分约化。主要障碍是从实际多参数 Helmholtz EOS 证明这些热力学一致性前提、用隐函数定理证明局部平衡解存在且唯一、处理临界点及相选择，以及将实数证明连接到浮点计算/flash 求解器误差；证明代数公式并不能证明求解器找到了物理稳定相。中间 Q 抛异常属于程序契约，需独立的程序语义证明，不是实数热力学命题。
+
+tokens used
+41,455
+已完成 [spec.md](./spec.md)，包含模板要求的全部九项内容，并明确列出三项可检查的不变量：
+
+- **主要：** 固定总组成的泡点、露点曲线切线与相平衡微分一致。
+- **次要：** 端点焓、熵、密度的饱和导数满足固定组成链式法则。
+- **次要：** 真正纯流体满足 Clapeyron 关系，且泡点、露点切线一致。
+
+文档给出了合并版本公共 API、抽样范围、差分步长策略、建议容差及原测试覆盖缺口。对尚未验证的范围和正确性预期均作了标注；没有安装、编译或运行项目代码。

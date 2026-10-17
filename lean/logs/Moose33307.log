@@ -1,0 +1,4 @@
+⚠ [8924/8924] Built PhysAudit.Moose33307 (6.1s)
+warning: PhysAudit/Moose33307.lean:663:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/Moose33307.lean:686:8: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (8924 jobs).

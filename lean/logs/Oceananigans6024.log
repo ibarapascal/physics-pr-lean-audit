@@ -1,0 +1,9 @@
+⚠ [8924/8924] Built PhysAudit.Oceananigans6024 (13s)
+warning: PhysAudit/Oceananigans6024.lean:195:51: Variable name `hCD` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hCD
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: PhysAudit/Oceananigans6024.lean:256:59: `if_neg` has been deprecated: Use `ite_eq_right` instead
+Build completed successfully (8924 jobs).

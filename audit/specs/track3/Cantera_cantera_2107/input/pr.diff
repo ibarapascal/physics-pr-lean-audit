@@ -1,0 +1,1795 @@
+diff --git a/.github/workflows/linters.yml b/.github/workflows/linters.yml
+index 8fcf8cb492..a9d388c38e 100644
+--- a/.github/workflows/linters.yml
++++ b/.github/workflows/linters.yml
+@@ -61,6 +61,7 @@ jobs:
+           echo "test/data/*.cti -diff" >> .gitattributes
+           echo "test/data/*.dat -diff" >> .gitattributes
+           echo "test_problems/**/*blessed* -diff" >> .gitattributes
++          echo "test_problems/**/*.txt -diff" >> .gitattributes
+ 
+           git config --global core.autocrlf false
+           git config --global core.whitespace \
+diff --git a/include/cantera/thermo/BinarySolutionTabulatedThermo.h b/include/cantera/thermo/BinarySolutionTabulatedThermo.h
+index 8111ee3a19..dd8c133b6f 100644
+--- a/include/cantera/thermo/BinarySolutionTabulatedThermo.h
++++ b/include/cantera/thermo/BinarySolutionTabulatedThermo.h
+@@ -52,10 +52,14 @@ namespace Cantera
+  *  @f]
+  *
+  *  For the tabulated binary phase, the user identifies a 'tabulated' species,
+- *  while the other is considered the 'reference' species.  The standard state
+- *  thermo variables for the tabulated species therefore incorporate any and all
+- *  excess energy contributions, and are calculated according to the reaction
+- *  energy terms:
++ *  while the other is considered the 'reference' species.  The reference
++ *  species (typically a vacancy) is assigned standard state thermo variables
++ *  @f$ h^{\rm o} = 0 @f$ and @f$ s^{\rm o} = 0 @f$, and all excess
++ *  thermodynamics are absorbed into the standard state of the tabulated
++ *  species.  Standard state thermo variables for species in any other phases
++ *  are calculated according to the rules specified in that phase definition.
++ *  The standard state thermo variables are calculated according to the
++ *  reaction energy terms:
+  *
+  *  @f[
+  *  \Delta h_{\rm rxn} = \sum_k \nu_k h^{\rm o}_k
+@@ -64,11 +68,6 @@ namespace Cantera
+  *  \Delta s_{\rm rxn} = \sum_k \nu_k s^{\rm o}_k + RT\ln\left(\prod_k\left(\frac{c_k}{c^{\rm o}_k} \right)^{\nu_k}\right)
+  *  @f]
+  *
+- *  Where the 'reference' species is automatically assigned standard state
+- *  thermo variables @f$ h^{\rm o} = 0 @f$ and @f$ s^{\rm o} = 0 @f$, and standard
+- *  state thermo variables for species in any other phases are calculated
+- *  according to the rules specified in that phase definition.
+- *
+  *  The present model is intended for modeling non-ideal, tabulated
+  *  thermodynamics for binary solutions where the tabulated species is
+  *  incorporated via an electrochemical reaction, such that the open circuit
+@@ -94,6 +93,10 @@ namespace Cantera
+  *  temperature of @f$ T^{\rm o} @f$.  The arrays @f$ h_{\rm tab} @f$ and
+  *  @f$ s_{\rm tab} @f$ must be the same length as the @f$ x_{\rm tab} @f$ array.
+  *
++ *  Note that @f$ s_{\rm tab} @f$ is the *non-configurational* (excess) entropy
++ *  derived from electrochemical measurements. It is a experimentally determined
++ *  function of composition and does not include any logarithmic mixing terms.
++ *
+  *  From these tabulated inputs, the standard state thermodynamic properties
+  *  for the tabulated species (subscript @f$ k @f$, tab) are calculated as:
+  *
+@@ -104,6 +107,23 @@ namespace Cantera
+  *   s^{\rm o}_{k,\,{\rm tab}} =  s_{\rm tab} + R\ln\frac{x_{k,\,{\rm tab}}}{1-x_{k,\,{\rm tab}}} + \frac{R}{F} \ln\left(\frac{c^{\rm o}_{k,\,{\rm ref}}}{c^{\rm o}_{k,\,{\rm tab}}}\right)
+  *  @f]
+  *
++ *  The mole fraction-dependent term in @f$ s^{\rm o} @f$ encodes the vacancy-reference
++ *  activity convention: it ensures that the electrode reaction driving force
++ *  @f$ \Delta g_{\rm rxn} = \mu_{\rm tab} - \mu_{\rm ref} = h_{\rm tab} - T s_{\rm tab} @f$
++ *  is independent of the vacancy (reference species) mole fraction.  Because
++ *  this term makes @f$ s^{\rm o}_{k,\,{\rm tab}} @f$ composition-dependent, the
++ *  standard-state entropy of the tabulated species diverges at both composition
++ *  limits (@f$ x_{\rm tab} \to 0 @f$ and @f$ x_{\rm tab} \to 1 @f$), and the
++ *  mixture entropy returned by entropy_mole() diverges as @f$ x_{\rm tab} \to 1
++ *  @f$ (equivalently, @f$ x_{\rm ref} \to 0 @f$). These behaviors are
++ *  expected consequences of the activity convention and do not affect the
++ *  accuracy of electrode reaction thermodynamics, which is the primary
++ *  intended use of this class.
++ *
++ *  The correction term @f$ (R/F)\ln(c^{\rm o}_{k,\,{\rm ref}} / c^{\rm o}_{k,\,{\rm tab}}) @f$
++ *  accounts for differing standard concentration choices between the tabulated phase
++ *  and the counter electrode phase.
++ *
+  *  Now, whenever the composition has changed, the lookup/interpolation of the
+  *  tabulated thermo data is performed to update the standard state
+  *  thermodynamic data for the tabulated species.
+diff --git a/include/cantera/thermo/GibbsExcessVPSSTP.h b/include/cantera/thermo/GibbsExcessVPSSTP.h
+index 8d34ca0321..cf8b44d987 100644
+--- a/include/cantera/thermo/GibbsExcessVPSSTP.h
++++ b/include/cantera/thermo/GibbsExcessVPSSTP.h
+@@ -89,14 +89,6 @@ class GibbsExcessVPSSTP : public VPStandardStateTP
+ 
+     GibbsExcessVPSSTP() {}
+ 
+-    //! @}
+-    //! @name Mechanical Properties
+-    //! @{
+-
+-protected:
+-    void calcDensity() override;
+-
+-public:
+     //! @}
+     //! @name Activities, Standard States, and Activity Concentrations
+     //!
+diff --git a/include/cantera/thermo/IdealSolnGasVPSS.h b/include/cantera/thermo/IdealSolnGasVPSS.h
+index ac6b2444a3..decc008de9 100644
+--- a/include/cantera/thermo/IdealSolnGasVPSS.h
++++ b/include/cantera/thermo/IdealSolnGasVPSS.h
+@@ -54,6 +54,16 @@ class IdealSolnGasVPSS : public VPStandardStateTP
+     double enthalpy_mole() const override;
+     double entropy_mole() const override;
+     double cp_mole() const override;
++
++    //! Molar heat capacity at constant volume.
++    //!
++    //! For an ideal solution with pressure-dependent standard state volumes, the
++    //! thermodynamic identity @f$ c_v = c_p - T v \beta^2 / \kappa_T @f$ is used, where
++    //! @f$ \beta @f$ and @f$ \kappa_T @f$ are the mixture thermal expansion coefficient
++    //! and isothermal compressibility, respectively.
++    //!
++    //! If all species have pressure-independent standard state volumes
++    //! (@f$ \kappa_T = 0 @f$), then @f$ c_v = c_p @f$.
+     double cv_mole() const override;
+ 
+     //! @}
+@@ -62,6 +72,30 @@ class IdealSolnGasVPSS : public VPStandardStateTP
+ 
+     void setPressure(double p) override;
+ 
++    //! Isothermal compressibility of the mixture.
++    /*!
++     * Computed as
++     * @f[
++     *   \kappa_T = -\frac{1}{v}
++     *       \sum_k X_k \left.\frac{\partial V^\circ_k}{\partial P}\right|_T
++     * @f]
++     * using the species standard state volume derivatives from each PDSS object. For
++     * phases where all species have pressure-independent standard state volumes,
++     * returns zero.
++     */
++    double isothermalCompressibility() const override;
++
++    //! Thermal expansion coefficient of the mixture.
++    /*!
++     * Computed as
++     * @f[
++     *   \beta = \frac{1}{v}
++     *       \sum_k X_k \left.\frac{\partial V^\circ_k}{\partial T}\right|_P
++     * @f]
++     * using the species standard state volume derivatives from each PDSS object.
++     */
++    double thermalExpansionCoeff() const override;
++
+ protected:
+     void calcDensity() override;
+     //! @}
+diff --git a/include/cantera/thermo/MargulesVPSSTP.h b/include/cantera/thermo/MargulesVPSSTP.h
+index 952fb86fae..93f7504856 100644
+--- a/include/cantera/thermo/MargulesVPSSTP.h
++++ b/include/cantera/thermo/MargulesVPSSTP.h
+@@ -42,7 +42,7 @@ namespace Cantera
+  * 2 species.
+  *
+  * @f[
+- *     G^E = \sum_i \left(  H_{Ei} - T S_{Ei} \right)
++ *     G^E = \sum_i \left(  H_{Ei} - T S_{Ei} + (P - P_{ref}) V^E_i \right)
+  * @f]
+  * @f[
+  *    H^E_i = n X_{Ai} X_{Bi} \left( h_{o,i} +  h_{1,i} X_{Bi} \right)
+@@ -50,8 +50,18 @@ namespace Cantera
+  * @f[
+  *    S^E_i = n X_{Ai} X_{Bi} \left( s_{o,i} +  s_{1,i} X_{Bi} \right)
+  * @f]
++ * @f[
++ *    V^E_i = n X_{Ai} X_{Bi} \left( v_{o,i} +  v_{1,i} X_{Bi} \right)
++ * @f]
+  *
+- * where n is the total moles in the solution.
++ * where n is the total moles in the solution, @f$ P_{ref} @f$ is the
++ * standard-state reference pressure (1 atm), and @f$ v_{o,i} = v^{HE}_{o,i} -
++ * T \cdot v^{SE}_{o,i} @f$, @f$ v_{1,i} = v^{HE}_{1,i} - T \cdot
++ * v^{SE}_{1,i} @f$ where @f$ v^{HE} @f$ and @f$ v^{SE} @f$ are the
++ * `excess-volume-enthalpy` and `excess-volume-entropy` interaction parameters.
++ * The @f$ (P - P_{\rm ref}) V^E_i @f$ term is what makes the Maxwell relation
++ * @f$ (\partial S/\partial P)_T = -(\partial V/\partial T)_P @f$ consistent
++ * with the non-zero, temperature-dependent excess volume.
+  *
+  * The activity of a species defined in the phase is given by an excess Gibbs
+  * free energy formulation.
+@@ -74,9 +84,10 @@ namespace Cantera
+  *       \left( \delta_{Bi,k} - X_{Bi} \right)      X_{Ai} X_{Bi}  g^E_{1,i} \right)
+  * @f]
+  * where
+- * @f$  g^E_{o,i} =  h_{o,i} - T s_{o,i} @f$ and
+- * @f$ g^E_{1,i} =  h_{1,i} - T s_{1,i} @f$ and where
+- * @f$ X_k @f$ is the mole fraction of species *k*.
++ * @f$  g^E_{o,i} =  h_{o,i} - T s_{o,i} + (P - P_{\rm ref})(v^{HE}_{o,i} - T \cdot v^{SE}_{o,i}) @f$
++ * and
++ * @f$ g^E_{1,i} =  h_{1,i} - T s_{1,i} + (P - P_{\rm ref})(v^{HE}_{1,i} - T \cdot v^{SE}_{1,i}) @f$
++ * and where @f$ X_k @f$ is the mole fraction of species *k*.
+  *
+  * This object inherits from the class VPStandardStateTP. Therefore, the
+  * specification and calculation of all standard state and reference state
+@@ -230,8 +241,39 @@ class MargulesVPSSTP : public GibbsExcessVPSSTP
+     //! @name  Molar Thermodynamic Properties
+     //! @{
+ 
++    //! Molar heat capacity at constant volume.
++    //!
++    //! For a Margules phase with pressure-dependent standard state volumes, the
++    //! thermodynamic identity @f$ c_v = c_p - T v \beta^2 / \kappa_T @f$ is used.
++    //! If @f$ \kappa_T = 0 @f$ (all species have pressure-independent standard state
++    //! volumes), then @f$ c_v = c_p @f$.
+     double cv_mole() const override;
+ 
++    //! Isothermal compressibility of the mixture.
++    /*!
++     * Computed as
++     * @f[
++     *   \kappa_T = -\frac{1}{v} \sum_k X_k \frac{\partial V^\circ_k}{\partial P}\Bigg|_T
++     * @f]
++     * The Margules excess volume has no pressure dependence, so only the standard
++     * state PDSS derivatives contribute.
++     */
++    double isothermalCompressibility() const override;
++
++    //! Thermal expansion coefficient of the mixture.
++    /*!
++     * Computed as
++     * @f[
++     *   \beta = \frac{1}{v} \left(
++     *       \sum_k X_k \frac{\partial V^\circ_k}{\partial T}\Bigg|_P
++     *       + \frac{\partial V_\mathrm{excess}}{\partial T}\Bigg|_{P,X}
++     *   \right)
++     * @f]
++     * where the excess volume T-derivative is computed analytically from the
++     * Margules excess-volume-entropy interaction parameters.
++     */
++    double thermalExpansionCoeff() const override;
++
+     //! @}
+     //! @name Activities, Standard States, and Activity Concentrations
+     //!
+diff --git a/include/cantera/thermo/MolalityVPSSTP.h b/include/cantera/thermo/MolalityVPSSTP.h
+index 5f84f41e84..810d59799b 100644
+--- a/include/cantera/thermo/MolalityVPSSTP.h
++++ b/include/cantera/thermo/MolalityVPSSTP.h
+@@ -415,17 +415,18 @@ class MolalityVPSSTP : public VPStandardStateTP
+      * of the molality-based activity coefficients.
+      *  See Denbigh p. 278 @cite denbigh1981 for a thorough discussion.
+      *
+-     * The molar-based activity coefficients @f$ \gamma_k @f$ may be calculated
+-     * from the molality-based activity coefficients, @f$ \gamma_k^\triangle @f$
+-     * by the following formula.
++     * The mole-fraction-based activity coefficients @f$ \gamma_k @f$ may be calculated
++     * from the molality-based activity coefficients, @f$ \gamma_k^\triangle @f$,
++     * by requiring consistency with the activity: @f$ a_k = X_k \gamma_k @f$ for all
++     * species. For solute species (k ≠ o), using the molality definition
++     * @f$ m_k = X_k / (X_o \tilde{M}_o) @f$ and @f$ a_k = m_k \gamma_k^\triangle @f$:
+      * @f[
+-     *     \gamma_k = \frac{\gamma_k^\triangle}{X_o}
++     *     \gamma_k = \frac{\gamma_k^\triangle}{X_o \tilde{M}_o}
+      * @f]
++     * where @f$ \tilde{M}_o @f$ is the molar mass of the solvent in kg/mol.
+      *
+-     * For purposes of establishing a convention, the molar activity coefficient of the
+-     * solvent is set equal to the molality-based activity coefficient of the
+-     * solvent:
+-     *
++     * For the solvent (k = o), the mole-fraction-based activity coefficient equals the
++     * molality-based activity coefficient:
+      * @f[
+      *     \gamma_o = \gamma_o^\triangle
+      * @f]
+diff --git a/include/cantera/thermo/PDSS.h b/include/cantera/thermo/PDSS.h
+index d5211cd833..a5d54e6218 100644
+--- a/include/cantera/thermo/PDSS.h
++++ b/include/cantera/thermo/PDSS.h
+@@ -231,6 +231,20 @@ class PDSS
+      */
+     virtual double molarVolume() const;
+ 
++    //! Return the temperature derivative of the standard state molar volume
++    //! at constant pressure [m³/kmol/K].
++    //!
++    //! @return @f$ (dV^\circ/dT)_P @f$ at the current temperature and pressure.
++    //! @since New in %Cantera 4.0.
++    virtual double dVdT() const;
++
++    //! Return the pressure derivative of the standard state molar volume
++    //! at constant temperature [m³/kmol/Pa].
++    //!
++    //! @return @f$ (dV^\circ/dP)_T @f$ at the current temperature and pressure.
++    //! @since New in %Cantera 4.0.
++    virtual double dVdP() const;
++
+     //! Return the standard state density at standard state
+     /*!
+      * @return The standard state density at the current temperature and
+diff --git a/include/cantera/thermo/PDSS_ConstVol.h b/include/cantera/thermo/PDSS_ConstVol.h
+index aa1d30a57c..b686131fda 100644
+--- a/include/cantera/thermo/PDSS_ConstVol.h
++++ b/include/cantera/thermo/PDSS_ConstVol.h
+@@ -31,6 +31,8 @@ class PDSS_ConstVol : public PDSS_Nondimensional
+     // See PDSS.h for documentation of functions overridden from Class PDSS
+     double intEnergy_mole() const override;
+     double cv_mole() const override;
++    double dVdT() const override;
++    double dVdP() const override;
+ 
+     //! @}
+     //! @name Mechanical Equation of State Properties
+diff --git a/include/cantera/thermo/PDSS_HKFT.h b/include/cantera/thermo/PDSS_HKFT.h
+index 38b3e6b1a7..2e73af7818 100644
+--- a/include/cantera/thermo/PDSS_HKFT.h
++++ b/include/cantera/thermo/PDSS_HKFT.h
+@@ -43,6 +43,8 @@ class PDSS_HKFT : public PDSS_Molar
+     double cp_mole() const override;
+     double molarVolume() const override;
+     double density() const override;
++    double dVdT() const override;
++    double dVdP() const override;
+ 
+     //! @}
+     //! @name Properties of the Reference State of the Species in the Solution
+@@ -100,6 +102,10 @@ class PDSS_HKFT : public PDSS_Molar
+     VPStandardStateTP* m_tp; //!< Parent VPStandardStateTP (ThermoPhase) object
+     size_t m_spindex; //!< Index of this species within the parent phase
+ 
++    //! Evaluate the molar volume at a given temperature and pressure.
++    //! Used internally by dVdT() to evaluate derivatives by finite difference.
++    double molarVolumeTP(double temp, double pres) const;
++
+     //! Main routine that actually calculates the Gibbs free energy difference
+     //! between the reference state at Tr, Pr and T,P
+     /*!
+diff --git a/include/cantera/thermo/PDSS_SSVol.h b/include/cantera/thermo/PDSS_SSVol.h
+index 2df5abbb38..196a5c7700 100644
+--- a/include/cantera/thermo/PDSS_SSVol.h
++++ b/include/cantera/thermo/PDSS_SSVol.h
+@@ -120,6 +120,8 @@ class PDSS_SSVol : public PDSS_Nondimensional
+ 
+     double intEnergy_mole() const override;
+     double cv_mole() const override;
++    double dVdT() const override;
++    double dVdP() const override;
+ 
+     //! @}
+ 
+diff --git a/include/cantera/thermo/PDSS_Water.h b/include/cantera/thermo/PDSS_Water.h
+index 5d16795cb9..2f61dee3c2 100644
+--- a/include/cantera/thermo/PDSS_Water.h
++++ b/include/cantera/thermo/PDSS_Water.h
+@@ -65,6 +65,8 @@ class PDSS_Water : public PDSS_Molar
+     double cv_mole() const override;
+     double molarVolume() const override;
+     double density() const override;
++    double dVdT() const override;
++    double dVdP() const override;
+ 
+     //! @}
+     //! @name Properties of the Reference State of the Species in the Solution
+diff --git a/src/thermo/BinarySolutionTabulatedThermo.cpp b/src/thermo/BinarySolutionTabulatedThermo.cpp
+index c4607aec4e..794f437d04 100644
+--- a/src/thermo/BinarySolutionTabulatedThermo.cpp
++++ b/src/thermo/BinarySolutionTabulatedThermo.cpp
+@@ -42,15 +42,10 @@ void BinarySolutionTabulatedThermo::_updateThermo() const
+         double x_other = moleFraction(1 - m_kk_tab);
+         m_h0_tab = interpolate(x_tab, m_enthalpy_tab);
+         m_s0_tab = interpolate(x_tab, m_entropy_tab);
+-        if (x_tab == 0) {
+-            m_s0_tab = -BigNumber;
+-        } else if (x_other == 0) {
+-            m_s0_tab = BigNumber;
+-        } else {
+-            m_s0_tab += GasConstant*std::log(x_tab / x_other) +
+-                    GasConstant/Faraday*std::log(standardConcentration(1-m_kk_tab)
+-                    /standardConcentration(m_kk_tab));
+-        }
++        m_s0_tab += GasConstant*std::log(std::max(SmallNumber, x_tab)
++                                         / std::max(SmallNumber, x_other))
++                  + GasConstant/Faraday*std::log(standardConcentration(1-m_kk_tab)
++                  / standardConcentration(m_kk_tab));
+     }
+ 
+     double tnow = temperature();
+diff --git a/src/thermo/DebyeHuckel.cpp b/src/thermo/DebyeHuckel.cpp
+index 7ffd5cd5af..88b08be7e1 100644
+--- a/src/thermo/DebyeHuckel.cpp
++++ b/src/thermo/DebyeHuckel.cpp
+@@ -1056,10 +1056,12 @@ void DebyeHuckel::s_update_d2lnMolalityActCoeff_dT2() const
+ 
+     switch (m_formDH) {
+     case DHFORM_DILUTE_LIMIT:
+-        for (size_t k = 0; k < m_kk; k++) {
++        for (size_t k = 1; k < m_kk; k++) {
+             m_d2lnActCoeffMolaldT2[k] =
+                 m_lnActCoeffMolal[k] * d2AdT2 / m_A_Debye;
+         }
++        m_d2lnActCoeffMolaldT2[0] = 2.0 / 3.0 * d2AdT2 * m_Mnaught *
++                                    m_IionicMolality * sqrt(m_IionicMolality);
+         break;
+ 
+     case DHFORM_BDOT_AK:
+@@ -1162,10 +1164,12 @@ void DebyeHuckel::s_update_dlnMolalityActCoeff_dP() const
+ 
+     switch (m_formDH) {
+     case DHFORM_DILUTE_LIMIT:
+-        for (size_t k = 0; k < m_kk; k++) {
++        for (size_t k = 1; k < m_kk; k++) {
+             m_dlnActCoeffMolaldP[k] =
+                 m_lnActCoeffMolal[k] * dAdP / m_A_Debye;
+         }
++        m_dlnActCoeffMolaldP[0] = 2.0 / 3.0 * dAdP * m_Mnaught *
++                                   m_IionicMolality * sqrt(m_IionicMolality);
+         break;
+ 
+     case DHFORM_BDOT_AK:
+diff --git a/src/thermo/GibbsExcessVPSSTP.cpp b/src/thermo/GibbsExcessVPSSTP.cpp
+index c601e07809..be38a14c62 100644
+--- a/src/thermo/GibbsExcessVPSSTP.cpp
++++ b/src/thermo/GibbsExcessVPSSTP.cpp
+@@ -27,19 +27,6 @@ void GibbsExcessVPSSTP::compositionChanged()
+     getMoleFractions(moleFractions_);
+ }
+ 
+-// ------------ Mechanical Properties ------------------------------
+-
+-void GibbsExcessVPSSTP::calcDensity()
+-{
+-    auto vbar = getStandardVolumes();
+-    double vtotal = 0.0;
+-    for (size_t i = 0; i < m_kk; i++) {
+-        vtotal += vbar[i] * moleFractions_[i];
+-    }
+-    double dd = meanMolecularWeight() / vtotal;
+-    Phase::assignDensity(dd);
+-}
+-
+ // - Activities, Standard States, Activity Concentrations -----------
+ 
+ Units GibbsExcessVPSSTP::standardConcentrationUnits() const
+diff --git a/src/thermo/IdealMolalSoln.cpp b/src/thermo/IdealMolalSoln.cpp
+index ba965e6cbd..f507d39521 100644
+--- a/src/thermo/IdealMolalSoln.cpp
++++ b/src/thermo/IdealMolalSoln.cpp
+@@ -227,6 +227,9 @@ void IdealMolalSoln::getPartialMolarIntEnergies(span<double> ubar) const
+ void IdealMolalSoln::getPartialMolarEntropies(span<double> sbar) const
+ {
+     getEntropy_R(sbar);
++    for (size_t k = 0; k < m_kk; k++) {
++        sbar[k] *= GasConstant;
++    }
+     calcMolalities();
+     if (IMS_typeCutoff_ == 0) {
+         for (size_t k = 1; k < m_kk; k++) {
+diff --git a/src/thermo/IdealSolnGasVPSS.cpp b/src/thermo/IdealSolnGasVPSS.cpp
+index 0ed681c4a8..7f093b290b 100644
+--- a/src/thermo/IdealSolnGasVPSS.cpp
++++ b/src/thermo/IdealSolnGasVPSS.cpp
+@@ -61,7 +61,39 @@ double IdealSolnGasVPSS::cp_mole() const
+ 
+ double IdealSolnGasVPSS::cv_mole() const
+ {
+-    return cp_mole() - GasConstant;
++    updateStandardStateThermo();
++    double sum_xk_dVkdT = 0.0;
++    double sum_xk_dVkdP = 0.0;
++    for (size_t k = 0; k < m_kk; k++) {
++        double Xk = moleFraction(k);
++        sum_xk_dVkdT += Xk * providePDSS(k)->dVdT();
++        sum_xk_dVkdP += Xk * providePDSS(k)->dVdP();
++    }
++    if (sum_xk_dVkdP == 0.0) {
++        return cp_mole();
++    }
++    // cv = cp - T*V*beta^2/kappa_T, using mixture beta and kappa_T from PDSS
++    return cp_mole() - temperature() * sum_xk_dVkdT * sum_xk_dVkdT / (-sum_xk_dVkdP);
++}
++
++double IdealSolnGasVPSS::isothermalCompressibility() const
++{
++    updateStandardStateThermo();
++    double sum_xk_dVkdP = 0.0;
++    for (size_t k = 0; k < m_kk; k++) {
++        sum_xk_dVkdP += moleFraction(k) * providePDSS(k)->dVdP();
++    }
++    return -sum_xk_dVkdP / molarVolume();
++}
++
++double IdealSolnGasVPSS::thermalExpansionCoeff() const
++{
++    updateStandardStateThermo();
++    double sum_xk_dVkdT = 0.0;
++    for (size_t k = 0; k < m_kk; k++) {
++        sum_xk_dVkdT += moleFraction(k) * providePDSS(k)->dVdT();
++    }
++    return sum_xk_dVkdT / molarVolume();
+ }
+ 
+ void IdealSolnGasVPSS::setPressure(double p)
+diff --git a/src/thermo/MargulesVPSSTP.cpp b/src/thermo/MargulesVPSSTP.cpp
+index 9f7df0c662..84ac00d514 100644
+--- a/src/thermo/MargulesVPSSTP.cpp
++++ b/src/thermo/MargulesVPSSTP.cpp
+@@ -10,6 +10,7 @@
+ // at https://cantera.org/license.txt for license and copyright information.
+ 
+ #include "cantera/thermo/MargulesVPSSTP.h"
++#include "cantera/thermo/PDSS.h"
+ #include "cantera/thermo/ThermoFactory.h"
+ #include "cantera/base/stringUtils.h"
+ 
+@@ -52,7 +53,41 @@ void MargulesVPSSTP::getChemPotentials(span<double> mu) const
+ 
+ double MargulesVPSSTP::cv_mole() const
+ {
+-    return cp_mole() - GasConstant;
++    double kappa_T = isothermalCompressibility();
++    if (kappa_T == 0.0) {
++        return cp_mole();
++    }
++    double beta = thermalExpansionCoeff();
++    return cp_mole() - temperature() * molarVolume() * beta * beta / kappa_T;
++}
++
++double MargulesVPSSTP::isothermalCompressibility() const
++{
++    // V^E has no pressure dependence in this model, so only the standard
++    // state PDSS derivatives contribute to kappa_T.
++    double sum_xk_dVkdP = 0.0;
++    for (size_t k = 0; k < m_kk; k++) {
++        sum_xk_dVkdP += moleFractions_[k] * providePDSS(k)->dVdP();
++    }
++    return -sum_xk_dVkdP / molarVolume();
++}
++
++double MargulesVPSSTP::thermalExpansionCoeff() const
++{
++    // Standard state contribution
++    double dVdT = 0.0;
++    for (size_t k = 0; k < m_kk; k++) {
++        dVdT += moleFractions_[k] * providePDSS(k)->dVdT();
++    }
++    // Excess volume contribution: d/dT [XA*XB*(g0 + g1*XB)]
++    // where g0 = VHE_b - T*VSE_b, g1 = VHE_c - T*VSE_c
++    // => dg0/dT = -VSE_b, dg1/dT = -VSE_c
++    for (size_t i = 0; i < numBinaryInteractions_; i++) {
++        double XA = moleFractions_[m_pSpecies_A_ij[i]];
++        double XB = moleFractions_[m_pSpecies_B_ij[i]];
++        dVdT -= XA * XB * (m_VSE_b_ij[i] + m_VSE_c_ij[i] * XB);
++    }
++    return dVdT / molarVolume();
+ }
+ 
+ void MargulesVPSSTP::getPartialMolarEnthalpies(span<double> hbar) const
+@@ -230,12 +265,15 @@ void MargulesVPSSTP::addBinaryInteraction(const string& speciesA,
+ void MargulesVPSSTP::s_update_lnActCoeff() const
+ {
+     double T = temperature();
++    double deltaP_RT = (pressure() - OneAtm) / RT();
+     lnActCoeff_Scaled_.assign(m_kk, 0.0);
+     for (size_t i = 0; i < numBinaryInteractions_; i++) {
+         size_t iA = m_pSpecies_A_ij[i];
+         size_t iB = m_pSpecies_B_ij[i];
+-        double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT();
+-        double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT();
++        double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT()
++                  + deltaP_RT * (m_VHE_b_ij[i] - T * m_VSE_b_ij[i]);
++        double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT()
++                  + deltaP_RT * (m_VHE_c_ij[i] - T * m_VSE_c_ij[i]);
+         double XA = moleFractions_[iA];
+         double XB = moleFractions_[iB];
+         const double XAXB = XA * XB;
+@@ -253,6 +291,7 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dT() const
+ {
+     double invT = 1.0 / temperature();
+     double invRTT = 1.0 / GasConstant*invT*invT;
++    double deltaP = pressure() - OneAtm;
+     dlnActCoeffdT_Scaled_.assign(m_kk, 0.0);
+     d2lnActCoeffdT2_Scaled_.assign(m_kk, 0.0);
+     for (size_t i = 0; i < numBinaryInteractions_; i++) {
+@@ -260,8 +299,8 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dT() const
+         size_t iB = m_pSpecies_B_ij[i];
+         double XA = moleFractions_[iA];
+         double XB = moleFractions_[iB];
+-        double g0 = -m_HE_b_ij[i] * invRTT;
+-        double g1 = -m_HE_c_ij[i] * invRTT;
++        double g0 = -(m_HE_b_ij[i] + deltaP * m_VHE_b_ij[i]) * invRTT;
++        double g1 = -(m_HE_c_ij[i] + deltaP * m_VHE_c_ij[i]) * invRTT;
+         const double XAXB = XA * XB;
+         const double g0g1XB = (g0 + g1 * XB);
+         const double all = -1.0 * XAXB * g0g1XB - XAXB * XB * g1;
+@@ -302,6 +341,7 @@ void MargulesVPSSTP::getdlnActCoeffds(const double dTds, span<const double> cons
+     checkArraySize("MargulesVPSSTP::getdlnActCoeffds", dlnActCoeffds.size(), m_kk);
+     checkArraySize("MargulesVPSSTP::getdlnActCoeffds", dXds.size(), m_kk);
+     double T = temperature();
++    double deltaP_RT = (pressure() - OneAtm) / RT();
+     s_update_dlnActCoeff_dT();
+     for (size_t iK = 0; iK < m_kk; iK++) {
+         dlnActCoeffds[iK] = 0.0;
+@@ -314,8 +354,10 @@ void MargulesVPSSTP::getdlnActCoeffds(const double dTds, span<const double> cons
+         double XB = moleFractions_[iB];
+         double dXA = dXds[iA];
+         double dXB = dXds[iB];
+-        double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT();
+-        double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT();
++        double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT()
++                  + deltaP_RT * (m_VHE_b_ij[i] - T * m_VSE_b_ij[i]);
++        double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT()
++                  + deltaP_RT * (m_VHE_c_ij[i] - T * m_VSE_c_ij[i]);
+         const double g02g1XB = g0 + 2*g1*XB;
+         const double g2XAdXB = 2*g1*XA*dXB;
+         const double all = (-XB * dXA - XA *dXB) * g02g1XB - XB *g2XAdXB;
+@@ -330,6 +372,7 @@ void MargulesVPSSTP::getdlnActCoeffds(const double dTds, span<const double> cons
+ void MargulesVPSSTP::s_update_dlnActCoeff_dlnN_diag() const
+ {
+     double T = temperature();
++    double deltaP_RT = (pressure() - OneAtm) / RT();
+     dlnActCoeffdlnN_diag_.assign(m_kk, 0.0);
+ 
+     for (size_t iK = 0; iK < m_kk; iK++) {
+@@ -350,8 +393,10 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dlnN_diag() const
+             double XA = moleFractions_[iA];
+             double XB = moleFractions_[iB];
+ 
+-            double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT();
+-            double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT();
++            double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT()
++                      + deltaP_RT * (m_VHE_b_ij[i] - T * m_VSE_b_ij[i]);
++            double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT()
++                      + deltaP_RT * (m_VHE_c_ij[i] - T * m_VSE_c_ij[i]);
+ 
+             dlnActCoeffdlnN_diag_[iK] += 2*(delBK-XB)*(g0*(delAK-XA)+g1*(2*(delAK-XA)*XB+XA*(delBK-XB)));
+         }
+@@ -362,6 +407,7 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dlnN_diag() const
+ void MargulesVPSSTP::s_update_dlnActCoeff_dlnN() const
+ {
+     double T = temperature();
++    double deltaP_RT = (pressure() - OneAtm) / RT();
+     dlnActCoeffdlnN_.zero();
+ 
+     // Loop over the activity coefficient gamma_k
+@@ -388,8 +434,10 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dlnN() const
+ 
+                 double XA = moleFractions_[iA];
+                 double XB = moleFractions_[iB];
+-                double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT();
+-                double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT();
++                double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT()
++                          + deltaP_RT * (m_VHE_b_ij[i] - T * m_VSE_b_ij[i]);
++                double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT()
++                          + deltaP_RT * (m_VHE_c_ij[i] - T * m_VSE_c_ij[i]);
+                 dlnActCoeffdlnN_(iK,iM) += g0*((delAM-XA)*(delBK-XB)+(delAK-XA)*(delBM-XB));
+                 dlnActCoeffdlnN_(iK,iM) += 2*g1*((delAM-XA)*(delBK-XB)*XB+(delAK-XA)*(delBM-XB)*XB+(delBM-XB)*(delBK-XB)*XA);
+             }
+@@ -401,6 +449,7 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dlnN() const
+ void MargulesVPSSTP::s_update_dlnActCoeff_dlnX_diag() const
+ {
+     double T = temperature();
++    double deltaP_RT = (pressure() - OneAtm) / RT();
+     dlnActCoeffdlnX_diag_.assign(m_kk, 0.0);
+ 
+     for (size_t i = 0; i < numBinaryInteractions_; i++) {
+@@ -410,8 +459,10 @@ void MargulesVPSSTP::s_update_dlnActCoeff_dlnX_diag() const
+         double XA = moleFractions_[iA];
+         double XB = moleFractions_[iB];
+ 
+-        double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT();
+-        double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT();
++        double g0 = (m_HE_b_ij[i] - T * m_SE_b_ij[i]) / RT()
++                  + deltaP_RT * (m_VHE_b_ij[i] - T * m_VSE_b_ij[i]);
++        double g1 = (m_HE_c_ij[i] - T * m_SE_c_ij[i]) / RT()
++                  + deltaP_RT * (m_VHE_c_ij[i] - T * m_VSE_c_ij[i]);
+ 
+         dlnActCoeffdlnX_diag_[iA] += XA*XB*(2*g1*-2*g0-6*g1*XB);
+         dlnActCoeffdlnX_diag_[iB] += XA*XB*(2*g1*-2*g0-6*g1*XB);
+diff --git a/src/thermo/MolalityVPSSTP.cpp b/src/thermo/MolalityVPSSTP.cpp
+index 0e7c5eab4c..658ab2e6f0 100644
+--- a/src/thermo/MolalityVPSSTP.cpp
++++ b/src/thermo/MolalityVPSSTP.cpp
+@@ -205,7 +205,7 @@ void MolalityVPSSTP::getActivityCoefficients(span<double> ac) const
+     getMolalityActivityCoefficients(ac);
+     double xmolSolvent = std::max(moleFraction(0), m_xmolSolventMIN);
+     for (size_t k = 1; k < m_kk; k++) {
+-        ac[k] /= xmolSolvent;
++        ac[k] /= (xmolSolvent * m_Mnaught);
+     }
+ }
+ 
+diff --git a/src/thermo/PDSS.cpp b/src/thermo/PDSS.cpp
+index 8da968af7e..2b53c1cf98 100644
+--- a/src/thermo/PDSS.cpp
++++ b/src/thermo/PDSS.cpp
+@@ -70,6 +70,16 @@ double PDSS::density() const
+     throw NotImplementedError("PDSS::density");
+ }
+ 
++double PDSS::dVdT() const
++{
++    throw NotImplementedError("PDSS::dVdT");
++}
++
++double PDSS::dVdP() const
++{
++    throw NotImplementedError("PDSS::dVdP");
++}
++
+ double PDSS::cv_mole() const
+ {
+     throw NotImplementedError("PDSS::cv_mole");
+diff --git a/src/thermo/PDSS_ConstVol.cpp b/src/thermo/PDSS_ConstVol.cpp
+index d4faa5b265..2a5c73f86d 100644
+--- a/src/thermo/PDSS_ConstVol.cpp
++++ b/src/thermo/PDSS_ConstVol.cpp
+@@ -53,7 +53,17 @@ double PDSS_ConstVol::intEnergy_mole() const
+ 
+ double PDSS_ConstVol::cv_mole() const
+ {
+-    return (cp_mole() - m_V0);
++    return cp_mole();
++}
++
++double PDSS_ConstVol::dVdT() const
++{
++    return 0.0;
++}
++
++double PDSS_ConstVol::dVdP() const
++{
++    return 0.0;
+ }
+ 
+ void PDSS_ConstVol::setPressure(double p)
+diff --git a/src/thermo/PDSS_HKFT.cpp b/src/thermo/PDSS_HKFT.cpp
+index 2327b08466..6ef6781dbf 100644
+--- a/src/thermo/PDSS_HKFT.cpp
++++ b/src/thermo/PDSS_HKFT.cpp
+@@ -106,12 +106,20 @@ double PDSS_HKFT::cp_mole() const
+ 
+ double PDSS_HKFT::molarVolume() const
+ {
+-    // Initially do all calculations in (cal/gmol/Pa)
++    return molarVolumeTP(m_temp, m_pres);
++}
++
++double PDSS_HKFT::density() const
++{
++    return m_mw / molarVolume();
++}
+ 
++double PDSS_HKFT::molarVolumeTP(double temp, double pres) const
++{
+     double a1term = m_a1 * 1.0E-5;
+-    double a2term = m_a2 / (2600.E5 + m_pres);
+-    double a3term = m_a3 * 1.0E-5/ (m_temp - 228.);
+-    double a4term = m_a4 / (m_temp - 228.) / (2600.E5 + m_pres);
++    double a2term = m_a2 / (2600.E5 + pres);
++    double a3term = m_a3 * 1.0E-5 / (temp - 228.);
++    double a4term = m_a4 / (temp - 228.) / (2600.E5 + pres);
+ 
+     double omega_j;
+     double domega_jdP;
+@@ -123,8 +131,8 @@ double PDSS_HKFT::molarVolume() const
+         double charge2 = m_charge_j * m_charge_j;
+         double r_e_j_pr_tr = charge2 / (m_omega_pr_tr/nu + m_charge_j/3.082);
+ 
+-        double gval = gstar(m_temp, m_pres, 0);
+-        double dgvaldP = gstar(m_temp, m_pres, 3);
++        double gval = gstar(temp, pres, 0);
++        double dgvaldP = gstar(temp, pres, 3);
+ 
+         double r_e_j = r_e_j_pr_tr + fabs(m_charge_j) * gval;
+         double r_e_H = 3.082 + gval;
+@@ -135,21 +143,36 @@ double PDSS_HKFT::molarVolume() const
+                      + nu * m_charge_j / (r_e_H * r_e_H) * dgvaldP;
+     }
+ 
+-    double drelepsilondP = m_waterProps->relEpsilon(m_temp, m_pres, 3);
+-    double relepsilon = m_waterProps->relEpsilon(m_temp, m_pres, 0);
++    double drelepsilondP = m_waterProps->relEpsilon(temp, pres, 3);
++    double relepsilon = m_waterProps->relEpsilon(temp, pres, 0);
+     double Q = drelepsilondP / (relepsilon * relepsilon);
+     double Z = -1.0 / relepsilon;
+     double wterm = - domega_jdP * (Z + 1.0);
+     double qterm = - omega_j * Q;
+     double molVol_calgmolPascal = a1term + a2term + a3term + a4term + wterm + qterm;
+-
+-    // Convert to m**3 / kmol from (cal/gmol/Pa)
+     return m_units.convertTo(molVol_calgmolPascal, "J/kmol");
+ }
+ 
+-double PDSS_HKFT::density() const
++double PDSS_HKFT::dVdT() const
+ {
+-    return m_mw / molarVolume();
++    double dT = 1.0e-4 * m_temp;
++    double v_hi = molarVolumeTP(m_temp + dT, m_pres);
++    double v_lo = molarVolumeTP(m_temp - dT, m_pres);
++    // Restore water state modified by gstar() calls inside molarVolumeTP
++    m_waterSS->setState_TP(m_temp, m_pres);
++    m_densWaterSS = m_waterSS->density();
++    return (v_hi - v_lo) / (2.0 * dT);
++}
++
++double PDSS_HKFT::dVdP() const
++{
++    double dP = 1.0e-4 * m_pres;
++    double v_hi = molarVolumeTP(m_temp, m_pres + dP);
++    double v_lo = molarVolumeTP(m_temp, m_pres - dP);
++    // Restore water state modified by gstar() calls inside molarVolumeTP
++    m_waterSS->setState_TP(m_temp, m_pres);
++    m_densWaterSS = m_waterSS->density();
++    return (v_hi - v_lo) / (2.0 * dP);
+ }
+ 
+ double PDSS_HKFT::gibbs_RT_ref() const
+diff --git a/src/thermo/PDSS_SSVol.cpp b/src/thermo/PDSS_SSVol.cpp
+index f02ef79561..1ea3c5c770 100644
+--- a/src/thermo/PDSS_SSVol.cpp
++++ b/src/thermo/PDSS_SSVol.cpp
+@@ -91,7 +91,17 @@ double PDSS_SSVol::intEnergy_mole() const
+ 
+ double PDSS_SSVol::cv_mole() const
+ {
+-    return (cp_mole() - m_V0);
++    return cp_mole();
++}
++
++double PDSS_SSVol::dVdT() const
++{
++    return dVdT_;
++}
++
++double PDSS_SSVol::dVdP() const
++{
++    return 0.0;
+ }
+ 
+ void PDSS_SSVol::calcMolarVolume()
+@@ -130,7 +140,7 @@ void PDSS_SSVol::setPressure(double p)
+         m_hss_RT = m_h0_RT + sV_term + del_pRT * m_Vss;
+         m_sss_R = m_s0_R + sV_term;
+         m_gss_RT = m_hss_RT - m_sss_R;
+-        m_cpss_R = m_cp0_R - m_temp * deltaP * d2VdT2_;
++        m_cpss_R = m_cp0_R - m_temp * deltaP * d2VdT2_ / GasConstant;
+     }
+ }
+ 
+@@ -152,7 +162,7 @@ void PDSS_SSVol::setTemperature(double temp)
+         m_hss_RT = m_h0_RT + sV_term + del_pRT * m_Vss;
+         m_sss_R = m_s0_R + sV_term;
+         m_gss_RT = m_hss_RT - m_sss_R;
+-        m_cpss_R = m_cp0_R - m_temp * deltaP * d2VdT2_;
++        m_cpss_R = m_cp0_R - m_temp * deltaP * d2VdT2_ / GasConstant;
+     }
+ }
+ 
+diff --git a/src/thermo/PDSS_Water.cpp b/src/thermo/PDSS_Water.cpp
+index 92b481ba6d..ce5193d9b9 100644
+--- a/src/thermo/PDSS_Water.cpp
++++ b/src/thermo/PDSS_Water.cpp
+@@ -84,6 +84,16 @@ double PDSS_Water::molarVolume() const
+     return m_mw / m_sub.density();
+ }
+ 
++double PDSS_Water::dVdT() const
++{
++    return thermalExpansionCoeff() * molarVolume();
++}
++
++double PDSS_Water::dVdP() const
++{
++    return -isothermalCompressibility() * molarVolume();
++}
++
+ double PDSS_Water::gibbs_RT_ref() const
+ {
+     m_sub.density(m_temp, m_p0, m_iState);
+diff --git a/src/thermo/WaterProps.cpp b/src/thermo/WaterProps.cpp
+index a9d23a07be..062da53a9a 100644
+--- a/src/thermo/WaterProps.cpp
++++ b/src/thermo/WaterProps.cpp
+@@ -188,10 +188,10 @@ double WaterProps::ADebye(double T, double P_input, int ifunc)
+             d2AdT2 += 1.5 * (- dAdT * depsRelWaterdT / epsRelWater
+                              - A_Debye / epsRelWater *
+                              (d2epsRelWaterdT2 - depsRelWaterdT * depsRelWaterdT / epsRelWater));
+-            double deltaT = -0.1;
+-            double Tdel = T + deltaT;
+-            double cte_del = coeffThermalExp_IAPWS(Tdel, P);
+-            double dctedT = (cte_del - cte) / Tdel;
++            double deltaT = 0.1;
++            double cte_del_p = coeffThermalExp_IAPWS(T + deltaT, P);
++            double cte_del_m = coeffThermalExp_IAPWS(T - deltaT, P);
++            double dctedT = (cte_del_p - cte_del_m) / (2 * deltaT);
+             double contrib3 = 0.5 * (-(dAdT * cte) -(A_Debye * dctedT));
+             d2AdT2 += contrib3;
+             return d2AdT2;
+diff --git a/test/SConscript b/test/SConscript
+index c4b909a35d..f28cb57398 100644
+--- a/test/SConscript
++++ b/test/SConscript
+@@ -95,6 +95,14 @@ def addTestProgram(subdir, progName, env_vars={}):
+         testenv.Append(CPPDEFINES=["CT_SKIP_SLOW"])
+     if env["python_package"] == "n":
+         testenv.Append(CPPDEFINES=["CT_NO_PYTHON"])
++    # Add build directory RPATH for test binaries
++    if env["OS"] == "Darwin":
++        testenv.Append(
++            LINKFLAGS=env.subst(
++                f"${{RPATHPREFIX}}{testenv.Dir('#build/lib').abspath}${{RPATHSUFFIX}}"))
++    elif env["use_rpath_linkage"]:
++        testenv.Append(RPATH=testenv.Dir('#build/lib'))
++
+     program = testenv.Program(pjoin(subdir, progName),
+                               multi_glob(testenv, subdir, 'cpp'))
+     passedFile = File(pjoin(str(program[0].dir), '%s.passed' % program[0].name))
+diff --git a/test/clib/test_clib.cpp b/test/clib/test_clib.cpp
+index 10648cfa1c..587337483a 100644
+--- a/test/clib/test_clib.cpp
++++ b/test/clib/test_clib.cpp
+@@ -240,6 +240,8 @@ int main(int argc, char** argv)
+     make_deprecation_warnings_fatal();
+     printStackTraceOnSegfault();
+     Cantera::CanteraError::setStackTraceDepth(20);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     vector<string> fileNames = {"gtest-freeflame.yaml", "gtest-freeflame.h5"};
+     for (const auto& fileName : fileNames) {
+         if (std::ifstream(fileName).good()) {
+diff --git a/test/data/consistency-cases.yaml b/test/data/consistency-cases.yaml
+index 151bcb4631..3fcc34794f 100644
+--- a/test/data/consistency-cases.yaml
++++ b/test/data/consistency-cases.yaml
+@@ -59,15 +59,6 @@ ideal-molal-solution:
+   setup:
+     file: thermo-models.yaml
+     phase: ideal-molal-aqueous
+-    known-failures:
+-      g_eq_h_minus_Ts:
+-        "Implementations of g and s are inconsistent. See GitHub Issue #1300"
+-      gk_eq_hk_minus_T_sk:
+-        "Implementations of g and s are inconsistent. See GitHub Issue #1300"
+-      cv_eq_.+: cv not implemented
+-      cp_eq_dsdT_const_p_times_T:
+-        "Implementation of cp and s are inconsistent. See GitHub Issue #1300"
+-      activity_coeffs: "Activity coeffs are incorrect. See GitHub Issue #1311"
+   states:
+   - {T: 300, P: 101325, molalities: {CH4(aq): 0.01, H2S(aq): 0.03, CO2(aq): 0.1}}
+   - {T: 300, P: 2 atm, molalities: {CH4(aq): 0.1, H2S(aq): 0.01, CO2(aq): 0.1}}
+@@ -96,17 +87,6 @@ binary-solution-tabulated:
+   setup:
+     file: BinarySolutionTabulatedThermo.yaml
+     phase: anode
+-    known-failures:
+-      g_eq_h_minus_Ts/4: "Problems near composition limit. See GitHub Issue #1303"
+-      g_eq_sum_gk_Xk/4: "Problems near composition limit. See GitHub Issue #1303"
+-      s_eq_sum_sk_Xk/4: "Problems near composition limit. See GitHub Issue #1303"
+-      gk_eq_hk_minus_T_sk/[34]: "Problems near composition limit. See GitHub Issue #1303"
+-      gk0_eq_hk0_minus_T_sk0/[34]:
+-        "Problems near composition limit. See GitHub Issue #1303"
+-      chem_potentials_to_activities/3:
+-        "Problems near composition limit. See GitHub Issue #1303"
+-      gRef_eq_hRef_minus_T_sRef/[34]:
+-        "Problems near composition limit. See GitHub Issue #1303"
+   states:
+   - {T: 300, P: 1 atm, X: {"Li[anode]": 0.3, "V[anode]": 0.7}}
+   - {T: 320, P: 1 atm, X: {"Li[anode]": 0.3, "V[anode]": 0.7}}
+@@ -167,10 +147,6 @@ debye-huckel-dilute:
+   setup:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-dilute
+-    known-failures: &debye-huckel-failures
+-      cv_eq_.+: cv not implemented
+-      activity_coeffs: "Activity coeffs are incorrect. See GitHub Issue #1311"
+-
+   states: &debye-huckel-states
+   - {T: 300, P: 1 atm,
+      molalities: {Na+: 9.3549, Cl-: 9.3549, H+: 1.05e-08, OH-: 1.3765e-06,
+@@ -191,19 +167,12 @@ debye-huckel-dilute-IAPWS:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-dilute-IAPWS
+     rtol_fd: 1e-5  # Good finite difference results with IAPWS are challenging
+-    known-failures:
+-      cv_eq_.+: cv not implemented
+-      activity_coeffs: "Activity coeffs are incorrect. See GitHub Issue #1311"
+-      cp_eq_.+: "cp with variable A_Debye is incorrect. See GitHub Issue #1500"
+-      dsdP_const_T_eq_minus_dV_dT_const_P.+:
+-        "Error with dilute limit with variable A_Debye. See GitHub Issue #1502"
+   states: *debye-huckel-states
+ 
+ debye-huckel-B-dot-ak:
+   setup:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-B-dot-ak
+-    known-failures: *debye-huckel-failures
+   states: *debye-huckel-states
+ 
+ debye-huckel-B-dot-ak-IAPWS:
+@@ -211,17 +180,12 @@ debye-huckel-B-dot-ak-IAPWS:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-B-dot-ak-IAPWS
+     rtol_fd: 1e-5  # Good finite difference results with IAPWS are challenging
+-    known-failures: &debye-huckel-IAPWS-failures
+-      cv_eq_.+: cv not implemented
+-      activity_coeffs: "Activity coeffs are incorrect. See GitHub Issue #1311"
+-      cp_eq_.+: "cp with variable A_debye is incorrect. See GitHub Issue #1500"
+   states: *debye-huckel-states
+ 
+ debye-huckel-B-dot-a:
+   setup:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-B-dot-a
+-    known-failures: *debye-huckel-failures
+   states: *debye-huckel-states
+ 
+ debye-huckel-B-dot-a-IAPWS:
+@@ -229,14 +193,12 @@ debye-huckel-B-dot-a-IAPWS:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-B-dot-a-IAPWS
+     rtol_fd: 1e-5  # Good finite difference results with IAPWS are challenging
+-    known-failures: *debye-huckel-IAPWS-failures
+   states: *debye-huckel-states
+ 
+ debye-huckel-pitzer-beta_ij:
+   setup:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-pitzer-beta_ij
+-    known-failures: *debye-huckel-failures
+   states: *debye-huckel-states
+ 
+ debye-huckel-pitzer-beta_ij-IAPWS:
+@@ -244,14 +206,12 @@ debye-huckel-pitzer-beta_ij-IAPWS:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-pitzer-beta_ij-IAPWS
+     rtol_fd: 1e-5  # Good finite difference results with IAPWS are challenging
+-    known-failures: *debye-huckel-IAPWS-failures
+   states: *debye-huckel-states
+ 
+ debye-huckel-beta_ij:
+   setup:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-beta_ij
+-    known-failures: *debye-huckel-failures
+   states: *debye-huckel-states
+ 
+ debye-huckel-beta_ij-IAPWS:
+@@ -259,19 +219,36 @@ debye-huckel-beta_ij-IAPWS:
+     file: debye-huckel-all.yaml
+     phase: debye-huckel-beta_ij-IAPWS
+     rtol_fd: 1e-5  # Good finite difference results with IAPWS are challenging
+-    known-failures: *debye-huckel-IAPWS-failures
+   states: *debye-huckel-states
+ 
+ margules:
+   setup:
+     file: LiKCl_liquid.yaml
+-    known-failures:
+-      cv_eq.+: "Implementation of cv is incorrect. See GitHub Issue #1308"
+   states:
+   - {T: 900, P: 1 atm, X: {KCl(L): 0.2, LiCl(L): 0.8}}
+   - {T: 1000, P: 10 atm, X: {KCl(L): 0.99, LiCl(L): 0.01}}
+   - {T: 1400, P: 20 atm, X: {KCl(L): 2.0e-5, LiCl(L): 1}}
+ 
++margules-with-excess-volume:
++  setup:
++    file: thermo-models.yaml
++    phase: ethanol-water-rough
++  states:
++  - {T: 298.15, P: 1 atm, X: {ethanol: 0.3, water: 0.7}}
++  - {T: 298.15, P: 1 atm, X: {ethanol: 0.5, water: 0.5}}
++  - {T: 308.15, P: 1 atm, X: {ethanol: 0.5, water: 0.5}}
++
++margules-SSVol:
++  # Tests Margules phase with PDSS_SSVol species (T-dependent standard state
++  # volumes), exercising the thermalExpansionCoeff and cv implementations.
++  setup:
++    file: Li_Liquid.yaml
++    phase: Li(L)
++  states:
++  - {T: 300, P: 1 atm, X: {Li(L): 0.4, "Li(L)2": 0.6}}
++  - {T: 400, P: 10 atm, X: {Li(L): 0.9, "Li(L)2": 0.1}}
++  - {T: 500, P: 5 atm, X: {Li(L): 0.5, "Li(L)2": 0.5}}
++
+ fixed-stoichiometry:
+   setup:
+     file: thermo-models.yaml
+@@ -332,10 +309,6 @@ ideal-solution-VPSS-simple:
+   setup:
+     file: IdealSolidSolnPhaseExample.yaml
+     phase: VpssSolidSolutionExample
+-    known-failures:
+-      cv_eq_dudT: "Implementation of cv is incorrect. See GitHub Issue #1317"
+-      cv_eq_dsdT_const_v_times_T:
+-        "Implementation of cv is incorrect. See GitHub Issue #1317"
+   states:
+   - {T: 300, P: 1 atm, X: {C2H2-graph: 0.2, C-graph: 0.5, H2-solute: 0.3}}
+   - {T: 400, P: 1 atm, X: {C2H2-graph: 1.0}}
+@@ -344,12 +317,12 @@ ideal-solution-VPSS-simple:
+ ideal-solution-VPSS-HKFT:
+   setup:
+     file: pdss_hkft.yaml
+-    known-failures:
+-      cv_eq_dudT: "Implementation of cv is incorrect. See GitHub Issue #1317"
+-      cv_eq_dsdT_const_v_times_T:
+-        "Implementation of cv is incorrect. See GitHub Issue #1317"
+-      dsdP_const_T_eq_minus_dV_dT_const_P:
+-        "Implementation of cv is incorrect. See GitHub Issue #1318"
++    # Relax tolerances slightly to accommodate iterative solver accuracy in the
++    # implementation of WaterPropsIAPWSphi::dfind, and the coarser finite difference
++    # step used internally in PDSS_HKFT::dVdP() relative to the consistency test finite
++    # difference step.
++    rtol_fd: 4e-6
++    atol_c: 5e-14
+   states:
+   - {T: 300, P: 1 atm, X: {H2O(L): 0.9, Na+: 0.05, Cl-: 0.05, H+: 1e-7, OH-: 1e-7}}
+   - {T: 360, P: 5 atm, X: {H2O(L): 0.6, Na+: 0.2, Cl-: 0.2}}
+@@ -378,11 +351,7 @@ Redlich-Kister-complex:
+ HMW-electrolyte:
+   setup:
+     file: HMW_NaCl.yaml
+-    known-failures:
+-      cp_eq_dhdT: "Moderate discrepancies. See GitHub Issue #1324"
+-      cp_eq_dsdT_const_p_times_T: "Moderate discrepancies. See GitHub Issue #1324"
+-      dsdP_const_T_eq_minus_dV_dT_const_P: "Moderate discrepancies. See GitHub Issue #1324"
+-      activity_coeffs: "Major discrepancies for all solute species. See GitHub Issue #1324"
++    rtol_fd: 4e-6  # internal numerical differentiation in ADebye limits Maxwell relation precision
+   states:
+   - {T: 300, P: 1 atm, molalities: {Na+: 9.4, Cl-: 9.4, H+: 1.05e-05, OH-: 1.0e-05}}
+   - {T: 330, P: 1 atm, molalities: {Na+: 9.4, Cl-: 9.4, H+: 1.05e-04, OH-: 1.0e-04}}
+diff --git a/test/data/thermo-models.yaml b/test/data/thermo-models.yaml
+index c841651446..4b6326f646 100644
+--- a/test/data/thermo-models.yaml
++++ b/test/data/thermo-models.yaml
+@@ -25,6 +25,23 @@ phases:
+     excess-enthalpy: [-17570, -377]
+     excess-entropy: [-7.627, 4.958]
+ 
++- name: ethanol-water-rough
++  note: Rough approximation of the ethanol-water system to enable regression and
++    consistency tests for the "excess volume" terms in this model. These parameter
++    values are not an accurate fit to any literature data and should not be used for
++    scientific purposes.
++  thermo: Margules
++  elements: [H, C, O]
++  species:
++  - {ethanol-water-fake-species: all}
++  interactions:
++  - species: [ethanol, water]
++    excess-enthalpy: [-2449 J/mol, -1613 J/mol]
++    excess-entropy: [-14.45 J/mol/K, -11.64 J/mol/K]
++    # VHE0 = v0 + T0*VSE0 = -3.762 + 298.15*(-0.030) = -12.707 cm^3/mol
++    excess-volume-enthalpy: [-12.707 cm^3/mol, 0.476 cm^3/mol]
++    excess-volume-entropy: [-0.030 cm^3/mol/K, 0.0 cm^3/mol/K]
++
+ - name: ideal-molal-aqueous
+   thermo: ideal-molal-solution
+   species:
+@@ -356,6 +373,30 @@ species:
+     model: constant-volume
+     density: 5.0317 g/cm^3
+ 
++ethanol-water-fake-species:
++- name: ethanol
++  composition: {C: 2, H: 6, O: 1}
++  thermo:
++    model: constant-cp
++    T0: 298.15 K
++    h0: -277.7 kJ/mol
++    s0: 159.86 J/mol/K
++    cp0: 112.0 J/mol/K
++  equation-of-state:
++    model: constant-volume
++    molar-volume: 58.35 cm^3/mol
++
++- name: water
++  composition: {H: 2, O: 1}
++  thermo:
++    model: constant-cp
++    T0: 298.15 K
++    h0: -285.83 kJ/mol
++    s0: 69.91 J/mol/K
++    cp0: 75.3 J/mol/K
++  equation-of-state:
++    model: constant-volume
++    molar-volume: 18.07 cm^3/mol
+ 
+ ideal-molal-fake-species:
+ # Fake thermo data (GRI 3.0 coefficients for H2)
+diff --git a/test/equil/equil_gas.cpp b/test/equil/equil_gas.cpp
+index 139ba69504..dcdf707f02 100644
+--- a/test/equil/equil_gas.cpp
++++ b/test/equil/equil_gas.cpp
+@@ -387,6 +387,8 @@ int main(int argc, char** argv)
+     make_deprecation_warnings_fatal();
+     printStackTraceOnSegfault();
+     Cantera::CanteraError::setStackTraceDepth(20);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     int result = RUN_ALL_TESTS();
+     appdelete();
+     return result;
+diff --git a/test/general/string_processing.cpp b/test/general/string_processing.cpp
+index e9209ce5a7..5650b3d888 100644
+--- a/test/general/string_processing.cpp
++++ b/test/general/string_processing.cpp
+@@ -119,6 +119,8 @@ int main(int argc, char** argv)
+     testing::InitGoogleTest(&argc, argv);
+     Cantera::make_deprecation_warnings_fatal();
+     Cantera::printStackTraceOnSegfault();
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     Cantera::CanteraError::setStackTraceDepth(20);
+     int result = RUN_ALL_TESTS();
+     Cantera::appdelete();
+diff --git a/test/kinetics/pdep.cpp b/test/kinetics/pdep.cpp
+index e04dd62056..2ba8380bba 100644
+--- a/test/kinetics/pdep.cpp
++++ b/test/kinetics/pdep.cpp
+@@ -227,6 +227,8 @@ int main(int argc, char** argv)
+     Cantera::make_deprecation_warnings_fatal();
+     Cantera::printStackTraceOnSegfault();
+     Cantera::CanteraError::setStackTraceDepth(20);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     testing::InitGoogleTest(&argc, argv);
+     int result = RUN_ALL_TESTS();
+     Cantera::appdelete();
+diff --git a/test/oneD/test_oneD.cpp b/test/oneD/test_oneD.cpp
+index b81952178d..b3c77aeb80 100644
+--- a/test/oneD/test_oneD.cpp
++++ b/test/oneD/test_oneD.cpp
+@@ -130,6 +130,8 @@ int main(int argc, char** argv)
+     testing::InitGoogleTest(&argc, argv);
+     make_deprecation_warnings_fatal();
+     printStackTraceOnSegfault();
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     CanteraError::setStackTraceDepth(20);
+     int result = RUN_ALL_TESTS();
+     appdelete();
+diff --git a/test/thermo/nasapoly.cpp b/test/thermo/nasapoly.cpp
+index adaa7063c8..300581eaf0 100644
+--- a/test/thermo/nasapoly.cpp
++++ b/test/thermo/nasapoly.cpp
+@@ -134,6 +134,8 @@ int main(int argc, char** argv)
+     Cantera::make_deprecation_warnings_fatal();
+     Cantera::printStackTraceOnSegfault();
+     Cantera::CanteraError::setStackTraceDepth(20);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     testing::InitGoogleTest(&argc, argv);
+     int result = RUN_ALL_TESTS();
+     Cantera::appdelete();
+diff --git a/test/thermo/thermoFromYaml.cpp b/test/thermo/thermoFromYaml.cpp
+index e05b4a414c..3fa8dd74a3 100644
+--- a/test/thermo/thermoFromYaml.cpp
++++ b/test/thermo/thermoFromYaml.cpp
+@@ -264,8 +264,8 @@ TEST(ThermoFromYaml, HMWSoln_HKFT)
+     double mvRef[] = {0.01815197, 0.00157182, 0.01954605, 0.00173137, -0.0020266};
+     double hRef[] = {-2.84096961e+08, -2.38159643e+08, -1.68846908e+08,
+                      3.59728865e+06, -2.29291570e+08};
+-    double acoeffRef[] = {0.922403480, 1.21859875, 1.21859855, 5.08171133,
+-                          0.5983205};
++    double acoeffRef[] = {0.922403480, 67.643561092, 67.643549776, 282.082227796,
++                          33.212351882};
+ 
+     // Regression test based on HMWSoln.fromScratch_HKFT
+     size_t N = thermo->nSpecies();
+@@ -276,7 +276,7 @@ TEST(ThermoFromYaml, HMWSoln_HKFT)
+     for (size_t k = 0; k < N; k++) {
+         EXPECT_NEAR(mv[k], mvRef[k], 2e-8);
+         EXPECT_NEAR(h[k], hRef[k], 2e0);
+-        EXPECT_NEAR(acoeff[k], acoeffRef[k], 2e-8);
++        EXPECT_NEAR(acoeff[k], acoeffRef[k], 1e-6);
+     }
+ }
+ 
+diff --git a/test/thermo_consistency/consistency.cpp b/test/thermo_consistency/consistency.cpp
+index 5a863a3fcc..7ac47d1115 100644
+--- a/test/thermo_consistency/consistency.cpp
++++ b/test/thermo_consistency/consistency.cpp
+@@ -355,6 +355,11 @@ TEST_P(TestConsistency, cp_eq_dhdT)
+ 
+ TEST_P(TestConsistency, cv_eq_dudT)
+ {
++    if (!phase->isCompressible()) {
++        // For nearly-incompressible phases, we can't use setState_TD to evaluate
++        // ∂u/∂T at constant V using finite differences to compare with cv.
++        GTEST_SKIP() << "Not meaningful for incompressible phases";
++    }
+     double u1, cv1;
+     try {
+         u1 = phase->intEnergy_mole();
+@@ -364,11 +369,7 @@ TEST_P(TestConsistency, cv_eq_dudT)
+     }
+     double T1 = phase->temperature();
+     double dT = 1e-5 * phase->temperature();
+-    if (phase->isCompressible()) {
+-        phase->setState_TD(T1 + dT, phase->density());
+-    } else {
+-        phase->setTemperature(T1 + dT);
+-    }
++    phase->setState_TD(T1 + dT, phase->density());
+     double u2 = phase->intEnergy_mole();
+     double cv2 = phase->cv_mole();
+     double cv_mid = 0.5 * (cv1 + cv2);
+@@ -397,6 +398,11 @@ TEST_P(TestConsistency, cp_eq_dsdT_const_p_times_T)
+ 
+ TEST_P(TestConsistency, cv_eq_dsdT_const_v_times_T)
+ {
++    if (!phase->isCompressible()) {
++        // For nearly-incompressible phases, we can't use setState_TD to evaluate ∂S/∂T
++        // at constant V by finite difference to compare with cv.
++        GTEST_SKIP() << "Not meaningful for incompressible phases";
++    }
+     double s1, cv1;
+     try {
+         s1 = phase->entropy_mole();
+@@ -406,11 +412,7 @@ TEST_P(TestConsistency, cv_eq_dsdT_const_v_times_T)
+     }
+     double T1 = phase->temperature();
+     double dT = 1e-4 * phase->temperature();
+-    if (phase->isCompressible()) {
+-        phase->setState_TD(T1 + dT, phase->density());
+-    } else {
+-        phase->setTemperature(T1 + dT);
+-    }
++    phase->setState_TD(T1 + dT, phase->density());
+     double s2 = phase->entropy_mole();
+     double cv2 = phase->cv_mole();
+     double cv_mid = 0.5 * (cv1 + cv2);
+@@ -418,6 +420,26 @@ TEST_P(TestConsistency, cv_eq_dsdT_const_v_times_T)
+     EXPECT_NEAR(cv_fd, cv_mid, max({rtol_fd * cv_mid, rtol_fd * cv_fd, atol}));
+ }
+ 
++TEST_P(TestConsistency, cv_eq_cp_minus_T_V_beta2_over_kappa_T)
++{
++    double cv, cp, beta, kappa_T, V;
++    try {
++        cv = phase->cv_mole();
++        cp = phase->cp_mole();
++        beta = phase->thermalExpansionCoeff();
++        kappa_T = phase->isothermalCompressibility();
++        V = phase->molarVolume();
++    } catch (NotImplementedError& err) {
++        GTEST_SKIP() << err.getMethod() << " threw NotImplementedError";
++    }
++    if (kappa_T == 0.0) {
++        // Truly incompressible: cv = cp exactly
++        EXPECT_NEAR(cv, cp, atol);
++    } else {
++        EXPECT_NEAR(cv, cp - T * V * beta * beta / kappa_T, max({rtol_fd * cv, atol}));
++    }
++}
++
+ TEST_P(TestConsistency, dsdP_const_T_eq_minus_dV_dT_const_P)
+ {
+     double P0 = phase->pressure();
+@@ -519,7 +541,7 @@ TEST_P(TestConsistency, alphaV_eq_dmv_dT_const_P_div_mv)
+     double alphaV_fd = 1 / mv_mid * (mv2 - mv1) / (T2 - T1);
+ 
+     EXPECT_NEAR(alphaV_fd, alphaV_mid,
+-                max({rtol_fd * alphaV_mid, rtol_fd * alphaV_fd, atol_e}));
++        max({rtol_fd * std::abs(alphaV_mid), rtol_fd * std::abs(alphaV_fd), atol_e}));
+ }
+ 
+ TEST_P(TestConsistency, c_eq_sqrt_dP_drho_const_s)
+@@ -884,6 +906,18 @@ INSTANTIATE_TEST_SUITE_P(Margules, TestConsistency,
+         testing::ValuesIn(getStates("margules")))
+ );
+ 
++INSTANTIATE_TEST_SUITE_P(MargulesSSVol, TestConsistency,
++    testing::Combine(
++        testing::Values(getSetup("margules-SSVol")),
++        testing::ValuesIn(getStates("margules-SSVol")))
++);
++
++INSTANTIATE_TEST_SUITE_P(MargulesWithExcessVolume, TestConsistency,
++    testing::Combine(
++        testing::Values(getSetup("margules-with-excess-volume")),
++        testing::ValuesIn(getStates("margules-with-excess-volume")))
++);
++
+ INSTANTIATE_TEST_SUITE_P(FixedStoichiometry, TestConsistency,
+     testing::Combine(
+         testing::Values(getSetup("fixed-stoichiometry")),
+@@ -950,6 +984,8 @@ int main(int argc, char** argv)
+     testing::InitGoogleTest(&argc, argv);
+     Cantera::make_deprecation_warnings_fatal();
+     Cantera::CanteraError::setStackTraceDepth(0);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     int result = RUN_ALL_TESTS();
+     Cantera::appdelete();
+     return result;
+diff --git a/test/transport/transportFromScratch.cpp b/test/transport/transportFromScratch.cpp
+index 1023a67032..9863775c14 100644
+--- a/test/transport/transportFromScratch.cpp
++++ b/test/transport/transportFromScratch.cpp
+@@ -174,6 +174,8 @@ int main(int argc, char** argv)
+     make_deprecation_warnings_fatal();
+     printStackTraceOnSegfault();
+     CanteraError::setStackTraceDepth(20);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     testing::InitGoogleTest(&argc, argv);
+     int result = RUN_ALL_TESTS();
+     appdelete();
+diff --git a/test/zeroD/test_zeroD.cpp b/test/zeroD/test_zeroD.cpp
+index 4a941390a5..970a0f21fd 100644
+--- a/test/zeroD/test_zeroD.cpp
++++ b/test/zeroD/test_zeroD.cpp
+@@ -333,6 +333,8 @@ int main(int argc, char** argv)
+     testing::InitGoogleTest(&argc, argv);
+     Cantera::make_deprecation_warnings_fatal();
+     Cantera::CanteraError::setStackTraceDepth(20);
++    Cantera::addDataDirectory("test/data");
++    Cantera::addDataDirectory("data");
+     printStackTraceOnSegfault();
+     int result = RUN_ALL_TESTS();
+     Cantera::appdelete();
+diff --git a/test_problems/SConscript b/test_problems/SConscript
+index 633b33da4a..3f4ca337a0 100644
+--- a/test_problems/SConscript
++++ b/test_problems/SConscript
+@@ -51,6 +51,13 @@ class Test(object):
+         PASSED_FILES[self.testName] = pjoin(self.subdir, self.passedFile)
+ 
+         test_results.tests[self.testName] = self
++        # Add build directory RPATH for test binaries
++        if env["OS"] == "Darwin":
++            localenv.Append(
++                LINKFLAGS=env.subst(
++                f"${{RPATHPREFIX}}{localenv.Dir('#build/lib').abspath}${{RPATHSUFFIX}}"))
++        elif env["use_rpath_linkage"]:
++            localenv.Append(RPATH=localenv.Dir('#build/lib'))
+ 
+         if source_files:
+             self.program = localenv.Program(
+@@ -196,7 +203,7 @@ CompileAndTest('surfSolver', 'surfSolverTest', 'surfaceSolver', None,
+                extensions=['^surfaceSolver.cpp'])
+ CompileAndTest('VCS-NaCl', 'VCSnonideal/NaCl_equil',
+                'nacl_equil', 'good_out.txt',
+-               options='-d 3',
++               options='-d 3', threshold=1e-12,
+                artifacts=['vcs_equilibrate_res.csv']), # not testing this file because it's not really csv
+ 
+ # C++ Samples
+diff --git a/test_problems/VCSnonideal/NaCl_equil/good_out.txt b/test_problems/VCSnonideal/NaCl_equil/good_out.txt
+index 0947605fea..7ef36e2b24 100644
+--- a/test_problems/VCSnonideal/NaCl_equil/good_out.txt
++++ b/test_problems/VCSnonideal/NaCl_equil/good_out.txt
+@@ -165,11 +165,11 @@ VCS CALCULATION METHOD
+  H2O(L)             1       2       0       0       0       0       0       0       0      -0       0          0  -3.06686E+08   1.84000E+00       Mol_Num
+  OH-                1       1       0       0       0       0      -1       0       0       1       0          0  -2.26784E+08   1.60000E-01       Mol_Num
+  CO2                2       0       1       0       0       0       0       0       0       0       0          1  -4.57248E+08   0.00000E+00       Mol_Num
+- H2                 0       2       0       0       0       0       0       0       0       0       0          1  -3.89623E+07   2.49543E-14       Mol_Num
++ H2                 0       2       0       0       0       0       0       0       0       0       0          1  -3.89623E+07   2.51764E-14       Mol_Num
+  H+                 0       1       0       0       0       0       1       0       0      -1       0          0   0.00000E+00   1.60000E-01       Mol_Num
+  H2O                1       2       0       0       0       0       0       0       0       0       0          1  -2.98124E+08   2.99921E-20       Mol_Num
+- NaCl               0       0       0       0       1       1       0       0       0       0       0          1  -2.49904E+08   4.71533E-44       Mol_Num
+- O2                 2       0       0       0       0       0       0       0       0       0       0          1  -6.11650E+07   2.05302E-41       Mol_Num
++ NaCl               0       0       0       0       1       1       0       0       0       0       0          1  -2.49904E+08   4.71622E-44       Mol_Num
++ O2                 2       0       0       0       0       0       0       0       0       0       0          1  -6.11650E+07   2.05263E-41       Mol_Num
+  NaCl(S)            0       0       0       0       1       1       0       0       0       0       0          2  -4.32620E+08   0.00000E+00       Mol_Num
+  OH                 1       1       0       0       0       0       0       0       0       0       0          1  -2.26792E+08   4.94645E-14       Mol_Num
+ 
+@@ -183,39 +183,39 @@ VCS CALCULATION METHOD
+ --------------------------------------------------------------------------------
+ 		Temperature  =           3e+02 Kelvin
+ 		Pressure     =      1.0132e+05 Pa 
+-		total Volume =          100.41 m**3
++		total Volume =          101.21 m**3
+ 
+ 
+ --------------------------------------------------------------------------------
+  Species                 Equilibrium kmoles   Mole Fraction    ChemPot/RT    SpecUnkType
+ --------------------------------------------------------------------------------
+- NaCl(S)                   4.7876975E+00      1.0000000E+00     -1.7452E+02     0
+- N2                        4.0000000E+00      9.7628872E-01     -2.3069E+01     0
+- H2O(L)                    1.9028515E+00      8.1756694E-01     -1.2400E+02     0
+- Cl-                       2.1230251E-01      9.1216527E-02     -7.2378E+01     0
+- OH-                       1.8414365E-09      7.9117974E-10     -1.0883E+02     0
+- OH                        3.7465500E-07      9.1442861E-08     -1.0769E+02     0
+- CO2                       0.0000000E+00      0.0000000E+00     -5.0822E+02     0
+- Na+                       2.1230251E-01      9.1216527E-02     -1.0214E+02  KMolNum
+- H2O                       9.7148077E-02      2.3711143E-02     -1.2400E+02  KMolNum
+- H2                        1.8732750E-07      4.5721431E-08     -3.2618E+01  KMolNum
+- H+                        1.8414365E-09      7.9117974E-10     -1.5174E+01  KMolNum
+- NaCl                      3.9992770E-32      9.7611226E-33     -1.7452E+02  KMolNum
+- O2                        8.9447209E-69      2.1831575E-69     -1.8277E+02  KMolNum
++ NaCl(S)                   4.9949243E+00      1.0000000E+00     -1.7452E+02     0
++ N2                        4.0000000E+00      9.6854177E-01     -2.3077E+01     0
++ H2O(L)                    1.8700803E+00      9.9460102E-01     -1.2372E+02     0
++ Cl-                       5.0756678E-03      2.6994907E-03     -7.2378E+01     0
++ OH-                       7.9570780E-11      4.2319669E-11     -1.0763E+02     0
++ OH                        4.5597854E-07      1.1040857E-07     -1.0751E+02     0
++ CO2                       0.0000000E+00      0.0000000E+00     -5.0823E+02     0
++ H2O                       1.2991927E-01      3.1458059E-02     -1.2372E+02  KMolNum 
++ Na+                       5.0756678E-03      2.6994907E-03     -1.0214E+02  KMolNum 
++ H2                        2.2798927E-07      5.5204283E-08     -3.2429E+01  KMolNum 
++ H+                        7.9570780E-11      4.2319669E-11     -1.6088E+01  KMolNum 
++ NaCl                      4.0312655E-32      9.7611226E-33     -1.7452E+02  KMolNum 
++ O2                        1.0886284E-68      2.6359552E-69     -1.8258E+02  KMolNum 
+ --------------------------------------------------------------------------------
+ 
+ 
+ -------------------------------------------------------------------------------------------------------------------
+                |ComponentID|          0          1          2          3          4          5          6 |           |
+                | Components|    NaCl(S)         N2     H2O(L)        Cl-        OH-         OH        CO2 |           |
+- NonComponent  |   Moles   |       4.79          4        1.9      0.212   1.84e-09   3.75e-07          0 | DG/RT Rxn |
++ NonComponent  |   Moles   |       4.99          4       1.87    0.00508   7.96e-11   4.56e-07          0 | DG/RT Rxn |
+ -------------------------------------------------------------------------------------------------------------------
+-   7 H+        |  1.84e-09 |       0.00       0.00      -1.00       0.00       1.00       0.00       0.00 |  -6.4e-10 |
+-   8 H2O       |    0.0972 |       0.00       0.00      -1.00       0.00       0.00       0.00       0.00 | -1.27e-10 |
+-   9 NaCl      |     4e-32 |      -1.00       0.00       0.00       0.00       0.00       0.00       0.00 |    -2e-11 |
+-  10 O2        |  8.95e-69 |       0.00       0.00       2.00       0.00       0.00      -4.00       0.00 |  -2.2e-09 |
+-  11 Na+       |     0.212 |      -1.00       0.00       0.00       1.00       0.00       0.00       0.00 |  1.56e-10 |
+-  12 H2        |  1.87e-07 |       0.00       0.00      -2.00       0.00       0.00       2.00       0.00 |  -2.8e-10 |
++   7 H+        |  7.96e-11 |       0.00       0.00      -1.00       0.00       1.00       0.00       0.00 | -1.42e-14 |
++   8 H2O       |      0.13 |       0.00       0.00      -1.00       0.00       0.00       0.00       0.00 | -9.38e-13 |
++   9 NaCl      |  4.03e-32 |      -1.00       0.00       0.00       0.00       0.00       0.00       0.00 | -8.33e-12 |
++  10 O2        |  1.09e-68 |       0.00       0.00       2.00       0.00       0.00      -4.00       0.00 | -1.84e-09 |
++  11 Na+       |   0.00508 |      -1.00       0.00       0.00       1.00       0.00       0.00       0.00 | -7.39e-13 |
++  12 H2        |  2.28e-07 |       0.00       0.00      -2.00       0.00       0.00       2.00       0.00 | -2.67e-11 |
+ -------------------------------------------------------------------------------------------------------------------
+ 
+ 
+@@ -226,15 +226,15 @@ VCS CALCULATION METHOD
+                   | Element   |          O          H          C          N         Na         Cl cn_NaCl_el         Fe         Si          E         Ca |                     |
+     PhaseName     |KMolTarget |          2          4          0          8          5          5          0          0          0          0          0 |     Gibbs Total     |
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-   0 NaCl_electro | 2.327e+00 |        1.9       3.81          0          0      0.212      0.212          0          0          0          0          0 | -2.73010752117E+02 |
+-   1 air          | 4.097e+00 |     0.0971      0.194          0          8      4e-32      4e-32          0          0          0          0          0 | -1.04323638096E+02 |
+-   2 NaCl(S)      | 4.788e+00 |          0          0          0          0       4.79       4.79          0          0          0          0          0 | -8.35534519273E+02 |
++   0 NaCl_electro | 1.880e+00 |       1.87       3.74          0          0    0.00508    0.00508          0          0          0          0          0 | -2.32253705026E+02 |
++   1 air          | 4.130e+00 |       0.13       0.26          0          8   4.03e-32   4.03e-32          0          0          0          0          0 | -1.08382529648E+02 |
++   2 NaCl(S)      | 4.995e+00 |          0          0          0          0       4.99       4.99          0          0          0          0          0 | -8.71699121588E+02 |
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-    TOTAL         | 1.121e+01 |          2          4          0          8          5          5          0          0          0          0          0 | -1.21286855208E+03 |
++    TOTAL         | 1.101e+01 |          2          4          0          8          5          5          0          0          0          0          0 | -1.21233535626E+03 |
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+-	Total Dimensionless Gibbs Free Energy = G/RT =  -1.2128686E+03
++	Total Dimensionless Gibbs Free Energy = G/RT =  -1.2123354E+03
+ 
+ Elemental Abundances (kmol):          Actual                    Target         Type      ElActive
+                           O   2.000000000000E+00    2.000000000000E+00     0       1
+@@ -255,32 +255,32 @@ Chemical Potentials of the Species: (dimensionless)
+ 		(RT = 2.47896e+06 J/kmol)
+     Name        TKMoles     StandStateChemPot      ln(AC)       ln(X_i)      |   F z_i phi   |    ChemPot    | (-lnMnaught)|  (MolNum ChemPot)|
+ ---------------------------------------------------------------------------------------------------------------------------------------------------
+- NaCl(S)       4.7876975E+00 -1.7451698E+02   0.0000000E+00   0.0000000E+00  | 0.0000000E+00 |   -1.7452E+02 |             |      -8.355345193E+02 |
+- N2            4.0000000E+00 -2.3045224E+01   0.0000000E+00  -2.3996917E-02  | 0.0000000E+00 |   -2.3069E+01 |             |      -9.227688454E+01 |
+- H2O(L)        1.9028515E+00 -1.2371582E+02  -8.6316182E-02  -2.0142249E-01  | 0.0000000E+00 |   -1.2400E+02 |             |      -2.359603593E+02 |
+- Cl-           2.1230251E-01 -7.4214135E+01   2.1455712E-01  -2.3945192E+00  |-0.0000000E+00 |   -7.2378E+01 |(4.01655E+00)|      -1.536593441E+01 |
+- OH-           1.8414365E-09 -9.1483587E+01  -4.0506775E-01  -2.0957496E+01  |-0.0000000E+00 |   -1.0883E+02 |(4.01655E+00)|      -2.004027948E-07 |
+- OH            3.7465500E-07 -9.1487044E+01   0.0000000E+00  -1.6207552E+01  | 0.0000000E+00 |   -1.0769E+02 |             |      -4.034831808E-05 |
+- CO2           0.0000000E+00 -1.8445182E+02   0.0000000E+00  -3.2377220E+02  | 0.0000000E+00 |   -5.0822E+02 |             |      -0.000000000E+00 |
+- Na+           2.1230251E-01 -1.0397602E+02   2.1455712E-01  -2.3945192E+00  | 0.0000000E+00 |   -1.0214E+02 |(4.01655E+00)|      -2.168445814E+01 |
+- H2O           9.7148077E-02 -1.2026175E+02   0.0000000E+00  -3.7418102E+00  | 0.0000000E+00 |   -1.2400E+02 |             |      -1.204670709E+01 |
+- H2            1.8732750E-07 -1.5717224E+01   0.0000000E+00  -1.6900699E+01  | 0.0000000E+00 |   -3.2618E+01 |             |      -6.110233812E-06 |
+- H+            1.8414365E-09  0.0000000E+00   1.7669887E+00  -2.0957496E+01  | 0.0000000E+00 |   -1.5174E+01 |(4.01655E+00)|      -2.794187744E-08 |
+- NaCl          3.9992770E-32 -1.0081008E+02   0.0000000E+00  -7.3706901E+01  | 0.0000000E+00 |   -1.7452E+02 |             |      -6.979417568E-30 |
+- O2            8.9447209E-69 -2.4673669E+01   0.0000000E+00  -1.5809760E+02  | 0.0000000E+00 |   -1.8277E+02 |             |      -1.634837974E-66 |
+-                                                                                                                                  -1.212868552E+03
++ NaCl(S)       4.9949243E+00 -1.7451698E+02   0.0000000E+00   0.0000000E+00  | 0.0000000E+00 |   -1.7452E+02 |             |      -8.716991216E+02 |
++ N2            4.0000000E+00 -2.3045224E+01   0.0000000E+00  -3.1963663E-02  | 0.0000000E+00 |   -2.3077E+01 |             |      -9.230875153E+01 |
++ H2O(L)        1.8700803E+00 -1.2371582E+02   3.8504427E-04  -5.4136087E-03  | 0.0000000E+00 |   -1.2372E+02 |             |      -2.313679148E+02 |
++ Cl-           5.0756678E-03 -7.4214135E+01   3.7347301E+00  -5.9146921E+00  |-0.0000000E+00 |   -7.2378E+01 |(4.01655E+00)|      -3.673643833E-01 |
++ OH-           7.9570780E-11 -9.1483587E+01   3.7201336E+00  -2.3885769E+01  |-0.0000000E+00 |   -1.0763E+02 |(4.01655E+00)|      -8.564415630E-09 |
++ OH            4.5597854E-07 -9.1487044E+01   0.0000000E+00  -1.6019078E+01  | 0.0000000E+00 |   -1.0751E+02 |             |      -4.902048414E-05 |
++ CO2           0.0000000E+00 -1.8445182E+02   0.0000000E+00  -3.2378017E+02  | 0.0000000E+00 |   -5.0823E+02 |             |      -0.000000000E+00 |
++ H2O           1.2991927E-01 -1.2026175E+02   0.0000000E+00  -3.4591001E+00  | 0.0000000E+00 |   -1.2372E+02 |             |      -1.607372170E+01 |
++ Na+           5.0756678E-03 -1.0397602E+02   3.7347301E+00  -5.9146921E+00  | 0.0000000E+00 |   -1.0214E+02 |(4.01655E+00)|      -5.184258490E-01 |
++ H2            2.2798927E-07 -1.5717224E+01   0.0000000E+00  -1.6712225E+01  | 0.0000000E+00 |   -3.2429E+01 |             |      -7.393566385E-06 |
++ H+            7.9570780E-11  0.0000000E+00   3.7810438E+00  -2.3885769E+01  | 0.0000000E+00 |   -1.6088E+01 |(4.01655E+00)|      -1.280148616E-09 |
++ NaCl          4.0312655E-32 -1.0081008E+02   0.0000000E+00  -7.3706901E+01  | 0.0000000E+00 |   -1.7452E+02 |             |      -7.035242897E-30 |
++ O2            1.0886284E-68 -2.4673669E+01   0.0000000E+00  -1.5790913E+02  | 0.0000000E+00 |   -1.8258E+02 |             |      -1.987648182E-66 |
++                                                                                                                                  -1.212335356E+03
+ ---------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+ Counters:         Iterations
+     vcs_basopt:       2
+-    vcs_TP:          18
++    vcs_TP:          16
+ --------------------------------------------------------------------------------
+ --------------------------------------------------------------------------------
+ 
+ TCounters:   Num_Calls   Total_Its
+     vcs_basopt:       2          2
+-    vcs_TP:           1         18
++    vcs_TP:           1         16
+     vcs_inest:        1
+ 
+  Results from vcs:
+@@ -291,83 +291,83 @@ Pressure    = 101325 Pa
+ -------------------------------------------------------------
+  Name             Mole_Number(kmol)  Mole_Fraction     Chem_Potential (J/kmol)
+ -------------------------------------------------------------
+-H2O(L)              1.903e+00         8.176e-01       -3.074e+08
+-Cl-                 2.123e-01         9.122e-02       -1.794e+08
+-H+                  1.842e-09         7.913e-10       -3.762e+07
+-Na+                 2.123e-01         9.122e-02       -2.532e+08
+-OH-                 1.842e-09         7.913e-10       -2.698e+08
+-O2                  8.946e-69         2.183e-69       -4.531e+08
+-H2                  1.874e-07         4.573e-08       -8.086e+07
++H2O(L)              1.870e+00         9.946e-01       -3.067e+08
++Cl-                 5.076e-03         2.699e-03       -1.894e+08
++H+                  7.957e-11         4.232e-11       -4.984e+07
++Na+                 5.076e-03         2.699e-03       -2.632e+08
++OH-                 7.957e-11         4.232e-11       -2.768e+08
++O2                  1.089e-68         2.636e-69       -4.526e+08
++H2                  2.280e-07         5.520e-08       -8.039e+07
+ CO2                 0.000e+00         0.000e+00       -1.000e+300
+-H2O                 9.717e-02         2.372e-02       -3.074e+08
+-NaCl                3.999e-32         9.761e-33       -4.326e+08
+-N2                  4.000e+00         9.763e-01       -5.719e+07
+-OH                  3.747e-07         9.145e-08       -2.670e+08
+-NaCl(S)             4.788e+00         1.000e+00       -4.326e+08
++H2O                 1.299e-01         3.146e-02       -3.067e+08
++NaCl                4.031e-32         9.761e-33       -4.326e+08
++N2                  4.000e+00         9.685e-01       -5.721e+07
++OH                  4.560e-07         1.104e-07       -2.665e+08
++NaCl(S)             4.995e+00         1.000e+00       -4.326e+08
+ -------------------------------------------------------------
+ VCS solver succeeded
+ *************** NaCl_electrolyte *****************
+-Moles: 2.32743
++Moles: 1.88023
+ 
+   NaCl_electrolyte:
+ 
+        temperature          298.15  K
+           pressure          101325  Pa
+-           density         1216.38  kg/m^3
+-  mean mol. weight         20.0591  amu
++           density         1003.22  kg/m^3
++  mean mol. weight         18.0755  amu
+          potential               0  V
+-                pH            6.59
++                pH           8.731
+ 
+                           1 kg            1 kmol
+                        -----------      ------------
+-          enthalpy    -1.35109e+07        -2.71e+08     J
+-   internal energy     -1.3511e+07        -2.71e+08     J
+-           entropy         3304.84        6.629e+04     J/K
+-    Gibbs function    -1.44962e+07       -2.908e+08     J
+- heat capacity c_p          3053.2        6.124e+04     J/K
++          enthalpy     -1.5789e+07       -2.854e+08     J
++   internal energy    -1.57891e+07       -2.854e+08     J
++           entropy         3872.76            7e+04     J/K
++    Gibbs function    -1.69436e+07       -3.063e+08     J
++ heat capacity c_p          4129.4        7.464e+04     J/K
+  heat capacity c_v    <not implemented>
+ 
+                            X           Molalities         Chem.Pot.    ChemPotSS    ActCoeffMolal
+                                                           (J/kmol)      (J/kmol)
+                      -------------    ------------     ------------  ------------    ------------
+-            H2O(L)      0.817567          55.5093     -3.07399e+08   -3.06686e+08       0.917304
+-               Cl-     0.0912165          6.19321     -1.79421e+08   -1.83974e+08        1.01322
+-                H+   7.91254e-10      5.37228e-08     -3.76154e+07              0        4.78538
+-               Na+     0.0912165          6.19321     -2.53199e+08   -2.57752e+08        1.01322
+-               OH-   7.91254e-10      5.37228e-08     -2.69784e+08   -2.26784e+08       0.545261
++            H2O(L)      0.994601          55.5093     -3.06699e+08   -3.06686e+08        1.00039
++               Cl-    0.00269949          0.15066     -1.89378e+08   -1.83974e+08       0.750336
++                H+   4.23197e-11      2.36189e-09     -4.98388e+07              0       0.785904
++               Na+    0.00269949          0.15066     -2.63156e+08   -2.57752e+08       0.750336
++               OH-   4.23197e-11      2.36189e-09     -2.76774e+08   -2.26784e+08       0.739463
+ 
+ *************** air *****************
+-Moles: 4.09717
++Moles: 4.12992
+ 
+   air:
+ 
+        temperature   298.15 K
+           pressure   1.0132e+05 Pa
+-           density   1.1354 kg/m^3
+-  mean mol. weight   27.777 kg/kmol
++           density   1.1322 kg/m^3
++  mean mol. weight   27.699 kg/kmol
+    phase of matter   gas
+ 
+                           1 kg             1 kmol     
+                      ---------------   ---------------
+-          enthalpy       -2.0647e+05        -5.735e+06  J
+-   internal energy       -2.9571e+05        -8.214e+06  J
+-           entropy            6929.3        1.9248e+05  J/K
+-    Gibbs function       -2.2725e+06       -6.3122e+07  J
+- heat capacity c_p            1052.3             29230  J/K
+- heat capacity c_v            752.98             20916  J/K
++          enthalpy       -2.7464e+05       -7.6074e+06  J
++   internal energy       -3.6413e+05       -1.0086e+07  J
++           entropy            6956.2        1.9268e+05  J/K
++    Gibbs function       -2.3486e+06       -6.5056e+07  J
++ heat capacity c_p            1056.5             29265  J/K
++ heat capacity c_v            756.34             20950  J/K
+ 
+                       mass frac. Y      mole frac. X     chem. pot. / RT
+                      ---------------   ---------------   ---------------
+-                O2        2.5152e-69        2.1834e-69           -182.77
+-                H2        3.3188e-09        4.5727e-08           -32.618
++                O2         3.045e-69         2.636e-69           -182.58
++                H2        4.0178e-09        5.5204e-08           -32.429
+                CO2                 0                 0  
+-               H2O          0.015381          0.023716              -124
+-              NaCl        2.0536e-32        9.7611e-33           -174.52
+-                N2           0.98462           0.97628           -23.069
+-                OH        5.5995e-08        9.1454e-08           -107.69
++               H2O           0.02046          0.031458           -123.72
++              NaCl        2.0594e-32        9.7611e-33           -174.52
++                N2           0.97954           0.96854           -23.077
++                OH        6.7789e-08        1.1041e-07           -107.51
+ 
+ *************** NaCl(S) *****************
+-Moles: 4.7877
++Moles: 4.99492
+ 
+   NaCl(S):
+ 
+diff --git a/test_problems/cathermo/HMW_graph_CpvT/output_blessed.txt b/test_problems/cathermo/HMW_graph_CpvT/output_blessed.txt
+index 5e41e611c4..e245a85f94 100644
+--- a/test_problems/cathermo/HMW_graph_CpvT/output_blessed.txt
++++ b/test_problems/cathermo/HMW_graph_CpvT/output_blessed.txt
+@@ -15,25 +15,25 @@ phiJ:     phiJ, calculated from the program, is checked
+ 
+             T,          Pres,          Aphi,         A_J/R,     Delta_Cp0,     Delta_Cps,             J,          phiJ,     MolarCp,   MolarCp0
+        Kelvin,           bar, sqrt(kg/gmol), sqrt(kg/gmol),   kJ/gmolSalt,   kJ/gmolSalt,   kJ/gmolSoln,   kJ/gmolSalt,       kJ/gmol,    kJ/gmol
+-       273.15,        1.0132,       0.37672,        4.0857,      -0.15898,     -0.036474,      0.011105,        0.1225,      0.063448,      0.052344
+-       298.15,        1.0132,       0.39145,        4.6122,       -0.1308,     -0.019957,      0.010047,       0.11084,       0.06444,      0.054393
+-       323.15,        1.0132,       0.41029,        5.5026,      -0.11572,     -0.010589,     0.0095297,       0.10513,      0.065338,      0.055808
+-       348.15,        1.0132,       0.43327,        6.7255,      -0.11377,    -0.0086929,     0.0095251,       0.10508,      0.065728,      0.056203
+-       373.15,        1.0142,       0.46056,        8.3544,      -0.12496,     -0.013575,      0.010097,       0.11139,      0.065656,      0.055559
+-       398.15,        2.3224,       0.49245,        10.544,      -0.14929,     -0.023759,      0.011379,       0.12553,      0.065308,      0.053929
+-       423.15,        4.7616,       0.52952,        13.581,      -0.18675,      -0.03649,      0.013621,       0.15026,         0.065,      0.051379
+-       448.15,         8.926,       0.57255,        17.996,      -0.23734,     -0.046696,      0.017281,       0.19064,      0.065269,      0.047988
+-       473.15,        15.549,       0.62277,        24.826,      -0.30104,     -0.044446,      0.023259,       0.25659,      0.067131,      0.043871
+-       498.15,        25.497,       0.68204,        36.273,      -0.37783,    -0.0086641,      0.033464,       0.36917,      0.072679,      0.039215
+-       523.15,        39.762,       0.75339,        57.519,      -0.46771,        0.1102,      0.052387,       0.57792,      0.086738,      0.034351
+-       548.15,        59.464,       0.84221,        102.54,      -0.57066,       0.44582,      0.092141,        1.0165,       0.12209,      0.029947
+-       573.15,        85.879,       0.95926,        217.13,      -0.68666,         1.436,       0.19241,        2.1227,       0.21997,      0.027558
+-       598.15,        120.51,        1.1302,        604.23,      -0.81569,        5.0214,       0.52911,         5.837,       0.56093,      0.031819
+-       623.15,        165.29,        1.4387,        2813.6,      -0.95774,         26.02,        2.4455,        26.978,        2.5129,      0.067449
+-       323.15,        1.0132,       0.41029,        5.5026,      -0.11572,     -0.010589,     0.0095297,       0.10513,      0.065338,      0.055808
++       273.15,        1.0132,       0.37672,        3.0616,      -0.15898,     -0.046266,      0.010217,       0.11271,       0.06256,      0.052343
++       298.15,        1.0132,       0.39145,        3.9421,       -0.1308,     -0.026365,     0.0094663,       0.10443,      0.063858,      0.054392
++       323.15,        1.0132,       0.41029,        4.9156,      -0.11572,     -0.016202,     0.0090209,      0.099517,      0.064828,      0.055807
++       348.15,        1.0132,       0.43327,        6.1229,      -0.11377,     -0.014455,     0.0090027,      0.099316,      0.065205,      0.056202
++       373.15,        1.0142,       0.46056,         7.666,      -0.12496,     -0.020157,     0.0095002,        0.1048,      0.065059,      0.055559
++       398.15,        2.3224,       0.49245,        9.6895,      -0.14929,     -0.031927,      0.010639,       0.11736,      0.064567,      0.053928
++       423.15,        4.7616,       0.52952,        12.443,      -0.18675,     -0.047377,      0.012634,       0.13938,      0.064012,      0.051378
++       448.15,         8.926,       0.57255,        16.375,      -0.23734,     -0.062193,      0.015876,       0.17514,      0.063864,      0.047987
++       473.15,        15.549,       0.62277,        22.366,      -0.30104,     -0.067969,      0.021127,       0.23307,      0.064997,       0.04387
++       498.15,        25.497,       0.68204,        32.271,      -0.37783,     -0.046934,      0.029995,        0.3309,      0.069209,      0.039213
++       523.15,        39.762,       0.75339,        50.435,      -0.46771,      0.042468,      0.046246,       0.51018,      0.080596,       0.03435
++       548.15,        59.464,       0.84221,        88.449,      -0.57066,       0.31107,      0.079926,       0.88173,       0.10987,      0.029946
++       573.15,        85.879,       0.95926,        183.45,      -0.68666,         1.114,       0.16322,        1.8007,       0.19078,      0.027556
++       598.15,        120.51,        1.1302,        491.79,      -0.81569,        3.9462,       0.43165,        4.7619,       0.46347,      0.031817
++       623.15,        165.29,        1.4387,        1879.2,      -0.95774,        17.086,        1.6356,        18.043,         1.703,      0.067447
++       323.15,        1.0132,       0.41029,        4.9156,      -0.11572,     -0.016202,     0.0090209,      0.099517,      0.064828,      0.055807
+ Breakdown of Heat Capacity Calculation at 323.15 K, 1atm:
+  Species     MoleFrac        Molal          Cp0          partCp     (partCp - Cp0)
+-  H2O(L)      0.81871             0      0.075328      0.069593    -0.0057351
+-  Na+        0.090647         6.146      0.028415       0.10688      0.078464
+-  Cl-        0.090647         6.146     -0.093096     -0.014632      0.078464
++  H2O(L)      0.81871             0      0.075327       0.06976    -0.0055666
++  Na+        0.090647         6.146      0.028415       0.10331      0.074897
++  Cl-        0.090647         6.146     -0.093096     -0.018199      0.074897
+  NaCl(s)            1                    0.051038      0.051038             0
+diff --git a/test_problems/cathermo/ims/output_blessed.txt b/test_problems/cathermo/ims/output_blessed.txt
+index 2e88816c9f..af304176b7 100644
+--- a/test_problems/cathermo/ims/output_blessed.txt
++++ b/test_problems/cathermo/ims/output_blessed.txt
+@@ -1,6 +1,6 @@
+ molar enthalpy   =      0.013282 J kg-1
+ molar intEnergy  =   -1.5185e+05 J kg-1
+-molar entropy    =        93.635 J kg-1 K-1
++molar entropy    =    1.3076e+05 J kg-1 K-1
+ molar gibbs      =   -3.8986e+07 J kg-1
+ molar Cp         =         28836 J kg-1 K-1
+ mixture density =        12.058 kg m-3
+@@ -14,7 +14,7 @@ mean molecular weight =         18.07 kg kmol-1
+          CH4(aq)  -3.8962e+07     0.013282   3.8962e+07        28836          0.1
+  Printout of Partial molar properties
+             Name         mu_i       H_i_PM       S_i_PM      Cp_i_PM     Vol_i_PM
+-          H2O(l)  -3.8969e+07     0.013282       36.687        28836          1.5
+-         CO2(aq)   -4.467e+07     0.013282        19160        28836          1.3
+-         H2S(aq)  -4.7655e+07     0.013282        29171        28836          0.1
+-         CH4(aq)  -5.0378e+07     0.013282        38305        28836          0.1
++          H2O(l)  -3.8969e+07     0.013282    1.307e+05        28836          1.5
++         CO2(aq)   -4.467e+07     0.013282   1.4983e+05        28836          1.3
++         H2S(aq)  -4.7655e+07     0.013282   1.5984e+05        28836          0.1
++         CH4(aq)  -5.0378e+07     0.013282   1.6897e+05        28836          0.1

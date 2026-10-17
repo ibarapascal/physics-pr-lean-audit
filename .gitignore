@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+*.pyc
+# environments and downloads created by the setup scripts
+replay/env/*/
+controlled/libs/
+lean/.lake/

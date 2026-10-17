@@ -1,0 +1,670 @@
+diff --git a/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo b/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo
+index 5194cda9e5..6313cd3c1f 100644
+--- a/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo
++++ b/Buildings/Fluid/Boilers/BaseClasses/PartialBoiler.mo
+@@ -26,8 +26,10 @@ partial model PartialBoiler "Boiler base class with efficiency unspecified"
+   input Modelica.SIunits.Efficiency eta "Boiler efficiency";
+   Modelica.SIunits.Power QFue_flow = y * Q_flow_nominal/eta_nominal
+     "Heat released by fuel";
+-  Modelica.SIunits.Power QWat_flow = eta * QFue_flow
++  Modelica.SIunits.Power QWat_flow = eta * QFue_flow + UAOve.Q_flow
+     "Heat transfer from gas into water";
++    // The direction of UAOve.Q_flow is from the ambient to the boiler
++    //   and therefore it takes a plus size here.
+   Modelica.SIunits.MassFlowRate mFue_flow = QFue_flow/fue.h
+     "Fuel mass flow rate";
+   Modelica.SIunits.VolumeFlowRate VFue_flow = mFue_flow/fue.d
+@@ -123,8 +125,8 @@ equation
+ defaultComponentName="boi",
+ Documentation(info="<html>
+ <p>
+-This is a base model of a boiler. 
+-The efficiency specified in extended models. 
++This is a base model of a boiler.
++The efficiency specified in extended models.
+ See <a href=\"Modelica://Buildings.Fluid.Boilers.UsersGuide\">
+ Buildings.Fluid.Boilers.UsersGuide</a> for details.
+ </p>
+@@ -132,13 +134,20 @@ Buildings.Fluid.Boilers.UsersGuide</a> for details.
+ revisions="<html>
+ <ul>
+ <li>
+-October 4, 2021, by Hongxiang Fu:
+-<br>Renamed from the old 
++November 10, 2021, by Hongxiang Fu:<br/>
++The heating power output of the boiler is now corrected
++by its heat loss to the ambient.
++This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2725\">
++#2725</a>.
++</li>
++<li>
++October 4, 2021, by Hongxiang Fu:<br/>
++Renamed from the old
+ <span style=\"font-family: monospace;\">
+-Buildings.Fluid.Boilers.BoilerPolynomial</span> 
+-and with the efficiency specification removed. 
++Buildings.Fluid.Boilers.BoilerPolynomial</span>
++and with the efficiency specification removed.
+ This is for <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2651\">
+-#2651</a>. 
++#2651</a>.
+ </li>
+ </ul>
+ </html>"));
+diff --git a/Buildings/Fluid/Boilers/BoilerPolynomial.mo b/Buildings/Fluid/Boilers/BoilerPolynomial.mo
+index bae06c5bee..9b7162c6c9 100644
+--- a/Buildings/Fluid/Boilers/BoilerPolynomial.mo
++++ b/Buildings/Fluid/Boilers/BoilerPolynomial.mo
+@@ -35,24 +35,24 @@ protected
+ initial equation
+   if  effCur == Buildings.Fluid.Types.EfficiencyCurves.QuadraticLinear then
+     assert(size(a, 1) == 6,
+-    "The parameter 'a' must have exactly 6 elements 
+-    when the boiler efficiency curve is set to 
+-    'Buildings.Fluid.Types.EfficiencyCurves.QuadraticLinear'. 
++    "The parameter 'a' must have exactly 6 elements
++    when the boiler efficiency curve is set to
++    'Buildings.Fluid.Types.EfficiencyCurves.QuadraticLinear'.
+     The number of elements currently supplied is " + String(size(a, 1)) + ".");
+   end if;
+ 
+   annotation (Documentation(info="<html>
+ <p>
+-This is a model of a boiler whose efficiency is described by a polynomial. 
++This is a model of a boiler whose efficiency is described by a polynomial.
+ See <a href=\"Modelica://Buildings.Fluid.Boilers.UsersGuide\">
+ Buildings.Fluid.Boilers.UsersGuide</a> for details.
+ </p>
+ <p>
+-The parameter <span style=\"font-family: monospace;\">effCur</span> 
+-determines what polynomial is used to compute the efficiency 
++The parameter <span style=\"font-family: monospace;\">effCur</span>
++determines what polynomial is used to compute the efficiency
+ with the following selections:
+ </p>
+-<table summary=\"Efficiency selections\" 
++<table summary=\"Efficiency selections\"
+ cellspacing=\"0\" cellpadding=\"2\" border=\"1\"><tr><td>
+ <p align=\"center\">
+ <b>Parameter <span style=\"font-family: monospace;\">effCur</span></b>
+@@ -89,30 +89,30 @@ Buildings.Fluid.Types.EfficiencyCurves.QuadraticLinear
+ </p>
+ </td><td>
+ <p>
+-<i>&eta; = a<sub>1</sub> + a<sub>2</sub> y + a<sub>3</sub> y<sup>2</sup> + 
+-(a<sub>4</sub> + a<sub>5</sub> y + a<sub>6</sub> y<sup>2</sup>) 
++<i>&eta; = a<sub>1</sub> + a<sub>2</sub> y + a<sub>3</sub> y<sup>2</sup> +
++(a<sub>4</sub> + a<sub>5</sub> y + a<sub>6</sub> y<sup>2</sup>)
+ T </i>
+ </p>
+ </td></tr>
+ </table>
+ <p>
+-where <i>T</i> is the boiler outlet temperature in Kelvin. 
++where <i>T</i> is the boiler outlet temperature in Kelvin.
+ For <span style=\"font-family: monospace;\">
+-effCur = Buildings.Fluid.Types.EfficiencyCurves.Polynomial</span>, 
+-an arbitrary number of polynomial coefficients can be specified. 
++effCur = Buildings.Fluid.Types.EfficiencyCurves.Polynomial</span>,
++an arbitrary number of polynomial coefficients can be specified.
+ </p>
+ </html>
+ ", revisions="<html>
+ <ul>
+ <li>
+ October 13, 2021, by Hongxiang Fu:<br/>
+-For the implementation of 
++For the implementation of
+ <a href=\"Modelica://Buildings.Fluid.Boilers.BoilerTable\">
+-<code>Buildings.Fluid.Boilers.BoilerTable</code></a>, 
+-moved most of the code to the base model 
++<code>Buildings.Fluid.Boilers.BoilerTable</code></a>,
++moved most of the code to the base model
+ <a href=\"Modelica://Buildings.Fluid.Boilers.BaseClasses.PartialBoiler\">
+-<code>Buildings.Fluid.Boilers.BaseClasses.PartialBoiler</code></a>. 
+-This is for 
++<code>Buildings.Fluid.Boilers.BaseClasses.PartialBoiler</code></a>.
++This is for
+ <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2651\">#2651</a>.
+ </li>
+ <li>
+diff --git a/Buildings/Fluid/Boilers/BoilerTable.mo b/Buildings/Fluid/Boilers/BoilerTable.mo
+index c328f6ada0..876217ff7b 100644
+--- a/Buildings/Fluid/Boilers/BoilerTable.mo
++++ b/Buildings/Fluid/Boilers/BoilerTable.mo
+@@ -40,13 +40,13 @@ equation
+     annotation (Line(points={{-77,68},{-72,68}}, color={0,0,127}));
+   annotation (Documentation(info="<html>
+ <p>
+-This is a model of a boiler whose efficiency is described 
+-by a table with control signal and inlet temperature. 
++This is a model of a boiler whose efficiency is described
++by a table with control signal and inlet temperature.
+ See <a href=\"Modelica://Buildings.Fluid.Boilers.UsersGuide\">
+ Buildings.Fluid.Boilers.UsersGuide</a> for details.
+ </p>
+ <p>
+-The efficiency tables are supplied via 
++The efficiency tables are supplied via
+ <a href=\"Buildings.Fluid.Boilers.Data\">
+ Buildings.Fluid.Boilers.Data</a>.
+ </p>
+@@ -54,7 +54,7 @@ Buildings.Fluid.Boilers.Data</a>.
+ <ul>
+ <li>
+ October 13, 2021 by Hongxiang Fu:<br/>
+-First implementation. This is for 
++First implementation. This is for
+ <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2651\">#2651</a>.
+ </li>
+ </ul>
+diff --git a/Buildings/Fluid/Boilers/Data/Generic.mo b/Buildings/Fluid/Boilers/Data/Generic.mo
+index 92c57a482d..fbcbc1d59e 100644
+--- a/Buildings/Fluid/Boilers/Data/Generic.mo
++++ b/Buildings/Fluid/Boilers/Data/Generic.mo
+@@ -2,7 +2,7 @@ within Buildings.Fluid.Boilers.Data;
+ record Generic "Generic data record for boiler performance"
+   extends Modelica.Icons.Record;
+ 
+-  parameter Modelica.SIunits.Efficiency effCur[:,:]=
++  parameter Real effCur[:,:]=
+     [0, 1; 1, 1]
+     "Efficiency curves as a table: First row = inlet temp(K), First column = firing rates or PLR";
+   final parameter Modelica.SIunits.Efficiency eta_nominal=
+@@ -48,7 +48,7 @@ then the effiency curve must be specified for the upper (or lower) heating value
+ <ul>
+ <li>
+ November 2, 2021 by Hongxiang Fu:<br/>
+-First implementation. 
++First implementation.
+ This is for
+ <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2651\">#2651</a>.
+ </li>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3001.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3001.mo
+index 14cfd4b881..9913fda6ac 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3001.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3001.mo
+@@ -9,7 +9,7 @@ record FBdash3001 "Specifications for Lochinvar Crest FB-3001 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3501.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3501.mo
+index cd3557b3f8..5b6c05112c 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3501.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash3501.mo
+@@ -9,7 +9,7 @@ record FBdash3501 "Specifications for Lochinvar Crest FB-3501 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash4001.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash4001.mo
+index d279b3b41e..faa42a3b95 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash4001.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash4001.mo
+@@ -10,7 +10,7 @@ record FBdash4001 "Specifications for Lochinvar Crest FB-4001 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash5001.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash5001.mo
+index 45deaa4f29..5cc0e78fdd 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash5001.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash5001.mo
+@@ -9,7 +9,7 @@ record FBdash5001 "Specifications for Lochinvar Crest FB-5001 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash6001.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash6001.mo
+index 5d29e6d860..0734b9397d 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash6001.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/FBdash6001.mo
+@@ -9,7 +9,7 @@ record FBdash6001 "Specifications for Lochinvar Crest FB-6001 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/package.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/package.mo
+index a8c672fd2c..149fc4fb20 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/package.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/Crest/package.mo
+@@ -7,7 +7,7 @@ package Crest "Package with performance data for Lochinvar Crest boilers"
+     Documentation(info="<html>
+ <p>
+ This package contains performance data for Lochinvar Crest boilers.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX400.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX400.mo
+index 3b49742e45..a1a6c5ba3f 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX400.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX400.mo
+@@ -15,7 +15,7 @@ record FTX400 "Specifications for Lochinvar FTXL FTX400 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX500.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX500.mo
+index e770ae7a83..20fad69c94 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX500.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX500.mo
+@@ -9,7 +9,7 @@ record FTX500 "Specifications for Lochinvar FTXL FTX500 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX600.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX600.mo
+index 6e9133c72d..f785dc5039 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX600.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX600.mo
+@@ -9,7 +9,7 @@ record FTX600 "Specifications for Lochinvar FTXL FTX600 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX725.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX725.mo
+index 0695508ac2..3749a06b70 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX725.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX725.mo
+@@ -9,7 +9,7 @@ record FTX725 "Specifications for Lochinvar FTXL FTX725 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX850.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX850.mo
+index 678101da22..f37a5d2ab6 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX850.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/FTX850.mo
+@@ -9,7 +9,7 @@ record FTX850 "Specifications for Lochinvar FTXL FTX850 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/package.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/package.mo
+index 12ccf3699b..e6c48a0d49 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/package.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/FTXL/package.mo
+@@ -1,4 +1,4 @@
+-﻿within Buildings.Fluid.Boilers.Data.Lochinvar;
++within Buildings.Fluid.Boilers.Data.Lochinvar;
+ package FTXL "Package with performance data for Lochinvar FTXL™ Fire Tube boilers"
+   extends Modelica.Icons.Package;
+ 
+@@ -7,7 +7,7 @@ package FTXL "Package with performance data for Lochinvar FTXL™ Fire Tube boil
+     Documentation(info="<html>
+ <p>
+ This package contains performance data for Lochinvar FTXL™ Fire Tube boilers.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0400.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0400.mo
+index e9d36201e9..324f520dae 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0400.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0400.mo
+@@ -14,7 +14,7 @@ record KBXdash0400 "Specifications for Lochinvar Knight XL KBX-0400 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0500.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0500.mo
+index 9a7ffec6d8..9bc4017bfa 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0500.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0500.mo
+@@ -8,7 +8,7 @@ record KBXdash0500 "Specifications for Lochinvar Knight XL KBX-0500 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0650.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0650.mo
+index 9f65fd4e1b..4fe7fcdc0e 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0650.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0650.mo
+@@ -8,7 +8,7 @@ record KBXdash0650 "Specifications for Lochinvar Knight XL KBX-0650 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0800.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0800.mo
+index d53de9f4e3..627fc0078a 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0800.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash0800.mo
+@@ -8,7 +8,7 @@ record KBXdash0800 "Specifications for Lochinvar Knight XL KBX-0800 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash1000.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash1000.mo
+index 3df505dcaa..81380e025f 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash1000.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/KBXdash1000.mo
+@@ -8,7 +8,7 @@ record KBXdash1000 "Specifications for Lochinvar Knight XL KBX-1000 boiler"
+   annotation (Documentation(info="<html>
+ <p>
+ Performance data for boiler model.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/package.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/package.mo
+index 6b4802287d..ed1e34ca7a 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/package.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/KnightXL/package.mo
+@@ -1,4 +1,4 @@
+-﻿within Buildings.Fluid.Boilers.Data.Lochinvar;
++within Buildings.Fluid.Boilers.Data.Lochinvar;
+ package KnightXL "Package with performance data for Lochinvar Knight™ XL boilers"
+   extends Modelica.Icons.Package;
+ 
+@@ -7,7 +7,7 @@ package KnightXL "Package with performance data for Lochinvar Knight™ XL boile
+     Documentation(info="<html>
+ <p>
+ This package contains performance data for Lochinvar Knight™ XL boilers.
+-See the documentation of 
++See the documentation of
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar\">
+ Buildings.Fluid.Boilers.Data.Lochinvar</a>.
+ </p>
+diff --git a/Buildings/Fluid/Boilers/Data/Lochinvar/package.mo b/Buildings/Fluid/Boilers/Data/Lochinvar/package.mo
+index 0e673ce8c2..4d1a44d494 100644
+--- a/Buildings/Fluid/Boilers/Data/Lochinvar/package.mo
++++ b/Buildings/Fluid/Boilers/Data/Lochinvar/package.mo
+@@ -1,4 +1,4 @@
+-﻿within Buildings.Fluid.Boilers.Data;
++within Buildings.Fluid.Boilers.Data;
+ package Lochinvar "Package containing data for Lochinvar boilers"
+   extends Modelica.Icons.Package;
+ 
+@@ -82,21 +82,21 @@ See sources of the data in the table below.
+ </tr>
+ </table>
+ <p>
+-Boilers with the same brand name use the same set of efficiency curves 
++Boilers with the same brand name use the same set of efficiency curves
+ (e.g. all records in
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar.Crest\">
+ Buildings.Fluid.Boilers.Data.Lochinvar.Crest</a>
+ have the same curves).
+-The original documents use the IP units and conversions are made 
+-in this implementation. Values corresponding to temperature rise of 
+-20&deg;F (11.1&deg;C) are used as nominal (except for 
++The original documents use the IP units and conversions are made
++in this implementation. Values corresponding to temperature rise of
++20&deg;F (11.1&deg;C) are used as nominal (except for
+ <a href=\"modelica://Buildings.Fluid.Boilers.Data.Lochinvar.Crest.FBdash4001\">
+ Buildings.Fluid.Boilers.Data.Lochinvar.Crest.FBdash4001</a>
+-whose data are based on 22&deg;F [12.2&deg;C]). 
+-The table below explains how the variables 
+-in this implementation correspond to items on the files from the website. 
++whose data are based on 22&deg;F [12.2&deg;C]).
++The table below explains how the variables
++in this implementation correspond to items on the files from the website.
+ </p>
+-<table summary=\"Specification correspondence\" 
++<table summary=\"Specification correspondence\"
+ cellspacing=\"0\" cellpadding=\"2\" border=\"1\"><tr><td>
+ <p align=\"center\">
+ <b>Variable in Modelica</b>
+diff --git a/Buildings/Fluid/Boilers/Data/package.mo b/Buildings/Fluid/Boilers/Data/package.mo
+index 8c4e87797c..824f24eb18 100644
+--- a/Buildings/Fluid/Boilers/Data/package.mo
++++ b/Buildings/Fluid/Boilers/Data/package.mo
+@@ -4,7 +4,7 @@ extends Modelica.Icons.MaterialPropertiesPackage;
+ 
+ annotation (preferredView="info", Documentation(info="<html>
+ <p>
+-This package contains performance data of boilers. 
++This package contains performance data of boilers.
+ See documentation of each package for source and other information.
+ </p>
+ </html>"));
+diff --git a/Buildings/Fluid/Boilers/Examples/BoilerTable.mo b/Buildings/Fluid/Boilers/Examples/BoilerTable.mo
+index 2dbda6964d..18dfa29c91 100644
+--- a/Buildings/Fluid/Boilers/Examples/BoilerTable.mo
++++ b/Buildings/Fluid/Boilers/Examples/BoilerTable.mo
+@@ -70,20 +70,20 @@ equation
+     experiment(Tolerance=1e-6, StopTime=6000),
+     Documentation(info="<html>
+ <p>
+-Similar to 
++Similar to
+ <a href=\"Buildings.Fluid.Boilers.Examples.BoilerPolynomial\">
+ Buildings.Fluid.Boilers.Examples.BoilerPolynomial</a>,
+-this example demonstrates the open loop response of the boiler model 
++this example demonstrates the open loop response of the boiler model
+ with <code>boi1</code> a dynamic model and
+ <code>boi2</code> a steady-state model.
+-In addition to the control signal, 
++In addition to the control signal,
+ the inlet temperature is also varied.
+ </p>
+ </html>", revisions="<html>
+ <ul>
+ <li>
+ October 13, 2021, by Hongxiang Fu:<br/>
+-First implementation. This is for 
++First implementation. This is for
+ <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2651\">#2651</a>.
+ </li>
+ </ul>
+diff --git a/Buildings/Fluid/Boilers/UsersGuide.mo b/Buildings/Fluid/Boilers/UsersGuide.mo
+index 656805f431..31d132bf9e 100644
+--- a/Buildings/Fluid/Boilers/UsersGuide.mo
++++ b/Buildings/Fluid/Boilers/UsersGuide.mo
+@@ -1,4 +1,4 @@
+-﻿within Buildings.Fluid.Boilers;
++within Buildings.Fluid.Boilers;
+ package UsersGuide "User's Guide"
+   extends Modelica.Icons.Information;
+ 
+@@ -9,33 +9,70 @@ This package contains models for boilers.
+ The main equations are computed in the base class
+ <a href=\"Modelica://Buildings.Fluid.Boilers.BaseClasses.PartialBoiler\">
+ Buildings.Fluid.Boilers.BaseClasses.PartialBoiler</a>
+-and the efficiency is computed in the extended models.
++and the efficiency is described in the extended models
++using different methods.
+ </p>
+ <p>
+-The heat transferred to the working fluid (typically water or air) is
++The heat of combustion released by the fuel is computed as
+ </p>
+ <p align=\"center\">
+-<i>Q̇ = y Q̇<sub>0</sub> &eta; &frasl; &eta;<sub>0</sub> </i>
++<i>Q&#775;<sub>f</sub> = y &sdot; Q&#775;<sub>0</sub> &frasl; &eta;<sub>0</sub> </i>
+ </p>
+ <p>
+-where <i>y &isin; [0, 1]</i> is the control signal,
+-<i>Q̇<sub>0</sub></i> is the nominal power,
+-<i>&eta;</i> is the efficiency at the current operating point,
+-and <i>&eta;<sub>0</sub></i> is the efficiency at <i>y=1</i> and,
+-when applicable, at the nominal temperature <i>T=T<sub>nominal</sub></i>
+-or <i>T<sub>inlet</sub>=T<sub>inlet,nominal</sub></i>,
++where <i>y &isin; [0, 1]</i> is the control signal or firing rate,
++<i>Q&#775;<sub>0</sub></i> is the nominal heating power
++and <i>&eta;<sub>0</sub></i> is the nominal efficiency.
++The nominal values correspond to the operating condition at <i>y = 1</i> and,
++when applicable, at the nominal temperature <i>T = T<sub>0</sub></i>
++or <i>T<sub>inlet</sub> = T<sub>inlet,0</sub></i>,
+ depending on the choice of model.
+ </p>
+ <p>
+-The efficiency is defined as
++The heat transferred to the working fluid (typically water or air) is
++</p>
++<p align=\"center\">
++<i>Q&#775; = &eta; &sdot; Q&#775;<sub>f</sub> - Q&#775;<sub>amb</sub> </i>
++</p>
++<p>
++where <i>&eta;</i> is the efficiency at the current operating point
++and <i>Q&#775;<sub>amb</sub> > 0</i> is the heat loss from the boiler
++to the ambient.
++<p>
++<i>Q&#775;<sub>amb</sub></i> is considered only when the port <code>heatPort</code>
++is connected to a heat port outside of this model
++to impose a boundary condition in order to model heat losses to the ambient.
++When using this <code>heatPort</code>,
++make sure that the efficiency does not already account for this heat loss.
++Also note that in
++<a href=\"Modelica://Buildings.Fluid.Boilers.BaseClasses.PartialBoiler\">
++Buildings.Fluid.Boilers.BaseClasses.PartialBoiler</a>,
++the equation
++<code>QWat_flow = eta * QFue_flow + UAOve.Q_flow</code>
++uses a summation instead of a subtraction because the direction
++of <code>UAOve.Q_flow</code> is from the ambient to the boiler.
++</p>
++<p>
++The fuel is specified in
++<a href=\"Buildings.Fluid.Data.Fuels\">Buildings.Fluid.Data.Fuels</a>
++via
+ </p>
+ <p align=\"center\">
+-<i>&eta;</i> = <i>Q̇</i> &frasl; <i>Q̇<sub>f</sub></i>,
++<i>m&#775;<sub>f</sub> = Q&#775;<sub>f</sub> &frasl; h<sub>f</sub> </i> <br/>
++<i>V&#775;<sub>f</sub> = m&#775;<sub>f</sub> &frasl; &rho;<sub>f</sub> </i>
++</p>
++<p>
++where <i>m&#775;</i> is the mass flow rate of the fuel,
++<i>h<sub>f</sub></i> is the heating value of the fuel,
++<i>V&#775;<sub>f</sub></i> is the volumetric flow rate of the fuel,
++and <i>&rho;<sub>f</sub></i> is the density of the fuel.
++Care must be taken to choose the higher or lower heating value correctly
++that corresponds to the efficiency <i>&eta;</i>.
++(E.g., the efficiency of a condensing boiler may be computed on the
++higher heating value to avoid efficiencies higher than <i>1</i>,
++whereas a non-condesing boiler's efficiency is typically on the lower heating value.)
+ </p>
+ <p>
+-where <i>Q̇<sub>f</sub></i> is the heat of combustion released by the fuel as specified in
+-<a href=\"Buildings.Fluid.Data.Fuels\">Buildings.Fluid.Data.Fuels</a>.
+-There are two methods of specifying the efficiency.
++There are two ways to specify the efficiency <i>&eta;</i>.
+ </p>
+ <ul>
+ <li>
+@@ -59,41 +96,7 @@ Specifying the performance using a table as implemtend in
+ <a href=\"Modelica://Buildings.Fluid.Boilers.BoilerTable\">
+ Buildings.Fluid.Boilers.BoilerTable</a>
+ is generally easier for representing condensing boilers because the change in
+-efficiency near the condensation point can easily be specified.
+-</p>
+-<p>
+-The parameter <code>Q_flow_nominal</code>
+-is the power transferred to the fluid for
+-<i><code>y</code></i>=1
+-and, if the efficiency depends on temperature
+-in the extended polynomial boiler model,
+-for <i><code>T=T<sub>0</sub></code></i>.
+-</p>
+-<p>
+-The fuel mass flow rate and volume flow rate are computed as
+-</p>
+-<p align=\"center\">
+-<i>ṁ<sub>f</sub> = Q̇<sub>f</sub> &frasl; h<sub>f</sub> </i>
+-</p>
+-<p>
+-and
+-</p>
+-<p align=\"center\">
+-<i>V̇<sub>f</sub> = ṁ<sub>f</sub> &frasl; &rho;<sub>f</sub>, </i>
+-</p>
+-<p>
+-where the fuel heating value <i>h<sub>f</sub></i>
+-and the fuel mass density <i>&rho;<sub>f</sub></i> are obtained
+-from the parameter <code>fue</code>.
+-Note that if <i>&eta;</i> is the efficiency relative to the lower heating value,
+-then the fuel properties also need to be used for the lower heating value.
+-</p>
+-<p>
+-Optionally, the port <code>heatPort</code>
+-can be connected to a heat port outside of this model
+-to impose a boundary condition in order to model heat losses to the ambient.
+-When using this <code>heatPort</code>,
+-make sure that the efficiency does not already account for this heat loss.
++efficiency near the condensation point can be described conveniently.
+ </p>
+ <p>
+ On the Assumptions tag, the model can be parameterized to compute a transient
+diff --git a/Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo b/Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo
+index ba5f7cefc8..44928cd9fa 100644
+--- a/Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo
++++ b/Buildings/Fluid/Boilers/Validation/BoilerTableEfficiencyCurves.mo
+@@ -112,7 +112,7 @@ equation
+         "Simulate and plot"),
+     experiment(Tolerance=1e-6, StopTime=3600),
+     Documentation(info="<html>
+-<p>    
++<p>
+ This model computes the efficiency of boilers for using the model
+ <a href=\"Buildings.Fluid.Boilers.BoilerTable\">
+ Buildings.Fluid.Boilers.BoilerTable</a>
+@@ -129,7 +129,7 @@ src=\"modelica://Buildings/Resources/Images/Fluid/Boilers/Validation/BoilerTable
+ <ul>
+ <li>
+ October 13, 2021, by Hongxiang Fu:<br/>
+-First implementation. This is for 
++First implementation. This is for
+ <a href=\"https://github.com/lbl-srg/modelica-buildings/issues/2651\">#2651</a>.
+ </li>
+ </ul>

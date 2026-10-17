@@ -1,0 +1,17 @@
+You are an independent reviewer writing a physics specification for one merged pull request (PR) to an open-source physics or engineering simulation library.
+
+Inputs in ./input/: pr.json (title, body, author, merge commit, base commit, changed files, commits) and pr.diff (the full diff).
+You may read the library's source code and documentation at the merge commit and at the base commit from GitHub, e.g. https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>, and you may consult the literature the PR or the code cites. Do not read any file on this computer outside the current working directory, and do not search for other analyses of this PR.
+
+Write ./spec.md in English with exactly these sections:
+1. What changed: the functions and formulas the PR changes, with file paths.
+2. Invariants: the library-level physical or mathematical invariants the changed code should satisfy. For each, give a precise mathematical statement and its domain of validity. Mark one or more as primary. If the correct behaviour depends on a modelling convention that the documentation or standards leave open, say so.
+3. Sources of the invariants: standards, literature, first principles, or consistency within the library.
+4. Operating domain: the common operating ranges of all input variables relevant to the invariants.
+5. Numerical check plan: how to check each invariant numerically through the merged library's public API — which calls, which configurations, which input sampling, which tolerance. Be explicit about which branches, cases, or configurations (for example every vector group, phase, regime, or option value the changed code distinguishes) the plan covers.
+6. Do the PR's own tests check these invariants: yes / partial / no for each invariant, with the test names and what they assert.
+7. Expected verdict: do you expect the merged change to satisfy each invariant? Mark uncertain expectations as such.
+8. Environment: what is needed to run the check (library version or commit, dependencies).
+9. Formalization feasibility: could the invariant be stated and proved in a proof assistant such as Lean over the transcribed function, and what are the obstacles.
+
+Be faithful and specific; do not pad. When done, stop.

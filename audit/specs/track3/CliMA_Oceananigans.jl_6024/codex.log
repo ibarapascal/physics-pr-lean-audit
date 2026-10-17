@@ -1,0 +1,2829 @@
+Reading additional input from stdin...
+OpenAI Codex v0.162.0
+--------
+workdir: <workdir>/CliMA_Oceananigans.jl_6024
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: detailed
+session id: <removed>
+--------
+user
+You are an "invariant writer" for an audit of physics software (one of two independent tracks; the other track cannot see you, and you may not look at it). For one GitHub PR that has been merged into a physics/engineering simulation library, write down the library-level invariants this change **should satisfy** physically, and how to check them numerically through the merged public API. The purpose is to test later, by random spot checks and formal proofs, whether these changes are physically right.
+
+## Input and output
+- Input: ./input/pr.json (repo, number, url, title, body, commits, files, merge commit) and ./input/pr.diff.
+- Output: ./spec.md in the current directory, one section following the template below.
+- **Independence rule**: read only ./input and GitHub (the PR page, the diff, the source at the merge commit, PR/issue discussion, the cited literature), e.g. https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>. Do not read any file on this computer outside the current working directory.
+
+## Template
+```
+## <repo>#<number> <title>
+- What changed (1–3 sentences, naming files and formulas):
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+- Common operating domain (range of each input, with the basis):
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+```
+- The invariants should target **the physics this change touches**; prefer narrow and checkable over a generic "energy is conserved". If a PR has several relevant invariants, list the most important 1–3 and mark which are primary and which secondary.
+- If you think no numerically checkable invariant can be written for this change, say why; do not force one.
+
+## Rules
+- Read GitHub public information only: no comments, issues, forks, or any write operation.
+- Do not clone the whole repository, and do not install, compile, or run any code.
+- When done, stop.
+codex
+我会只读取 `./input` 和允许的 GitHub 公开源码，提炼这次变更涉及的物理不变量及公共 API 数值检查方法，并写入 `./spec.md`；不安装、编译或运行项目代码。
+exec
+/bin/zsh -lc 'ls input && cat input/pr.json && cat input/pr.diff' in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 0ms:
+pr.diff
+pr.json
+{"author":{"id":"MDQ6VXNlcjE1MjcxOTQy","is_bot":false,"login":"glwagner","name":"Gregory L. Wagner"},"baseRefOid":"aca5970fa8ed41d5ef119b98b33b67bbcbb6c5da","body":"#4031 set `Cᵇ = 0.28` with the stated intent of yielding a von Kármán constant of 0.4 in near-bottom similarity layers. The intent was right but the arithmetic was not: the similarity relation was evaluated with `Cˡᵒu` to the first power instead of cubed. This PR sets `Cᵇ = 0.967`, which actually gives κ = 0.4.\r\n\r\n## The relation\r\n\r\nEquation (35) of [Wagner et al. (2025)](https://doi.org/10.1029/2024MS004522), section 3.1.3, for a neutrally-stratified similarity layer a distance `d` from a boundary with mixing length `ℓ = C d`:\r\n\r\n```\r\nκ = C (Cˡᵒu³ / CˡᵒD)^(1/4)\r\n```\r\n\r\nWith the calibrated `Cˢ = 1.131`, `Cˡᵒu = 0.361` and `CˡᵒD = 1.604` this gives κ = 0.468, which is the κ ≈ 0.47 reported in section 5.1.2 (eq. 53) and table 3. The surface value exceeds the rigid-wall 0.4 because the LES used for calibration include surface wave effects.\r\n\r\nThe bottom is the same calculation with `Cᵇ` in place of `Cˢ`. Inverting for κ = 0.4:\r\n\r\n```\r\nCᵇ = 0.4 (CˡᵒD / Cˡᵒu³)^(1/4) = 0.967\r\n```\r\n\r\n## What went wrong in #4031\r\n\r\nThe formula used in #4015 was `Cᵇ = κ (CˡᵒD / Cˡᵒu)^(1/4)`, with `Cˡᵒu` uncubed. \r\n\r\ncc @simone-silvestri this could affect OMIP simulations / overflows...\r\ncc @enri66 this should increase the impact of bottom drag ","commits":[{"authoredDate":"2026-09-17T21:51:57Z","authors":[{"email":"<email>","id":"MDQ6VXNlcjE1MjcxOTQy","login":"glwagner","name":"Gregory L. Wagner"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Opus 5 (1M context)"}],"committedDate":"2026-09-17T21:51:57Z","messageBody":"PR #4031 set Cᵇ = 0.28 to give a von Kármán constant of 0.4 in near-bottom\nsimilarity layers, but evaluated the similarity relation with Cˡᵒu to the first\npower rather than cubed. Equation (35) of Wagner et al. (2025) is\n\n    κ = C (Cˡᵒu³ / CˡᵒD)^(1/4)\n\nwhich gives κ = 0.47 for the calibrated Cˢ = 1.131, matching the value reported\nin section 5.1.2 of the paper. Inverting for κ = 0.4 gives Cᵇ = 0.967; the old\nvalue implies κ = 0.116.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>","messageHeadline":"Fix CATKE's bottom mixing length coefficient Cᵇ","oid":"93d9dda303df718ece04776a3f8bbc2269ad3830"}],"files":[{"path":"docs/src/models/turbulence_closures.md","additions":1,"deletions":1},{"path":"src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl","additions":16,"deletions":1}],"headRefOid":"93d9dda303df718ece04776a3f8bbc2269ad3830","mergeCommit":{"oid":"24de7026893af38df065920fbbf80f05024fd1b9"},"mergedAt":"2026-10-06T21:21:20Z","number":6024,"title":"Fix CATKE's bottom mixing length coefficient Cᵇ","url":"https://github.com/CliMA/Oceananigans.jl/pull/6024"}
+diff --git a/docs/src/models/turbulence_closures.md b/docs/src/models/turbulence_closures.md
+index 1a661252276..f0dcfbdba39 100644
+--- a/docs/src/models/turbulence_closures.md
++++ b/docs/src/models/turbulence_closures.md
+@@ -221,7 +221,7 @@ CATKEVerticalDiffusivity{VerticallyImplicitTimeDiscretization}
+ ├── tke_time_step: Nothing
+ ├── mixing_length: TKEBasedVerticalDiffusivities.CATKEMixingLength
+ │   ├── Cˢ:   1.131
+-│   ├── Cᵇ:   0.28
++│   ├── Cᵇ:   0.967
+ │   ├── Cʰⁱu: 0.242
+ │   ├── Cʰⁱc: 0.098
+ │   ├── Cʰⁱe: 0.548
+diff --git a/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl b/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl
+index a54101762de..127929ce64f 100644
+--- a/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl
++++ b/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl
+@@ -8,10 +8,25 @@ using ..TurbulenceClosures:
+     struct CATKEMixingLength{FT}
+ 
+ Contains mixing length parameters for CATKE vertical diffusivity.
++
++The wall-distance coefficients `Cˢ` and `Cᵇ` set the mixing length ``ℓ = Cˢ d`` near the
++surface and ``ℓ = Cᵇ d`` near the bottom, where ``d`` is the distance to the boundary.
++In a neutrally-stratified similarity layer, section 3.1.3 of [Wagner et al. (2025)](@cite Wagner25catke)
++shows that these are equivalent to prescribing a similarity ("von Kármán") constant
++
++```math
++κ = C \\left ( \\frac{(C^{lo}_u)^3}{C^{lo}_D} \\right )^{1/4}
++```
++
++where ``C`` is either `Cˢ` or `Cᵇ`. The calibrated `Cˢ = 1.131` corresponds to ``κ = 0.47``,
++slightly larger than the rigid-wall value 0.4 because the large eddy simulations used to
++calibrate CATKE include surface wave effects. Because `Cᵇ` is not constrained by those
++surface-forced simulations, it is instead chosen such that ``κ = 0.4`` at the bottom, which
++gives `Cᵇ = 0.967`.
+ """
+ Base.@kwdef struct CATKEMixingLength{FT}
+     Cˢ   :: FT = 1.131  # Surface distance coefficient for shear length scale
+-    Cᵇ   :: FT = 0.28   # Bottom distance coefficient for shear length scale
++    Cᵇ   :: FT = 0.967  # Bottom distance coefficient for shear length scale
+     Cˢᵖ  :: FT = 0.505  # Sheared convective plume coefficient
+     CRiᵟ :: FT = 1.02   # Stability function width
+     CRi⁰ :: FT = 0.254  # Stability function lower Ri
+
+web search: 
+web search: https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl
+exec
+/bin/zsh -lc 'curl -fsSL https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl' in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 106ms:
+using ..TurbulenceClosures:
+    depthᶜᶜᶠ,
+    height_above_bottomᶜᶜᶠ,
+    depthᶜᶜᶜ,
+    height_above_bottomᶜᶜᶜ
+
+"""
+    struct CATKEMixingLength{FT}
+
+Contains mixing length parameters for CATKE vertical diffusivity.
+
+The wall-distance coefficients `Cˢ` and `Cᵇ` set the mixing length ``ℓ = Cˢ d`` near the
+surface and ``ℓ = Cᵇ d`` near the bottom, where ``d`` is the distance to the boundary.
+In a neutrally-stratified similarity layer, section 3.1.3 of [Wagner et al. (2025)](@cite Wagner25catke)
+shows that these are equivalent to prescribing a similarity ("von Kármán") constant
+
+```math
+κ = C \\left ( \\frac{(C^{lo}_u)^3}{C^{lo}_D} \\right )^{1/4}
+```
+
+where ``C`` is either `Cˢ` or `Cᵇ`. The calibrated `Cˢ = 1.131` corresponds to ``κ = 0.47``,
+slightly larger than the rigid-wall value 0.4 because the large eddy simulations used to
+calibrate CATKE include surface wave effects. Because `Cᵇ` is not constrained by those
+surface-forced simulations, it is instead chosen such that ``κ = 0.4`` at the bottom, which
+gives `Cᵇ = 0.967`.
+"""
+Base.@kwdef struct CATKEMixingLength{FT}
+    Cˢ   :: FT = 1.131  # Surface distance coefficient for shear length scale
+    Cᵇ   :: FT = 0.967  # Bottom distance coefficient for shear length scale
+    Cˢᵖ  :: FT = 0.505  # Sheared convective plume coefficient
+    CRiᵟ :: FT = 1.02   # Stability function width
+    CRi⁰ :: FT = 0.254  # Stability function lower Ri
+    Cʰⁱu :: FT = 0.242  # Shear mixing length coefficient for momentum at high Ri
+    Cˡᵒu :: FT = 0.361  # Shear mixing length coefficient for momentum at low Ri
+    Cᵘⁿu :: FT = 0.370  # Shear mixing length coefficient for momentum at negative Ri
+    Cᶜu  :: FT = 3.705  # Convective mixing length coefficient for momentum
+    Cᵉu  :: FT = 0.0    # Convective penetration mixing length coefficient for momentum
+    Cʰⁱc :: FT = 0.098  # Shear mixing length coefficient for tracers at high Ri
+    Cˡᵒc :: FT = 0.369  # Shear mixing length coefficient for tracers at low Ri
+    Cᵘⁿc :: FT = 0.572  # Shear mixing length coefficient for tracers at negative Ri
+    Cᶜc  :: FT = 4.793  # Convective mixing length coefficient for tracers
+    Cᵉc  :: FT = 0.112  # Convective penetration mixing length coefficient for tracers
+    Cʰⁱe :: FT = 0.548  # Shear mixing length coefficient for TKE at high Ri
+    Cˡᵒe :: FT = 7.863  # Shear mixing length coefficient for TKE at low Ri
+    Cᵘⁿe :: FT = 1.447  # Shear mixing length coefficient for TKE at negative Ri
+    Cᶜe  :: FT = 3.642  # Convective mixing length coefficient for TKE
+    Cᵉe  :: FT = 0.0    # Convective penetration mixing length coefficient for TKE
+end
+
+#####
+##### Mixing length
+#####
+
+@inline function stratification_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, e, tracers, buoyancy)
+    FT = eltype(grid)
+    N² = ∂z_b(i, j, k, grid, buoyancy, tracers)
+    N²⁺ = clip(N²)
+    w★ = ℑzᵃᵃᶠ(i, j, k, grid, turbulent_velocityᶜᶜᶜ, closure, e)
+    return ifelse(N²⁺ == 0, FT(Inf), w★ / sqrt(N²⁺))
+end
+
+@inline function stratification_mixing_lengthᶜᶜᶜ(i, j, k, grid, closure, e, tracers, buoyancy)
+    FT = eltype(grid)
+    N² = ℑbzᵃᵃᶜ(i, j, k, grid, ∂z_b, buoyancy, tracers)
+    N²⁺ = clip(N²)
+    w★ = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, e)
+    return ifelse(N²⁺ == 0, FT(Inf), w★ / sqrt(N²⁺))
+end
+
+@inline function stable_length_scaleᶜᶜᶠ(i, j, k, grid, closure, e, velocities, tracers, buoyancy)
+    Cˢ = closure.mixing_length.Cˢ
+    Cᵇ = closure.mixing_length.Cᵇ
+
+    d_up   = Cˢ * depthᶜᶜᶠ(i, j, k, grid)
+    d_down = Cᵇ * height_above_bottomᶜᶜᶠ(i, j, k, grid)
+    d = min(d_up, d_down)
+
+    ℓᴺ = stratification_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, e, tracers, buoyancy)
+
+    ℓ = min(d, ℓᴺ)
+    ℓ = ifelse(isnan(ℓ), d, ℓ)
+
+    return ℓ
+end
+
+@inline function stable_length_scaleᶜᶜᶜ(i, j, k, grid, closure, e, velocities, tracers, buoyancy)
+    Cˢ = closure.mixing_length.Cˢ
+    Cᵇ = closure.mixing_length.Cᵇ
+
+    d_up   = Cˢ * depthᶜᶜᶜ(i, j, k, grid)
+    d_down = Cᵇ * height_above_bottomᶜᶜᶜ(i, j, k, grid)
+    d = min(d_up, d_down)
+
+    ℓᴺ = stratification_mixing_lengthᶜᶜᶜ(i, j, k, grid, closure, e, tracers, buoyancy)
+
+    ℓ = min(d, ℓᴺ)
+    ℓ = ifelse(isnan(ℓ), d, ℓ)
+
+    return ℓ
+end
+
+@inline three_halves_tkeᶜᶜᶜ(i, j, k, grid, closure, e) = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, e)^3
+@inline squared_tkeᶜᶜᶜ(i, j, k, grid, closure, e) = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, e)^2
+
+@inline function convective_length_scaleᶜᶜᶠ(i, j, k, grid, closure, Cᶜ::Number, Cᵉ::Number, Cˢᵖ::Number,
+                                            velocities, tracers, buoyancy, surface_buoyancy_flux)
+
+    u = velocities.u
+    v = velocities.v
+
+    Jᵇᵋ      = closure.minimum_convective_buoyancy_flux
+    Jᵇ       = @inbounds surface_buoyancy_flux[i, j, 1]
+    w★       = ℑzᵃᵃᶠ(i, j, k, grid, turbulent_velocityᶜᶜᶜ, closure, tracers.e)
+    w★³      = ℑzᵃᵃᶠ(i, j, k, grid, three_halves_tkeᶜᶜᶜ, closure, tracers.e)
+    S²       = shearᶜᶜᶠ(i, j, k, grid, u, v)
+    N²       = ∂z_b(i, j, k, grid, buoyancy, tracers)
+    N²_above = ∂z_b(i, j, k+1, grid, buoyancy, tracers)
+
+    # "Convective length"
+    # ℓᶜ ∼ boundary layer depth according to Deardorff scaling
+    ℓᶜ = Cᶜ * w★³ / (Jᵇ + Jᵇᵋ)
+    ℓᶜ = ifelse(isnan(ℓᶜ), zero(grid), ℓᶜ)
+
+    # Model for shear-convection interaction
+    # w★² = ℑzᵃᵃᶠ(i, j, k, grid, squared_tkeᶜᶜᶜ, closure, tracers.e)
+    # Sp = sqrt(S²) * w★² / (Jᵇ + Jᵇᵋ) # Sp = "Sheared convection number"
+    # ϵˢᵖ = 1 - Cˢᵖ * Sp               # ϵ = Sheared convection factor
+    # ℓᶜ = clip(ϵˢᵖ * ℓᶜ)              # ensure non-negativity
+
+    # Model for shear-convection interaction
+    d = depthᶜᶜᶠ(i, j, k, grid)
+    Riᶠ = d * w★ * S² / (Jᵇ + Jᵇᵋ) # Riᶠ = Flux Ri number
+    ϵˢᵖ = 1 - Cˢᵖ * Riᶠ            # ϵ = Sheared convection factor
+    ℓᶜ = clip(ϵˢᵖ * ℓᶜ)            # ensure non-negativity
+
+    # "Entrainment length"
+    # Ensures that w′b′ ~ Jᵇ at entrainment depth
+    ℓᵉ = Cᵉ * Jᵇ / (w★ * N² + Jᵇᵋ)
+
+    #=
+    w★² = ℑzᵃᵃᶠ(i, j, k, grid, squared_tkeᶜᶜᶜ, closure, tracers.e)
+    Riᶠ = w★² * S² / sqrt(N²) / (Jᵇ + Jᵇᵋ) # Riᶠ = Flux Ri number
+    ϵˢᵖ = 1 - Cˢᵖ * Riᶠ                    # ϵ = Sheared convection factor
+    ℓᵉ = clip(ϵˢᵖ * ℓᵉ)
+    =#
+
+    # Figure out which mixing length applies
+    convecting = (Jᵇ > Jᵇᵋ) & (N² < 0)
+    entraining = (Jᵇ > Jᵇᵋ) & (N² > 0) & (N²_above < 0)
+
+    ℓ = ifelse(convecting, ℓᶜ,
+        ifelse(entraining, ℓᵉ, zero(grid)))
+
+    return ifelse(isnan(ℓ), zero(grid), ℓ)
+end
+
+@inline function convective_length_scaleᶜᶜᶜ(i, j, k, grid, closure, Cᶜ::Number, Cᵉ::Number, Cˢᵖ::Number,
+                                            velocities, tracers, buoyancy, surface_buoyancy_flux)
+
+    u = velocities.u
+    v = velocities.v
+
+    Jᵇᵋ      = closure.minimum_convective_buoyancy_flux
+    Jᵇ       = @inbounds surface_buoyancy_flux[i, j, 1]
+    w★       = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, tracers.e)
+    w★³      = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, tracers.e)^3
+    S²       = shearᶜᶜᶜ(i, j, k, grid, u, v)
+    N²       = ℑbzᵃᵃᶜ(i, j, k, grid, ∂z_b, buoyancy, tracers)
+    N²_above = ℑbzᵃᵃᶜ(i, j, k+1, grid, ∂z_b, buoyancy, tracers)
+
+    # "Convective length"
+    # ℓᶜ ∼ boundary layer depth according to Deardorff scaling
+    ℓᶜ = Cᶜ * w★³ / (Jᵇ + Jᵇᵋ)
+    ℓᶜ = ifelse(isnan(ℓᶜ), zero(grid), ℓᶜ)
+
+    # Figure out which mixing length applies
+    convecting = (Jᵇ > Jᵇᵋ) & (N² < 0)
+
+    # Model for shear-convection interaction
+    # w★² = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, tracers.e)^2
+    # Sp = sqrt(S²) * w★² / (Jᵇ + Jᵇᵋ) # Sp = "Sheared convection number"
+    # ϵˢᵖ = 1 - Cˢᵖ * Sp        # ϵ = Sheared convection factor
+
+    # Model for shear-convection interaction
+    d = depthᶜᶜᶜ(i, j, k, grid)
+    Riᶠ = d * S² * w★ / (Jᵇ + Jᵇᵋ) # Riᶠ = Flux Ri number
+    ϵˢᵖ = 1 - Cˢᵖ * Riᶠ            # ϵ = Sheared convection factor
+    ℓᶜ = clip(ϵˢᵖ * ℓᶜ)            # ensure non-negativity
+
+    # "Entrainment length"
+    # Ensures that w′b′ ~ Jᵇ at entrainment depth
+    ℓᵉ = Cᵉ * Jᵇ / (w★ * N² + Jᵇᵋ)
+
+    # w★² = turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, tracers.e)^2
+    # Riᶠ = w★² / sqrt(N²) / (Jᵇ + Jᵇᵋ) # Riᶠ = Flux Ri number
+    # ϵˢᵖ = 1 - Cˢᵖ * Riᶠ               # ϵ = Sheared convection factor
+    # ℓᵉ = clip(ϵˢᵖ * ℓᵉ)
+
+    entraining = (Jᵇ > Jᵇᵋ) & (N² > 0) & (N²_above < 0)
+
+    ℓ = ifelse(convecting, ℓᶜ,
+        ifelse(entraining, ℓᵉ, zero(grid)))
+
+    return ifelse(isnan(ℓ), zero(grid), ℓ)
+end
+
+"""Piecewise linear function between 0 (when x < c) and 1 (when x - c > w)."""
+@inline step(x, c, w) = max(zero(x), min(one(x), (x - c) / w))
+
+@inline function scale(Ri, σ⁻, σ⁰, σ∞, c, w)
+    σ⁺ = σ⁰ + (σ∞ - σ⁰) * step(Ri, c, w)
+    σ = σ⁻ * (Ri < 0) + σ⁺ * (Ri ≥ 0)
+    return σ
+end
+
+@inline function stability_functionᶜᶜᶠ(i, j, k, grid, closure, Cᵘⁿ, Cˡᵒ, Cʰⁱ, velocities, tracers, buoyancy)
+    Ri = Riᶜᶜᶠ(i, j, k, grid, velocities, tracers, buoyancy)
+    CRi⁰ = closure.mixing_length.CRi⁰
+    CRiᵟ = closure.mixing_length.CRiᵟ
+    return scale(Ri, Cᵘⁿ, Cˡᵒ, Cʰⁱ, CRi⁰, CRiᵟ)
+end
+
+@inline function stability_functionᶜᶜᶜ(i, j, k, grid, closure, Cᵘⁿ, Cˡᵒ, Cʰⁱ, velocities, tracers, buoyancy)
+    Ri = Riᶜᶜᶜ(i, j, k, grid, velocities, tracers, buoyancy)
+    CRi⁰ = closure.mixing_length.CRi⁰
+    CRiᵟ = closure.mixing_length.CRiᵟ
+    return scale(Ri, Cᵘⁿ, Cˡᵒ, Cʰⁱ, CRi⁰, CRiᵟ)
+end
+
+@inline function momentum_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    Cᶜ  = closure.mixing_length.Cᶜu
+    Cᵉ  = closure.mixing_length.Cᵉu
+    Cˢᵖ = closure.mixing_length.Cˢᵖ
+    ℓʰ = convective_length_scaleᶜᶜᶠ(i, j, k, grid, closure, Cᶜ, Cᵉ, Cˢᵖ, velocities, tracers, buoyancy, surface_buoyancy_flux)
+
+    Cᵘⁿ = closure.mixing_length.Cᵘⁿu
+    Cˡᵒ = closure.mixing_length.Cˡᵒu
+    Cʰⁱ = closure.mixing_length.Cʰⁱu
+    σ = stability_functionᶜᶜᶠ(i, j, k, grid, closure, Cᵘⁿ, Cˡᵒ, Cʰⁱ, velocities, tracers, buoyancy)
+
+    ℓ★ = σ * stable_length_scaleᶜᶜᶠ(i, j, k, grid, closure, tracers.e, velocities, tracers, buoyancy)
+
+    ℓʰ = ifelse(isnan(ℓʰ), zero(grid), ℓʰ)
+    ℓ★ = ifelse(isnan(ℓ★), zero(grid), ℓ★)
+    ℓu = max(ℓ★, ℓʰ)
+
+    H = static_column_depthᶜᶜᵃ(i, j, grid)
+    return min(H, ℓu)
+end
+
+@inline function tracer_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    Cᶜ  = closure.mixing_length.Cᶜc
+    Cᵉ  = closure.mixing_length.Cᵉc
+    Cˢᵖ = closure.mixing_length.Cˢᵖ
+    ℓʰ = convective_length_scaleᶜᶜᶠ(i, j, k, grid, closure, Cᶜ, Cᵉ, Cˢᵖ, velocities, tracers, buoyancy, surface_buoyancy_flux)
+
+    Cᵘⁿ = closure.mixing_length.Cᵘⁿc
+    Cˡᵒ = closure.mixing_length.Cˡᵒc
+    Cʰⁱ = closure.mixing_length.Cʰⁱc
+    σ = stability_functionᶜᶜᶠ(i, j, k, grid, closure, Cᵘⁿ, Cˡᵒ, Cʰⁱ, velocities, tracers, buoyancy)
+    ℓ★ = σ * stable_length_scaleᶜᶜᶠ(i, j, k, grid, closure, tracers.e, velocities, tracers, buoyancy)
+
+    ℓʰ = ifelse(isnan(ℓʰ), zero(grid), ℓʰ)
+    ℓ★ = ifelse(isnan(ℓ★), zero(grid), ℓ★)
+    ℓc = max(ℓ★, ℓʰ)
+
+    H = static_column_depthᶜᶜᵃ(i, j, grid)
+    return min(H, ℓc)
+end
+
+@inline function TKE_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    Cᶜ  = closure.mixing_length.Cᶜe
+    Cᵉ  = closure.mixing_length.Cᵉe
+    Cˢᵖ = closure.mixing_length.Cˢᵖ
+    ℓʰ  = convective_length_scaleᶜᶜᶠ(i, j, k, grid, closure, Cᶜ, Cᵉ, Cˢᵖ, velocities, tracers, buoyancy, surface_buoyancy_flux)
+
+    Cᵘⁿ = closure.mixing_length.Cᵘⁿe
+    Cˡᵒ = closure.mixing_length.Cˡᵒe
+    Cʰⁱ = closure.mixing_length.Cʰⁱe
+    σ = stability_functionᶜᶜᶠ(i, j, k, grid, closure, Cᵘⁿ, Cˡᵒ, Cʰⁱ, velocities, tracers, buoyancy)
+    ℓ★ = σ * stable_length_scaleᶜᶜᶠ(i, j, k, grid, closure, tracers.e, velocities, tracers, buoyancy)
+
+    ℓʰ = ifelse(isnan(ℓʰ), zero(grid), ℓʰ)
+    ℓ★ = ifelse(isnan(ℓ★), zero(grid), ℓ★)
+    ℓe = max(ℓ★, ℓʰ)
+
+    H = static_column_depthᶜᶜᵃ(i, j, grid)
+    return min(H, ℓe)
+end
+
+Base.summary(::CATKEMixingLength) = "TKEBasedVerticalDiffusivities.CATKEMixingLength"
+
+Base.show(io::IO, ml::CATKEMixingLength) =
+    print(io, "TKEBasedVerticalDiffusivities.CATKEMixingLength parameters:\n",
+              " ├── Surface distance coefficient for shear length scale:           Cˢ   = $(ml.Cˢ)\n",
+              " ├── Bottom distance coefficient for shear length scale:            Cᵇ   = $(ml.Cᵇ)\n",
+              " ├── Shear mixing length coefficient for momentum at high Ri:       Cʰⁱu = $(ml.Cʰⁱu)\n",
+              " ├── Shear mixing length coefficient for tracers at high Ri:        Cʰⁱc = $(ml.Cʰⁱc)\n",
+              " ├── Shear mixing length coefficient for TKE at high Ri:            Cʰⁱe = $(ml.Cʰⁱe)\n",
+              " ├── Shear mixing length coefficient for momentum at low Ri:        Cˡᵒu = $(ml.Cˡᵒu)\n",
+              " ├── Shear mixing length coefficient for tracers at low Ri:         Cˡᵒc = $(ml.Cˡᵒc)\n",
+              " ├── Shear mixing length coefficient for TKE at low Ri:             Cˡᵒe = $(ml.Cˡᵒe)\n",
+              " ├── Shear mixing length coefficient for momentum at negative Ri:   Cᵘⁿu = $(ml.Cᵘⁿu)\n",
+              " ├── Shear mixing length coefficient for tracers at negative Ri:    Cᵘⁿc = $(ml.Cᵘⁿc)\n",
+              " ├── Shear mixing length coefficient for TKE at negative Ri:        Cᵘⁿe = $(ml.Cᵘⁿe)\n",
+              " ├── Convective mixing length coefficient for momentum:             Cᶜu  = $(ml.Cᶜu)\n",
+              " ├── Convective mixing length coefficient for tracers:              Cᶜc  = $(ml.Cᶜc)\n",
+              " ├── Convective mixing length coefficient for TKE:                  Cᶜe  = $(ml.Cᶜe)\n",
+              " ├── Convective penetration mixing length coefficient for momentum: Cᵉu  = $(ml.Cᵉu)\n",
+              " ├── Convective penetration mixing length coefficient for tracers:  Cᵉc  = $(ml.Cᵉc)\n",
+              " ├── Convective penetration mixing length coefficient for TKE:      Cᵉe  = $(ml.Cᵉe)\n",
+              " ├── Sheared convective plume coefficient:                          Cˢᵖ  = $(ml.Cˢᵖ)\n",
+              " ├── Stability function width:                                      CRiᵟ = $(ml.CRiᵟ)\n",
+              " └── Stability function lower Ri:                                   CRi⁰ = $(ml.CRi⁰)")
+
+exec
+/bin/zsh -lc 'curl -fsSL https://api.github.com/repos/CliMA/Oceananigans.jl/git/trees/24de7026893af38df065920fbbf80f05024fd1b9?recursive=1' in <workdir>/CliMA_Oceananigans.jl_6024
+ exited 1 in 0ms:
+zsh:1: no matches found: https://api.github.com/repos/CliMA/Oceananigans.jl/git/trees/24de7026893af38df065920fbbf80f05024fd1b9?recursive=1
+
+exec
+/bin/zsh -lc 'curl -fsSL https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_vertical_diffusivity.jl' in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 90ms:
+using Oceananigans.Fields: Field
+using Oceananigans.Units: minute
+
+struct CATKEVerticalDiffusivity{TD, CL, FT, DT, TKE} <: AbstractScalarDiffusivity{TD, VerticalFormulation, 2}
+    mixing_length :: CL
+    turbulent_kinetic_energy_equation :: TKE
+    maximum_tracer_diffusivity :: FT
+    maximum_tke_diffusivity :: FT
+    maximum_viscosity :: FT
+    minimum_tke :: FT
+    minimum_convective_buoyancy_flux :: FT
+    negative_tke_damping_time_scale :: FT
+    tke_time_step :: DT
+end
+
+function CATKEVerticalDiffusivity{TD}(mixing_length::CL,
+                                      turbulent_kinetic_energy_equation::TKE,
+                                      maximum_tracer_diffusivity::FT,
+                                      maximum_tke_diffusivity::FT,
+                                      maximum_viscosity::FT,
+                                      minimum_tke::FT,
+                                      minimum_convective_buoyancy_flux::FT,
+                                      negative_tke_damping_time_scale::FT,
+                                      tke_time_step::DT) where {TD, CL, FT, DT, TKE}
+
+    return CATKEVerticalDiffusivity{TD, CL, FT, DT, TKE}(mixing_length,
+                                                         turbulent_kinetic_energy_equation,
+                                                         maximum_tracer_diffusivity,
+                                                         maximum_tke_diffusivity,
+                                                         maximum_viscosity,
+                                                         minimum_tke,
+                                                         minimum_convective_buoyancy_flux,
+                                                         negative_tke_damping_time_scale,
+                                                         tke_time_step)
+end
+
+CATKEVerticalDiffusivity(FT::DataType; kw...) =
+    CATKEVerticalDiffusivity(VerticallyImplicitTimeDiscretization(), FT; kw...)
+
+const CATKEVD{TD} = CATKEVerticalDiffusivity{TD} where TD
+const CATKEVDArray{TD} = AbstractArray{<:CATKEVD{TD}} where TD
+const FlavorOfCATKE{TD} = Union{CATKEVD{TD}, CATKEVDArray{TD}} where TD
+
+"""
+    CATKEVerticalDiffusivity([time_discretization = VerticallyImplicitTimeDiscretization(),
+                             FT = Float64;]
+                             mixing_length = CATKEMixingLength(),
+                             turbulent_kinetic_energy_equation = CATKEEquation(),
+                             maximum_tracer_diffusivity = Inf,
+                             maximum_tke_diffusivity = Inf,
+                             maximum_viscosity = Inf,
+                             minimum_tke = 1e-9,
+                             minimum_convective_buoyancy_flux = 1e-11,
+                             negative_tke_damping_time_scale = 1minute,
+                             tke_time_step = nothing)
+
+Return the `CATKEVerticalDiffusivity` turbulence closure for vertical mixing by
+small-scale ocean turbulence based on the prognostic evolution of subgrid
+Turbulent Kinetic Energy (TKE).
+
+!!! note "CATKE vertical diffusivity"
+    `CATKEVerticalDiffusivity` is a new turbulence closure diffusivity. The default
+    values for its free parameters are obtained from calibration against large eddy
+    simulations. For more details please refer to [Wagner et al. (2025)](@cite Wagner25catke).
+
+    Use with caution and report any issues with the physics at
+    [https://github.com/CliMA/Oceananigans.jl/issues](https://github.com/CliMA/Oceananigans.jl/issues).
+
+Arguments
+=========
+
+- `time_discretization`: Either `ExplicitTimeDiscretization()` or `VerticallyImplicitTimeDiscretization()`;
+                         default `VerticallyImplicitTimeDiscretization()`.
+
+- `FT`: Float type; default `Float64`.
+
+Keyword arguments
+=================
+
+- `mixing_length`: The formulation for mixing length; default: `CATKEMixingLength()`.
+
+- `turbulent_kinetic_energy_equation`: The TKE equation; default: `CATKEEquation()`.
+
+- `maximum_tracer_diffusivity`: Maximum value for tracer diffusivity. CATKE-predicted tracer
+                                diffusivities that are larger than `maximum_tracer_diffusivity`
+                                are clipped. Default: `Inf`.
+
+- `maximum_tke_diffusivity`: Maximum value for TKE diffusivity. CATKE-predicted diffusivities
+                             for TKE that are larger than `maximum_tke_diffusivity` are clipped.
+                             Default: `Inf`.
+
+- `maximum_viscosity`: Maximum value for momentum diffusivity. CATKE-predicted momentum diffusivities
+                       that are larger than `maximum_viscosity` are clipped. Default: `Inf`.
+
+- `minimum_tke`: Minimum value for the turbulent kinetic energy. `minimum_tke` produces
+                 a background tracer diffusivity
+  ```math
+  κ_{bg} ≈ C^{hi}_c \\frac{e^{\\min}}{N}
+  ```
+  and background viscosity
+  ```math
+  ν_{bg} ≈ C^{hi}_u \\frac{e^{\\min}}{N}
+  ```
+  where ``N`` is the buoyancy frequency and by default, ``C^{hi}_c = 0.098`` and ``C^{hi}_u = 0.242``
+  are parameters of `CATKEMixingLength`. This feature may be used to model background mixing by
+  internal waves [Wagner et al. (2025)](@cite Wagner25catke). Default: 1e-9.
+
+- `minimum_convective_buoyancy_flux` Minimum value for the convective buoyancy flux. Default: 1e-11.
+
+- `negative_tke_damping_time_scale`: Damping time-scale for spurious negative values of TKE,
+                                     typically generated by oscillatory errors associated
+                                     with the TKE advection. Default: 1 minute.
+
+References
+==========
+
+Wagner, G. L., Hillier, A., Constantinou, N. C., Silvestri, S., Souza, A., Burns, K., Hill,
+    C., Campin, J.-M., Marshall, J., and Ferrari, R. (2025). Formulation and calibration of CATKE,
+    a one-equation parameterization for microscale ocean mixing. J. Adv. Model. Earth Sy., 17, e2024MS004522.
+"""
+function CATKEVerticalDiffusivity(time_discretization::TD = VerticallyImplicitTimeDiscretization(),
+                                  FT = Oceananigans.defaults.FloatType;
+                                  mixing_length = CATKEMixingLength(),
+                                  turbulent_kinetic_energy_equation = CATKEEquation(),
+                                  maximum_tracer_diffusivity = Inf,
+                                  maximum_tke_diffusivity = Inf,
+                                  maximum_viscosity = Inf,
+                                  minimum_tke = 1e-9,
+                                  minimum_convective_buoyancy_flux = 1e-11,
+                                  negative_tke_damping_time_scale = 1minute,
+                                  tke_time_step = nothing) where TD
+
+    mixing_length = convert_eltype(FT, mixing_length)
+    turbulent_kinetic_energy_equation = convert_eltype(FT, turbulent_kinetic_energy_equation)
+
+    return CATKEVerticalDiffusivity{TD}(mixing_length,
+                                        turbulent_kinetic_energy_equation,
+                                        convert(FT, maximum_tracer_diffusivity),
+                                        convert(FT, maximum_tke_diffusivity),
+                                        convert(FT, maximum_viscosity),
+                                        convert(FT, minimum_tke),
+                                        convert(FT, minimum_convective_buoyancy_flux),
+                                        convert(FT, negative_tke_damping_time_scale),
+                                        tke_time_step)
+end
+
+Base.@constprop :aggressive function Utils.with_tracers(tracer_names, closure::FlavorOfCATKE)
+    :e ∈ tracer_names ||
+        throw(ArgumentError("Tracers must contain :e to represent turbulent kinetic energy " *
+                            "for `CATKEVerticalDiffusivity`."))
+
+    return closure
+end
+
+# Required tracer names for CATKE
+closure_required_tracers(::FlavorOfCATKE) = tuple(:e)
+
+# For tuples of closures, we need to know _which_ closure is CATKE.
+# Here we take a "simple" approach that sorts the tuple so CATKE is first.
+# This is not sustainable though if multiple closures require this.
+# The two other possibilities are:
+# 1. Recursion to find which closure is CATKE in a compiler-inferrable way
+# 2. Store the "CATKE index" inside CATKE via validate_closure.
+validate_closure(closure_tuple::Tuple) = Tuple(sort(collect(closure_tuple), lt=catke_first))
+
+catke_first(closure1, catke::FlavorOfCATKE) = false
+catke_first(catke::FlavorOfCATKE, closure2) = true
+catke_first(closure1, closure2) = false
+catke_first(catke1::FlavorOfCATKE, catke2::FlavorOfCATKE) = error("Can't have two CATKEs in one closure tuple.")
+
+#####
+##### Diffusivities and diffusivity fields utilities
+#####
+
+struct CATKEClosureFields{K, L, J, U, KC, LC}
+    κu :: K
+    κc :: K
+    κe :: K
+    Le :: L
+    Jᵇ :: J
+    previous_velocities :: U
+    _tupled_tracer_diffusivities :: KC
+    _tupled_implicit_linear_coefficients :: LC
+end
+
+Adapt.adapt_structure(to, catke_closure_fields::CATKEClosureFields) =
+    CATKEClosureFields(adapt(to, catke_closure_fields.κu),
+                           adapt(to, catke_closure_fields.κc),
+                           adapt(to, catke_closure_fields.κe),
+                           adapt(to, catke_closure_fields.Le),
+                           adapt(to, catke_closure_fields.Jᵇ),
+                           adapt(to, catke_closure_fields.previous_velocities),
+                           adapt(to, catke_closure_fields._tupled_tracer_diffusivities),
+                           adapt(to, catke_closure_fields._tupled_implicit_linear_coefficients))
+
+function BoundaryConditions.fill_halo_regions!(catke_closure_fields::CATKEClosureFields, args...; kw...)
+    κ = (catke_closure_fields.κu,
+         catke_closure_fields.κc,
+         catke_closure_fields.κe)
+    return fill_halo_regions!(κ, args...; kw...)
+end
+
+Base.@constprop :aggressive function build_closure_fields(grid, clock, tracer_names, bcs, closure::FlavorOfCATKE)
+
+    default_diffusivity_bcs = (κu = FieldBoundaryConditions(grid, (Center(), Center(), Face())),
+                               κc = FieldBoundaryConditions(grid, (Center(), Center(), Face())),
+                               κe = FieldBoundaryConditions(grid, (Center(), Center(), Face())))
+
+    bcs = merge(default_diffusivity_bcs, bcs)
+
+    κu = ZFaceField(grid, boundary_conditions=bcs.κu)
+    κc = ZFaceField(grid, boundary_conditions=bcs.κc)
+    κe = ZFaceField(grid, boundary_conditions=bcs.κe)
+    Le = CenterField(grid)
+    Jᵇ = Field{Center, Center, Nothing}(grid)
+
+    # Note: we may be able to avoid using the "previous velocities" in favor of a "fully implicit"
+    # discretization of shear production
+    u⁻ = XFaceField(grid)
+    v⁻ = YFaceField(grid)
+    previous_velocities = (; u=u⁻, v=v⁻)
+
+    # Secret tuple for getting tracer diffusivities with tuple[tracer_index]
+    _tupled_tracer_diffusivities = named_tuple(tracer_names) do name
+        Base.@constprop :aggressive
+        name === :e ? κe : κc
+    end
+
+    _tupled_implicit_linear_coefficients = named_tuple(tracer_names) do name
+        Base.@constprop :aggressive
+        name === :e ? Le : ZeroField()
+    end
+
+    return CATKEClosureFields(κu, κc, κe, Le, Jᵇ,
+                                  previous_velocities,
+                                  _tupled_tracer_diffusivities,
+                                  _tupled_implicit_linear_coefficients)
+end
+
+@inline viscosity_location(::FlavorOfCATKE) = (c, c, f)
+@inline diffusivity_location(::FlavorOfCATKE) = (c, c, f)
+
+function reset!(closure_fields, ::FlavorOfCATKE)
+    fields = (closure_fields.κu, closure_fields.κc, closure_fields.κe, closure_fields.Jᵇ,
+              closure_fields.previous_velocities...)
+
+    for field in fields
+        fill!(field, 0)
+    end
+
+    return nothing
+end
+
+function step_closure_prognostics!(closure_fields, closure::FlavorOfCATKE, model, Δt)
+    arch = model.architecture
+    grid = model.grid
+    velocities = model.velocities
+    tracers = buoyancy_tracers(model)
+    buoyancy = buoyancy_force(model)
+    clock = model.clock
+    top_tracer_bcs = get_top_tracer_bcs(buoyancy, tracers)
+
+    # Step TKE equation with the provided timestep
+    time_step_catke_equation!(model, model.timestepper, Δt)
+
+    # Update previous velocities and surface buoyancy flux
+    u, v, w = model.velocities
+    u⁻, v⁻ = closure_fields.previous_velocities
+    parent(u⁻) .= parent(u)
+    parent(v⁻) .= parent(v)
+
+    active_cells_map = get_active_cells_map(grid, Val(:xy))
+
+    launch!(arch, grid, :xy,
+            compute_average_surface_buoyancy_flux!,
+            closure_fields.Jᵇ, grid, closure, velocities, tracers, buoyancy, top_tracer_bcs, clock, Δt;
+            active_cells_map)
+
+    return nothing
+end
+
+function compute_closure_fields!(closure_fields, closure::FlavorOfCATKE, model; parameters = :xyz)
+    arch = model.architecture
+    grid = model.grid
+    velocities = model.velocities
+    tracers = buoyancy_tracers(model)
+    buoyancy = buoyancy_force(model)
+
+    launch!(arch, grid, parameters,
+            compute_CATKE_closure_fields!,
+            closure_fields, grid, closure, velocities, tracers, buoyancy)
+
+    return nothing
+end
+
+@kernel function compute_average_surface_buoyancy_flux!(Jᵇ, grid, closure, velocities, tracers,
+                                                        buoyancy, top_tracer_bcs, clock, Δt)
+    i, j = @index(Global, NTuple)
+    k = grid.Nz
+
+    closure = getclosure(i, j, closure)
+
+    model_fields = merge(velocities, tracers)
+    Jᵇ★ = top_buoyancy_flux(i, j, grid, buoyancy, top_tracer_bcs, clock, model_fields)
+    ℓᴰ = dissipation_length_scaleᶜᶜᶜ(i, j, k, grid, closure, velocities, tracers, buoyancy, Jᵇ)
+
+    Jᵇᵋ = closure.minimum_convective_buoyancy_flux
+    Jᵇᵢⱼ = @inbounds Jᵇ[i, j, 1]
+    Jᵇ⁺ = max(Jᵇᵋ, Jᵇᵢⱼ, Jᵇ★) # selects fastest (dominant) time-scale
+    t★ = f32_safe_cbrt(ℓᴰ^2 / Jᵇ⁺)
+    ϵ = Δt / t★
+
+    @inbounds Jᵇ[i, j, 1] = (Jᵇᵢⱼ + ϵ * Jᵇ★) / (1 + ϵ)
+end
+
+@kernel function compute_CATKE_closure_fields!(closure_fields, grid, closure::FlavorOfCATKE, velocities, tracers, buoyancy)
+    i, j, k = @index(Global, NTuple)
+
+    # Ensure this works with "ensembles" of closures, in addition to ordinary single closures
+    closure_ij = getclosure(i, j, closure)
+    Jᵇ = closure_fields.Jᵇ
+
+    # Note: we also compute the TKE diffusivity here for diagnostic purposes, even though it
+    # is recomputed in time_step_turbulent_kinetic_energy.
+    κu★ = κuᶜᶜᶠ(i, j, k, grid, closure_ij, velocities, tracers, buoyancy, Jᵇ)
+    κc★ = κcᶜᶜᶠ(i, j, k, grid, closure_ij, velocities, tracers, buoyancy, Jᵇ)
+    κe★ = κeᶜᶜᶠ(i, j, k, grid, closure_ij, velocities, tracers, buoyancy, Jᵇ)
+
+    κu★ = mask_diffusivity(i, j, k, grid, κu★)
+    κc★ = mask_diffusivity(i, j, k, grid, κc★)
+    κe★ = mask_diffusivity(i, j, k, grid, κe★)
+
+    @inbounds begin
+        closure_fields.κu[i, j, k] = κu★
+        closure_fields.κc[i, j, k] = κc★
+        closure_fields.κe[i, j, k] = κe★
+    end
+end
+
+@inline function κuᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    w★ = ℑzᵃᵃᶠ(i, j, k, grid, turbulent_velocityᶜᶜᶜ, closure, tracers.e)
+    ℓu = momentum_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    κu = ℓu * w★
+    κu_max = closure.maximum_viscosity
+    κu★ = min(κu, κu_max)
+    FT = eltype(grid)
+    return FT(κu★)
+end
+
+@inline function κcᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    w★ = ℑzᵃᵃᶠ(i, j, k, grid, turbulent_velocityᶜᶜᶜ, closure, tracers.e)
+    ℓc = tracer_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    κc = ℓc * w★
+    κc_max = closure.maximum_tracer_diffusivity
+    κc★ = min(κc, κc_max)
+    FT = eltype(grid)
+    return FT(κc★)
+end
+
+@inline function κeᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    w★ = ℑzᵃᵃᶠ(i, j, k, grid, turbulent_velocityᶜᶜᶜ, closure, tracers.e)
+    ℓe = TKE_mixing_lengthᶜᶜᶠ(i, j, k, grid, closure, velocities, tracers, buoyancy, surface_buoyancy_flux)
+    κe = ℓe * w★
+    κe_max = closure.maximum_tke_diffusivity
+    κe★ = min(κe, κe_max)
+    FT = eltype(grid)
+    return FT(κe★)
+end
+
+@inline viscosity(::FlavorOfCATKE, closure_fields) = closure_fields.κu
+@inline diffusivity(::FlavorOfCATKE, closure_fields, ::Val{id}) where id = closure_fields._tupled_tracer_diffusivities[id]
+
+#####
+##### Show
+#####
+
+function Base.summary(closure::CATKEVD)
+    TD = nameof(typeof(TimeSteppers.time_discretization(closure)))
+    return string("CATKEVerticalDiffusivity{$TD}")
+end
+
+function Base.show(io::IO, clo::CATKEVD)
+    print(io, summary(clo))
+    print(io, '\n')
+    print(io, "├── maximum_tracer_diffusivity: ", prettysummary(clo.maximum_tracer_diffusivity), '\n',
+              "├── maximum_tke_diffusivity: ", prettysummary(clo.maximum_tke_diffusivity), '\n',
+              "├── maximum_viscosity: ", prettysummary(clo.maximum_viscosity), '\n',
+              "├── minimum_tke: ", prettysummary(clo.minimum_tke), '\n',
+              "├── negative_tke_time_scale: ", prettysummary(clo.negative_tke_damping_time_scale), '\n',
+              "├── minimum_convective_buoyancy_flux: ", prettysummary(clo.minimum_convective_buoyancy_flux), '\n',
+              "├── tke_time_step: ", prettysummary(clo.tke_time_step), '\n',
+              "├── mixing_length: ", prettysummary(clo.mixing_length), '\n',
+              "│   ├── Cˢ:   ", prettysummary(clo.mixing_length.Cˢ), '\n',
+              "│   ├── Cᵇ:   ", prettysummary(clo.mixing_length.Cᵇ), '\n',
+              "│   ├── Cʰⁱu: ", prettysummary(clo.mixing_length.Cʰⁱu), '\n',
+              "│   ├── Cʰⁱc: ", prettysummary(clo.mixing_length.Cʰⁱc), '\n',
+              "│   ├── Cʰⁱe: ", prettysummary(clo.mixing_length.Cʰⁱe), '\n',
+              "│   ├── Cˡᵒu: ", prettysummary(clo.mixing_length.Cˡᵒu), '\n',
+              "│   ├── Cˡᵒc: ", prettysummary(clo.mixing_length.Cˡᵒc), '\n',
+              "│   ├── Cˡᵒe: ", prettysummary(clo.mixing_length.Cˡᵒe), '\n',
+              "│   ├── Cᵘⁿu: ", prettysummary(clo.mixing_length.Cᵘⁿu), '\n',
+              "│   ├── Cᵘⁿc: ", prettysummary(clo.mixing_length.Cᵘⁿc), '\n',
+              "│   ├── Cᵘⁿe: ", prettysummary(clo.mixing_length.Cᵘⁿe), '\n',
+              "│   ├── Cᶜu:  ", prettysummary(clo.mixing_length.Cᶜu), '\n',
+              "│   ├── Cᶜc:  ", prettysummary(clo.mixing_length.Cᶜc), '\n',
+              "│   ├── Cᶜe:  ", prettysummary(clo.mixing_length.Cᶜe), '\n',
+              "│   ├── Cᵉc:  ", prettysummary(clo.mixing_length.Cᵉc), '\n',
+              "│   ├── Cᵉe:  ", prettysummary(clo.mixing_length.Cᵉe), '\n',
+              "│   ├── Cˢᵖ:  ", prettysummary(clo.mixing_length.Cˢᵖ), '\n',
+              "│   ├── CRiᵟ: ", prettysummary(clo.mixing_length.CRiᵟ), '\n',
+              "│   └── CRi⁰: ", prettysummary(clo.mixing_length.CRi⁰), '\n',
+              "└── turbulent_kinetic_energy_equation: ", prettysummary(clo.turbulent_kinetic_energy_equation), '\n',
+              "    ├── CʰⁱD: ", prettysummary(clo.turbulent_kinetic_energy_equation.CʰⁱD),  '\n',
+              "    ├── CˡᵒD: ", prettysummary(clo.turbulent_kinetic_energy_equation.CˡᵒD),  '\n',
+              "    ├── CᵘⁿD: ", prettysummary(clo.turbulent_kinetic_energy_equation.CᵘⁿD),  '\n',
+              "    ├── CᶜD:  ", prettysummary(clo.turbulent_kinetic_energy_equation.CᶜD),  '\n',
+              "    ├── CᵉD:  ", prettysummary(clo.turbulent_kinetic_energy_equation.CᵉD),  '\n',
+              "    ├── Cᵂu★: ", prettysummary(clo.turbulent_kinetic_energy_equation.Cᵂu★), '\n',
+              "    ├── CᵂwΔ: ", prettysummary(clo.turbulent_kinetic_energy_equation.CᵂwΔ), '\n',
+              "    └── Cᵂϵ:  ", prettysummary(clo.turbulent_kinetic_energy_equation.Cᵂϵ))
+end
+
+#####
+##### Checkpointing
+#####
+
+function prognostic_state(cf::CATKEClosureFields)
+    return (previous_velocities = prognostic_state(cf.previous_velocities),
+            Jᵇ = prognostic_state(cf.Jᵇ),
+            κu = prognostic_state(cf.κu),
+            κc = prognostic_state(cf.κc),
+            κe = prognostic_state(cf.κe))
+end
+
+function restore_prognostic_state!(restored::CATKEClosureFields, from)
+    restore_prognostic_state!(restored.previous_velocities, from.previous_velocities)
+    restore_prognostic_state!(restored.Jᵇ, from.Jᵇ)
+    restore_prognostic_state!(restored.κu, from.κu)
+    restore_prognostic_state!(restored.κc, from.κc)
+    restore_prognostic_state!(restored.κe, from.κe)
+    return restored
+end
+
+restore_prognostic_state!(::CATKEClosureFields, ::Nothing) = nothing
+
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/Project.toml'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://api.github.com/repos/CliMA/Oceananigans.jl/git/trees/24de7026893af38df065920fbbf80f05024fd1b9?recursive=1' | rg '\"path\".*(catke|CATKE|test_turbulence|single_column|TKEBased|set_model)'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_equation.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 137ms:
+name = "Oceananigans"
+uuid = "9e8cae18-63c1-5223-a75c-80ca9d6e9a09"
+version = "0.113.5"
+authors = ["Climate Modeling Alliance and contributors"]
+
+[deps]
+Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+BFloat16s = "ab4f0b2a-ad5b-11e8-123f-65d77653426b"
+Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
+CubedSphere = "7445602f-e544-4518-8976-18f8e8ae6cdb"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+GPUArraysCore = "46192b85-c4d5-4398-a991-12ede77f4527"
+Glob = "c27321d9-0574-5035-807b-f59d2c89b15c"
+InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+KernelAbstractions = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
+Krylov = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
+MuladdMacro = "46d2c3a1-f734-5fdb-9937-b9b9aeba4221"
+OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+ReactantCore = "a3311ec8-5e00-46d5-b541-4f83e724a433"
+Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
+SeawaterPolynomials = "d496a93d-167e-4197-9f49-d3af4ff8fe40"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+
+[weakdeps]
+AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
+AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
+ConservativeRegridding = "8e50ac2c-eb48-49bc-a402-07c87b949343"
+Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+GPUArrays = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
+Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
+Metal = "dde4c033-4e86-420c-a63e-0dd931031962"
+NCDatasets = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
+Reactant = "3c362404-f566-11ee-1572-e11a4b42c853"
+NCCL = "3fe64909-d7a1-4096-9b7d-7a0f12cf0f6b"
+Zarr = "0a941bbe-ad1d-11e8-39d9-ab76183a1d99"
+oneAPI = "8f75cd03-7ff8-4ecb-9b8f-daf728133b1b"
+
+[extensions]
+OceananigansAMDGPUExt = ["AMDGPU", "AbstractFFTs"]
+OceananigansCUDAExt = ["CUDA", "GPUArrays", "GPUArraysCore"]
+OceananigansConservativeRegriddingExt = "ConservativeRegridding"
+OceananigansEnzymeExt = "Enzyme"
+OceananigansMakieExt = "Makie"
+OceananigansMetalExt = ["Metal", "AbstractFFTs"]
+OceananigansNCDatasetsExt = "NCDatasets"
+OceananigansOneAPIExt = "oneAPI"
+OceananigansReactantExt = ["Reactant", "KernelAbstractions", "ConstructionBase", "AbstractFFTs"]
+OceananigansNCCLExt = ["NCCL", "CUDA"]
+OceananigansZarrExt = "Zarr"
+
+[compat]
+AbstractFFTs = "1.5"
+Adapt = "4.1.1"
+AMDGPU = "1.3.6, 2"
+BFloat16s = "0.6.1"
+CUDA = "=5.8.5, 5.9.1, 6"
+ConstructionBase = "1"
+ConservativeRegridding = "0.2"
+Crayons = "4"
+CubedSphere = "0.3.4"
+Dates = "1.9"
+Distances = "0.10"
+DocStringExtensions = "0.8, 0.9"
+Enzyme = "0.13.78"
+FFTW = "1"
+GPUArrays = "10.3, 11.2.2"
+GPUArraysCore = "0.2"
+Glob = "1.3"
+InteractiveUtils = "1.9"
+JLD2 = "0.4, 0.5, 0.6"
+KernelAbstractions = "0.9.39"
+Krylov = "0.10.0"
+LinearAlgebra = "1.9"
+Logging = "1.9"
+MPI = "0.16, 0.17, 0.18, 0.19, 0.20"
+NCCL = "0.1"
+Makie = "0.24"
+Metal = "1.10"
+MuladdMacro = "0.2"
+NCDatasets = "0.12.10, 0.13.1, 0.14"
+OffsetArrays = "1.4"
+OrderedCollections = "1.1"
+Pkg = "<0.0.1, 1"
+Printf = "1.9"
+Reactant = "0.2.278"
+ReactantCore = "^0.1.0"
+Rotations = "1.0"
+SeawaterPolynomials = "0.3, 0.4"
+SparseArrays = "1.9"
+StaticArrays = "1"
+Statistics = "1.9"
+StructArrays = "0.4, 0.5, 0.6, 0.7"
+Zarr = "0.10"
+julia = "1.10"
+oneAPI = "2.4.0"
+
+ succeeded in 130ms:
+"""
+    struct CATKEEquation{FT}
+
+Parameters for the evolution of oceanic turbulent kinetic energy at the O(1 m) scales associated with
+isotropic turbulence and diapycnal mixing.
+"""
+Base.@kwdef struct CATKEEquation{FT}
+    CʰⁱD  :: FT = 0.579 # Dissipation length scale shear coefficient for high Ri
+    CˡᵒD  :: FT = 1.604 # Dissipation length scale shear coefficient for low Ri
+    CᵘⁿD  :: FT = 0.923 # Dissipation length scale shear coefficient for negative Ri
+    CᶜD   :: FT = 3.254 # Dissipation length scale convecting layer coefficient
+    CᵉD   :: FT = 0.0   # Dissipation length scale penetration layer coefficient
+    Cᵂu★  :: FT = 3.179 # Surface shear-driven TKE flux coefficient
+    CᵂwΔ  :: FT = 0.383 # Surface convective TKE flux coefficient
+    Cᵂϵ   :: FT = 1.0   # Dissipative near-bottom TKE flux coefficient
+end
+
+#####
+##### Terms in the turbulent kinetic energy equation, all at cell centers
+#####
+
+@inline dissipation(i, j, k, grid, closure::FlavorOfCATKE{<:VITD}, args...) = zero(grid)
+
+@inline function dissipation_length_scaleᶜᶜᶜ(i, j, k, grid, closure::FlavorOfCATKE, velocities, tracers,
+                                             buoyancy, surface_buoyancy_flux)
+
+    # Convective dissipation length
+    Cᶜ = closure.turbulent_kinetic_energy_equation.CᶜD
+    Cᵉ = closure.turbulent_kinetic_energy_equation.CᵉD
+    Cˢᵖ = closure.mixing_length.Cˢᵖ
+    Jᵇ = surface_buoyancy_flux
+    ℓʰ = convective_length_scaleᶜᶜᶜ(i, j, k, grid, closure, Cᶜ, Cᵉ, Cˢᵖ, velocities, tracers, buoyancy, Jᵇ)
+
+    # "Stable" dissipation length
+    Cˡᵒ = closure.turbulent_kinetic_energy_equation.CˡᵒD
+    Cʰⁱ = closure.turbulent_kinetic_energy_equation.CʰⁱD
+    Cᵘⁿ = closure.turbulent_kinetic_energy_equation.CᵘⁿD
+    σᴰ = stability_functionᶜᶜᶜ(i, j, k, grid, closure, Cᵘⁿ, Cˡᵒ, Cʰⁱ, velocities, tracers, buoyancy)
+    ℓ★ = stable_length_scaleᶜᶜᶜ(i, j, k, grid, closure, tracers.e, velocities, tracers, buoyancy)
+    ℓ★ = ℓ★ / σᴰ
+
+    # Dissipation length
+    ℓʰ = ifelse(isnan(ℓʰ), zero(grid), ℓʰ)
+    ℓ★ = ifelse(isnan(ℓ★), zero(grid), ℓ★)
+    ℓᴰ = max(ℓ★, ℓʰ)
+
+    H = static_column_depthᶜᶜᵃ(i, j, grid)
+    return min(H, ℓᴰ)
+end
+
+@inline function dissipation_rate(i, j, k, grid, closure::FlavorOfCATKE,
+                                  velocities, tracers, buoyancy, closure_fields)
+
+    ℓᴰ = dissipation_length_scaleᶜᶜᶜ(i, j, k, grid, closure, velocities, tracers, buoyancy, closure_fields.Jᵇ)
+    e = tracers.e
+    FT = eltype(grid)
+    eᵢ = @inbounds e[i, j, k]
+
+    # Note:
+    #   Because   ∂t e + ⋯ = ⋯ + L e = ⋯ - ϵ,
+    #
+    #   then      L e = - ϵ
+    #                 = - Cᴰ e³² / ℓ
+    #
+    #   and thus    L = - Cᴰ √e / ℓ .
+
+    ω_numerical = 1 / closure.negative_tke_damping_time_scale
+    ω_physical = sqrt(abs(eᵢ)) / ℓᴰ
+
+    return ifelse(eᵢ < 0, ω_numerical, ω_physical)
+end
+
+# Fallbacks for explicit time discretization
+@inline function dissipation(i, j, k, grid, closure::FlavorOfCATKE, velocities, tracers, args...)
+    eᵢ = @inbounds tracers.e[i, j, k]
+    ω = dissipation_rate(i, j, k, grid, closure, velocities, tracers, args...)
+    return ω * eᵢ
+end
+
+#####
+##### TKE top boundary condition
+#####
+
+@inline function top_tke_flux(i, j, grid, clock, fields, parameters, closure::FlavorOfCATKE, buoyancy)
+    closure = getclosure(i, j, closure)
+
+    top_tracer_bcs = parameters.top_tracer_boundary_conditions
+    top_velocity_bcs = parameters.top_velocity_boundary_conditions
+    tke_parameters = closure.turbulent_kinetic_energy_equation
+
+    return _top_tke_flux(i, j, grid, clock, fields, tke_parameters, closure,
+                         buoyancy, top_tracer_bcs, top_velocity_bcs)
+end
+
+@inline function _top_tke_flux(i, j, grid, clock, fields,
+                               tke::CATKEEquation, closure::CATKEVD,
+                               buoyancy, top_tracer_bcs, top_velocity_bcs)
+
+    wΔ³ = top_convective_turbulent_velocity_cubed(i, j, grid, clock, fields, buoyancy, top_tracer_bcs)
+    u★ = friction_velocity(i, j, grid, clock, fields, top_velocity_bcs)
+
+    Cᵂu★ = tke.Cᵂu★
+    CᵂwΔ = tke.CᵂwΔ
+
+    return - Cᵂu★ * u★^3 - CᵂwΔ * wΔ³
+end
+
+#####
+##### Utilities for model constructors
+#####
+
+""" Add TKE boundary conditions specific to `CATKEVerticalDiffusivity`. """
+function add_closure_specific_boundary_conditions(closure::FlavorOfCATKE,
+                                                  user_bcs,
+                                                  grid,
+                                                  tracer_names,
+                                                  buoyancy)
+
+    top_tracer_bcs = top_tracer_boundary_conditions(grid, tracer_names, user_bcs)
+    top_velocity_bcs = top_velocity_boundary_conditions(grid, user_bcs)
+    parameters = TKETopBoundaryConditionParameters(top_tracer_bcs, top_velocity_bcs)
+    top_tke_bc = FluxBoundaryCondition(top_tke_flux, discrete_form=true, parameters=parameters)
+
+    if :e ∈ keys(user_bcs)
+        e_bcs = user_bcs[:e]
+
+        tke_bcs = FieldBoundaryConditions(grid, (Center(), Center(), Center()),
+                                          top = top_tke_bc,
+                                          bottom = e_bcs.bottom,
+                                          north = e_bcs.north,
+                                          south = e_bcs.south,
+                                          east = e_bcs.east,
+                                          west = e_bcs.west)
+    else
+        tke_bcs = FieldBoundaryConditions(grid, (Center(), Center(), Center()), top=top_tke_bc)
+    end
+
+    new_boundary_conditions = merge(user_bcs, (; e = tke_bcs))
+
+    return new_boundary_conditions
+end
+
+Base.summary(::CATKEEquation) = "TKEBasedVerticalDiffusivities.CATKEEquation"
+Base.show(io::IO, tke::CATKEEquation) =
+    print(io, "TKEBasedVerticalDiffusivities.CATKEEquation parameters:\n",
+              "├── Dissipation length scale shear coefficient for high Ri:     CʰⁱD = $(tke.CʰⁱD)\n",
+              "├── Dissipation length scale shear coefficient for low Ri:      CˡᵒD = $(tke.CˡᵒD)\n",
+              "├── Dissipation length scale shear coefficient for negative Ri: CᵘⁿD = $(tke.CᵘⁿD)\n",
+              "├── Dissipation length scale convecting layer coefficient:      CᶜD  = $(tke.CᶜD)\n",
+              "├── Dissipation length scale penetration layer coefficient:     CᵉD  = $(tke.CᵉD)\n",
+              "├── Surface shear-driven TKE flux coefficient:                  Cᵂu★ = $(tke.Cᵂu★)\n",
+              "├── Surface convective TKE flux coefficient:                    CᵂwΔ = $(tke.CᵂwΔ)\n",
+              "└── Dissipative near-bottom TKE flux coefficient:               Cᵂϵ  = $(tke.Cᵂϵ)")
+
+ succeeded in 335ms:
+      "path": "examples/single_column_parameter_estimation.jl",
+      "path": "src/Models/HydrostaticFreeSurfaceModels/single_column_model_mode.jl",
+      "path": "src/Models/set_model.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/TKEBasedVerticalDiffusivities.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_equation.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_vertical_diffusivity.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/time_step_catke_equation.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/tke_dissipation_equations.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/tke_dissipation_stability_functions.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/tke_dissipation_vertical_diffusivity.jl",
+      "path": "src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/tke_top_boundary_condition.jl",
+      "path": "test/reactant/single_column.jl",
+      "path": "validation/vertical_mixing_closures/compare_catke_k_epsilon.jl",
+      "path": "validation/vertical_mixing_closures/compare_catke_results.jl",
+      "path": "validation/vertical_mixing_closures/test_single_column_model.jl",
+
+**Listing tests**
+codex
+已确认这次改动只调整底边界混合长度系数。关键检查是：在中性、局地剪切生产与耗散平衡的条件下，实际闭合系数是否对应 κ≈0.4；我也会注明边界距离截断、TKE 下限及离散误差，避免把这个条件性关系误写成所有海流状态都应满足的定律。
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/TKEBasedVerticalDiffusivities.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/Models/set_model.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/test/test_turbulence_closures.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/test/test_vertical_mixing_closures.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 152ms:
+module TKEBasedVerticalDiffusivities
+
+export CATKEVerticalDiffusivity,
+       TKEDissipationVerticalDiffusivity
+
+using Adapt: Adapt, adapt
+using DocStringExtensions: TYPEDSIGNATURES
+using GPUArraysCore: @allowscalar
+using KernelAbstractions: @kernel, @index
+
+using Oceananigans: Oceananigans
+using Oceananigans.BoundaryConditions: BoundaryConditions, default_prognostic_bc,
+                                       fill_halo_regions!, DefaultBoundaryCondition,
+                                       FieldBoundaryConditions, DiscreteBoundaryFunction,
+                                       FluxBoundaryCondition
+using Oceananigans.BuoyancyFormulations: BuoyancyForce, BuoyancyTracer, SeawaterBuoyancy,
+                                         TemperatureSeawaterBuoyancy, SalinitySeawaterBuoyancy,
+                                         ∂z_b, top_buoyancy_flux
+using Oceananigans.Fields: CenterField, XFaceField, YFaceField, ZFaceField, ZeroField
+using Oceananigans.Grids: Center, Face, peripheral_node, inactive_node, inactive_cell, static_column_depthᶜᶜᵃ
+using Oceananigans.Operators: Δzᶜᶜᶜ, Δzᶜᶠᶠ, Δzᶠᶜᶠ, Δz⁻¹ᶜᶠᶜ, Δz⁻¹ᶠᶜᶜ,
+                              ℑxᶜᵃᵃ, ℑxᶠᵃᵃ, ℑyᵃᶜᵃ, ℑyᵃᶠᵃ, ℑzᵃᵃᶜ, ℑzᵃᵃᶠ, ∂zᶜᶠᶠ, ∂zᶠᶜᶠ
+using Oceananigans.TimeSteppers: TimeSteppers, time_discretization
+using Oceananigans.TurbulenceClosures: getclosure, AbstractScalarDiffusivity, VerticalFormulation,
+                                       VerticallyImplicitTimeDiscretization
+using Oceananigans.Utils: Utils, launch!, prettysummary, get_active_cells_map, named_tuple, f32_safe_cbrt
+
+import Oceananigans: prognostic_state, restore_prognostic_state!
+import Oceananigans.TimeSteppers: reset!
+import Oceananigans.TurbulenceClosures:
+    validate_closure,
+    shear_production,
+    dissipation,
+    buoyancy_force,
+    buoyancy_tracers,
+    add_closure_specific_boundary_conditions,
+    closure_required_tracers,
+    compute_closure_fields!,
+    step_closure_prognostics!,
+    build_closure_fields,
+    implicit_linear_coefficient,
+    viscosity,
+    diffusivity,
+    viscosity_location,
+    diffusivity_location
+
+const c = Center()
+const f = Face()
+const VITD = VerticallyImplicitTimeDiscretization
+
+@inline ϕ²(i, j, k, grid, ϕ, args...) = ϕ(i, j, k, grid, args...)^2
+
+@inline function shearᶜᶜᶠ(i, j, k, grid, u, v)
+    ∂z_u² = ℑxᶜᵃᵃ(i, j, k, grid, ϕ², ∂zᶠᶜᶠ, u)
+    ∂z_v² = ℑyᵃᶜᵃ(i, j, k, grid, ϕ², ∂zᶜᶠᶠ, v)
+    S² = ∂z_u² + ∂z_v²
+    return S²
+end
+
+@inline function shearᶜᶜᶜ(i, j, k, grid, u, v)
+    ∂z_u² = ℑxᶜᵃᵃ(i, j, k, grid, ℑbzᵃᵃᶜ, ϕ², ∂zᶠᶜᶠ, u)
+    ∂z_v² = ℑyᵃᶜᵃ(i, j, k, grid, ℑbzᵃᵃᶜ, ϕ², ∂zᶜᶠᶠ, v)
+    S² = ∂z_u² + ∂z_v²
+    return S²
+end
+
+@inline Riᶜᶜᶜ(i, j, k, grid, velocities, tracers, buoyancy) =
+    ℑbzᵃᵃᶜ(i, j, k, grid, Riᶜᶜᶠ, velocities, tracers, buoyancy)
+
+@inline function Riᶜᶜᶠ(i, j, k, grid, velocities, tracers, buoyancy)
+    u = velocities.u
+    v = velocities.v
+    S² = shearᶜᶜᶠ(i, j, k, grid, u, v)
+    N² = ∂z_b(i, j, k, grid, buoyancy, tracers)
+    Ri = N² / S²
+    return ifelse(N² == 0, zero(grid), Ri)
+end
+
+# @inline ℑbzᵃᵃᶜ(i, j, k, grid, fᵃᵃᶠ, args...) = ℑzᵃᵃᶜ(i, j, k, grid, fᵃᵃᶠ, args...)
+
+# A particular kind of reconstruction that ignores peripheral nodes
+@inline function ℑbzᵃᵃᶜ(i, j, k, grid, fᵃᵃᶠ, args...)
+    k⁺ = k + 1
+    k⁻ = k
+
+    f⁺ = fᵃᵃᶠ(i, j, k⁺, grid, args...)
+    f⁻ = fᵃᵃᶠ(i, j, k⁻, grid, args...)
+
+    p⁺ = peripheral_node(i, j, k⁺, grid, c, c, f)
+    p⁻ = peripheral_node(i, j, k⁻, grid, c, c, f)
+
+    f⁺ = ifelse(p⁺, f⁻, f⁺)
+    f⁻ = ifelse(p⁻, f⁺, f⁻)
+
+    return (f⁺ + f⁻) / 2
+end
+
+# To reconstruct buoyancy flux "conservatively" (ie approximately corresponding to production/destruction
+# of mean potential energy):
+@inline function buoyancy_fluxᶜᶜᶠ(i, j, k, grid, tracers, buoyancy, closure_fields)
+    κc = @inbounds closure_fields.κc[i, j, k]
+    N² = ∂z_b(i, j, k, grid, buoyancy, tracers)
+    return - κc * N²
+end
+
+@inline explicit_buoyancy_flux(i, j, k, grid, closure, velocities, tracers, buoyancy, closure_fields) =
+    ℑbzᵃᵃᶜ(i, j, k, grid, buoyancy_fluxᶜᶜᶠ, tracers, buoyancy, closure_fields)
+
+# Note special attention paid to averaging the vertical grid spacing correctly
+@inline Δz_νₑ_az_bzᶠᶜᶠ(i, j, k, grid, νₑ, a, b) = ℑxᶠᵃᵃ(i, j, k, grid, νₑ) * ∂zᶠᶜᶠ(i, j, k, grid, a) *
+                                                  Δzᶠᶜᶠ(i, j, k, grid)     * ∂zᶠᶜᶠ(i, j, k, grid, b)
+
+@inline Δz_νₑ_az_bzᶜᶠᶠ(i, j, k, grid, νₑ, a, b) = ℑyᵃᶠᵃ(i, j, k, grid, νₑ) * ∂zᶜᶠᶠ(i, j, k, grid, a) *
+                                                  Δzᶜᶠᶠ(i, j, k, grid)     * ∂zᶜᶠᶠ(i, j, k, grid, b)
+
+@inline function shear_production_xᶠᶜᶜ(i, j, k, grid, νₑ, uⁿ, u⁺)
+    Δz_Pxⁿ = ℑbzᵃᵃᶜ(i, j, k, grid, Δz_νₑ_az_bzᶠᶜᶠ, νₑ, uⁿ, u⁺)
+    Δz_Px⁺ = ℑbzᵃᵃᶜ(i, j, k, grid, Δz_νₑ_az_bzᶠᶜᶠ, νₑ, u⁺, u⁺)
+    return (Δz_Pxⁿ + Δz_Px⁺) / 2 * Δz⁻¹ᶠᶜᶜ(i, j, k, grid)
+end
+
+@inline function shear_production_yᶜᶠᶜ(i, j, k, grid, νₑ, vⁿ, v⁺)
+    Δz_Pyⁿ = ℑbzᵃᵃᶜ(i, j, k, grid, Δz_νₑ_az_bzᶜᶠᶠ, νₑ, vⁿ, v⁺)
+    Δz_Py⁺ = ℑbzᵃᵃᶜ(i, j, k, grid, Δz_νₑ_az_bzᶜᶠᶠ, νₑ, v⁺, v⁺)
+    return (Δz_Pyⁿ + Δz_Py⁺) / 2 * Δz⁻¹ᶜᶠᶜ(i, j, k, grid)
+end
+
+@inline function shear_production(i, j, k, grid, νₑ, uⁿ, u⁺, vⁿ, v⁺)
+    # Reconstruct the shear production term in an "approximately conservative" manner
+    # (ie respecting the spatial discretization and using a stencil commensurate with the
+    # loss of mean kinetic energy due to shear production --- but _not_ respecting the
+    # the temporal discretization. Note that also respecting the temporal discretization, would
+    # require storing the velocity field at n and n+1):
+
+    return ℑxᶜᵃᵃ(i, j, k, grid, shear_production_xᶠᶜᶜ, νₑ, uⁿ, u⁺) +
+           ℑyᵃᶜᵃ(i, j, k, grid, shear_production_yᶜᶠᶜ, νₑ, vⁿ, v⁺)
+end
+
+@inline function turbulent_velocityᶜᶜᶜ(i, j, k, grid, closure, e)
+    eᵢ = @inbounds e[i, j, k]
+    eᵐⁱⁿ = closure.minimum_tke
+    return sqrt(max(eᵐⁱⁿ, eᵢ))
+end
+
+@inline function mask_diffusivity(i, j, k, grid, κ★)
+    on_periphery = peripheral_node(i, j, k, grid, c, c, f)
+    within_inactive = inactive_node(i, j, k, grid, c, c, f)
+    nan = convert(eltype(grid), NaN)
+    return ifelse(on_periphery, zero(grid), ifelse(within_inactive, nan, κ★))
+end
+
+@inline clip(x) = max(zero(x), x)
+
+function get_time_step(closure_array::AbstractArray)
+    # assume they are all the same
+    closure = @allowscalar closure_array[1, 1]
+    return get_time_step(closure)
+end
+
+get_top_tracer_bcs(bf::BuoyancyForce, tracers) = get_top_tracer_bcs(bf.formulation, tracers)
+get_top_tracer_bcs(::Nothing, tracers) = NamedTuple()
+get_top_tracer_bcs(::BuoyancyTracer, tracers) = (; b=tracers.b.boundary_conditions.top)
+get_top_tracer_bcs(::SeawaterBuoyancy, tracers) = (T = tracers.T.boundary_conditions.top,
+                                                   S = tracers.S.boundary_conditions.top)
+get_top_tracer_bcs(::TemperatureSeawaterBuoyancy, tracers) = (; T = tracers.T.boundary_conditions.top)
+get_top_tracer_bcs(::SalinitySeawaterBuoyancy, tracers)    = (; S = tracers.S.boundary_conditions.top)
+
+include("tke_top_boundary_condition.jl")
+include("catke_vertical_diffusivity.jl")
+include("catke_mixing_length.jl")
+include("catke_equation.jl")
+include("time_step_catke_equation.jl")
+
+include("tke_dissipation_vertical_diffusivity.jl")
+include("tke_dissipation_stability_functions.jl")
+include("tke_dissipation_equations.jl")
+
+for S in (:CATKEMixingLength,
+          :CATKEEquation,
+          :StratifiedDisplacementScale,
+          :ConstantStabilityFunctions,
+          :VariableStabilityFunctions)
+
+    @eval @inline convert_eltype(::Type{FT}, s::$S) where FT =
+        $S{FT}(; Dict(p => getproperty(s, p) for p in propertynames(s))...)
+
+    @eval @inline convert_eltype(::Type{FT}, s::$S{FT}) where FT = s
+end
+
+end # module
+
+ exited 56 in 145ms:
+curl: (56) The requested URL returned error: 404
+
+ exited 56 in 171ms:
+curl: (56) The requested URL returned error: 404
+
+ succeeded in 181ms:
+using Oceananigans.Utils
+using Oceananigans.TimeSteppers: QuasiAdamsBashforth2TimeStepper
+using JLD2
+
+import Oceananigans.Fields: set!
+
+#####
+##### set! for checkpointer filepaths and `OceananigansModels`
+#####
+
+"""
+$(TYPEDSIGNATURES)
+
+Set data in `model.velocities`, `model.tracers` and the timestepper tendencies `model.timestepper.Gⁿ` and
+`model.timestepper.G⁻` (for non-self starting timesteppers) to the checkpointed data stored at `filepath`.
+"""
+function set!(model::OceananigansModels, filepath::AbstractString)
+    addr = checkpointer_address(model)
+
+    jldopen(filepath, "r") do file
+
+        # Validate the grid
+        checkpointed_grid = file["$addr/grid"]
+
+        model.grid == checkpointed_grid ||
+            @warn "The grid associated with $filepath and model.grid are not the same!"
+
+        model_fields = prognostic_fields(model)
+
+        for name in keys(model_fields)
+            if string(name) ∈ keys(file[addr]) # Test if variable exists in checkpoint.
+                model_field = model_fields[name]
+                parent_data = on_architecture(model.architecture, file["$addr/$name/data"])
+                @apply_regionally copyto!(parent(model_field), parent_data)
+            else
+                @warn "Field $name does not exist in checkpoint and could not be restored."
+            end
+        end
+
+        set_time_stepper!(model.timestepper, model.architecture, file, model_fields, addr)
+
+        # Try restoring particles
+        if "particles" ∈ keys(file[addr]) && !isnothing(model.particles)
+            copyto!(model.particles.properties, file["$addr/particles"])
+        else
+            @warn "Particles do not exist in checkpoint and could not be restored."
+        end
+
+        checkpointed_clock = file["$addr/clock"]
+
+        # Update model clock
+        set!(model, checkpointed_clock)
+    end
+
+    return nothing
+end
+
+function set_time_stepper_tendencies!(timestepper, arch, file, model_fields, addr)
+    for name in propertynames(model_fields)
+        tendency_in_model = hasproperty(timestepper.Gⁿ, name)
+        tendency_in_checkpoint = string(name) ∈ keys(file["$addr/timestepper/Gⁿ"])
+        if tendency_in_model && tendency_in_checkpoint
+            # Tendency "n"
+            parent_data = on_architecture(arch, file["$addr/timestepper/Gⁿ/$name/data"])
+
+            tendencyⁿ_field = timestepper.Gⁿ[name]
+            @apply_regionally copyto!(parent(tendencyⁿ_field), parent_data)
+
+            # Tendency "n-1"
+            parent_data = on_architecture(arch, file["$addr/timestepper/G⁻/$name/data"])
+
+            tendency⁻_field = timestepper.G⁻[name]
+            @apply_regionally copyto!(parent(tendency⁻_field), parent_data)
+        elseif tendency_in_model && !tendency_in_checkpoint
+            @warn "Tendencies for $name do not exist in checkpoint and could not be restored."
+        end
+    end
+
+    return nothing
+end
+
+# For self-starting timesteppers like RK3 we do nothing
+set_time_stepper!(timestepper, args...) = nothing
+
+set_time_stepper!(timestepper::QuasiAdamsBashforth2TimeStepper, args...) =
+    set_time_stepper_tendencies!(timestepper, args...)
+
+exec
+/bin/zsh -lc "curl -fsSL 'https://api.github.com/repos/CliMA/Oceananigans.jl/git/trees/24de7026893af38df065920fbbf80f05024fd1b9?recursive=1' | rg '\"path\": \"test/.*(closure|mixing)'" in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 5ms:
+      "path": "test/time_stepping/tracer_budget_closure.jl",
+      "path": "test/turbulence_closures",
+      "path": "test/turbulence_closures/closures.jl",
+      "path": "test/turbulence_closures/diffusion_stencils.jl",
+      "path": "test/turbulence_closures/gm_infinite_slope.jl",
+      "path": "test/turbulence_closures/triad_isopycnal.jl",
+
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/validation/vertical_mixing_closures/test_single_column_model.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/Models/HydrostaticFreeSurfaceModels/set_hydrostatic_free_surface_model.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/test/turbulence_closures/closures.jl'" in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 92ms:
+using Oceananigans.Operators: intrinsic_vector, ℑxyᶠᶜᵃ, ℑxyᶜᶠᵃ
+using Oceananigans.Utils: @apply_regionally
+
+import Oceananigans.Fields: set!
+
+"""
+    set!(model::HydrostaticFreeSurfaceModel;
+         u=ZeroField(), v=ZeroField(), intrinsic_velocities=false,
+         reconcile_state=true, kwargs...)
+
+Set velocity and tracer fields of `model`. The keyword arguments `kwargs...`
+take the form `name = data`, where `name` refers to one of the fields of either:
+(i) `model.velocities`, (ii) `model.tracers`, or (iii) `model.free_surface.displacement`,
+and the `data` may be an array, a function with arguments `(x, y, z)`, or any data type
+for which a `set!(ϕ::AbstractField, data)` function exists.
+
+Example
+=======
+
+```jldoctest
+using Oceananigans
+grid = RectilinearGrid(size=(16, 16, 16), extent=(1, 1, 1))
+model = HydrostaticFreeSurfaceModel(grid; tracers=:T)
+
+# Set u to a parabolic function of z, v to random numbers damped
+# at top and bottom, and T to some silly array of half zeros,
+# half random numbers.
+
+u₀(x, y, z) = z / model.grid.Lz * (1 + z / model.grid.Lz)
+v₀(x, y, z) = 1e-3 * rand() * u₀(x, y, z)
+
+T₀ = rand(size(model.grid)...)
+T₀[T₀ .< 0.5] .= 0
+
+set!(model, u=u₀, v=v₀, T=T₀)
+
+model.velocities.u
+
+# output
+
+16×16×16 Field{Face, Center, Center} on RectilinearGrid on CPU
+├── grid: 16×16×16 RectilinearGrid{Float64, Periodic, Periodic, Bounded} on CPU with 3×3×3 halo
+├── boundary conditions: FieldBoundaryConditions
+│   └── west: Periodic, east: Periodic, south: Periodic, north: Periodic, bottom: ZeroFlux, top: ZeroFlux, immersed: Nothing
+└── data: 22×22×22 OffsetArray(::Array{Float64, 3}, -2:19, -2:19, -2:19) with eltype Float64 with indices -2:19×-2:19×-2:19
+    └── max=-0.0302734, min=-0.249023, mean=-0.166992
+```
+"""
+@inline function set!(model::HydrostaticFreeSurfaceModel;
+                      u=ZeroField(), v=ZeroField(), intrinsic_velocities=false,
+                      reconcile_state=true,
+                      kwargs...)
+
+    set_velocities!(model, u, v; intrinsic_velocities)
+
+    for (fldname, value) in kwargs
+        if fldname ∈ propertynames(model.velocities)
+            ϕ = getproperty(model.velocities, fldname)
+        elseif fldname ∈ propertynames(model.tracers)
+            ϕ = getproperty(model.tracers, fldname)
+        elseif fldname ∈ propertynames(model.free_surface)
+            ϕ = getproperty(model.free_surface, fldname)
+        elseif fldname === :η
+            # The free surface displacement is accessed via `model.free_surface.displacement`
+            # but the public interface uses `η` as the canonical name.
+            ϕ = model.free_surface.displacement
+        else
+            throw(ArgumentError("name $fldname not found in model.velocities, model.tracers, or model.free_surface"))
+        end
+
+        @apply_regionally set!(ϕ, value, model.clock, fields(model))
+    end
+
+    reconcile_state && reconcile_state!(model)
+    update_state!(model)
+
+    return nothing
+end
+
+
+const IntrinsicCoordinateGrid = Union{
+    OrthogonalSphericalShellGrid,
+    ImmersedBoundaryGrid{<:Any, <:Any, <:Any, <:Any, OrthogonalSphericalShellGrid},
+}
+
+"""
+    set_velocities!(model, u, v; intrinsic_velocities=false)
+
+Set the velocities of `model` from `u` and `v`.
+
+If `intrinsic_velocities` is true, then `(u, v)` is assumed to be a horizontal vector
+in the intrinsic coordinate system of the grid. Otherwise, `(u, v)` is assumed to represent
+an extrinsic vector, and is rotated into the intrinsic coordinate system.
+
+This abstraction is necessary for `OrthogonalSphericalShellGrid` and derivatives thereof,
+where the extrinsic and intrinsic coordinate systems differ.
+"""
+function set_velocities!(model, u, v; intrinsic_velocities=false)
+    if intrinsic_velocities || !(model.grid isa IntrinsicCoordinateGrid)
+        u isa ZeroField || set!(model.velocities.u, u, model.clock, fields(model))
+        v isa ZeroField || set!(model.velocities.v, v, model.clock, fields(model))
+    else
+        set_from_extrinsic_velocities!(model.velocities, model.grid, u, v)
+    end
+    return nothing
+end
+
+function set_from_extrinsic_velocities!(velocities, grid, u, v)
+    grid = grid
+    arch = grid.architecture
+    uᶜᶜᶜ = CenterField(grid)
+    vᶜᶜᶜ = CenterField(grid)
+    u isa ZeroField || set!(uᶜᶜᶜ, u)
+    v isa ZeroField || set!(vᶜᶜᶜ, v)
+    launch!(arch, grid, :xyz, _rotate_velocities!, uᶜᶜᶜ, vᶜᶜᶜ, grid)
+    fill_halo_regions!(uᶜᶜᶜ)
+    fill_halo_regions!(vᶜᶜᶜ)
+    launch!(arch, grid, :xyz, _interpolate_velocities!,
+            velocities.u, velocities.v, grid, uᶜᶜᶜ, vᶜᶜᶜ)
+    return nothing
+end
+
+@kernel function _rotate_velocities!(u, v, grid)
+    i, j, k = @index(Global, NTuple)
+    # Rotate u, v from extrinsic to intrinsic coordinate system
+    ur, vr = intrinsic_vector(i, j, k, grid, u, v)
+    @inbounds begin
+        u[i, j, k] = ur
+        v[i, j, k] = vr
+    end
+end
+
+@kernel function _interpolate_velocities!(u, v, grid, uᶜᶜᶜ, vᶜᶜᶜ)
+    i, j, k = @index(Global, NTuple)
+    @inbounds begin
+        u[i, j, k] = ℑxyᶠᶜᵃ(i, j, k, grid, uᶜᶜᶜ)
+        v[i, j, k] = ℑxyᶜᶠᵃ(i, j, k, grid, vᶜᶜᶜ)
+    end
+end
+
+ succeeded in 99ms:
+include(joinpath(@__DIR__, "..", "setup", "dependencies_for_runtests.jl"))
+
+using Random
+
+using Oceananigans.Grids: znode
+using Oceananigans.Grids: ZDirection
+using Oceananigans.ImmersedBoundaries: immersed_cell
+using Oceananigans.Operators: Δz
+using Oceananigans.Solvers: get_coefficient
+using Oceananigans.TimeSteppers: implicit_step!
+using Oceananigans.TurbulenceClosures: VerticallyImplicitDiffusionLowerDiagonal,
+                                       VerticallyImplicitDiffusionDiagonal,
+                                       VerticallyImplicitDiffusionUpperDiagonal
+using Oceananigans.TurbulenceClosures: CATKEVerticalDiffusivity, RiBasedVerticalDiffusivity, DiscreteDiffusionFunction,
+                                       viscosity_location, diffusivity_location,
+                                       required_halo_size_x, required_halo_size_y, required_halo_size_z,
+                                       cell_diffusion_timescale, formulation, min_Δxyz,
+                                       diffusive_flux_x, diffusive_flux_y, diffusive_flux_z,
+                                       viscous_flux_ux, viscous_flux_uy, viscous_flux_uz, ∂ⱼ_τ₃ⱼ,
+                                       ScalarDiffusivity, ScalarBiharmonicDiffusivity,
+                                       TwoDimensionalLeith, ConvectiveAdjustmentVerticalDiffusivity,
+                                       Smagorinsky, DynamicSmagorinsky, SmagorinskyLilly,
+                                       LagrangianAveraging,
+                                       AnisotropicMinimumDissipation,
+                                       IsopycnalSkewSymmetricDiffusivity,
+                                       DiffusiveFormulation, AdvectiveFormulation, ThreeDimensionalFormulation,
+                                       VerticalFormulation
+
+ConstantSmagorinsky(FT=Float64) = Smagorinsky(FT, coefficient=0.16)
+DirectionallyAveragedDynamicSmagorinsky(FT=Float64) = DynamicSmagorinsky(FT, averaging=(1, 2))
+LagrangianAveragedDynamicSmagorinsky(FT=Float64) = DynamicSmagorinsky(FT, averaging=LagrangianAveraging())
+
+function tracer_specific_horizontal_diffusivity(T=Float64; νh=T(0.3), κh=T(0.7))
+    closure = HorizontalScalarDiffusivity(κ=(T=κh, S=κh), ν=νh)
+    return closure.ν == νh && closure.κ.T == κh && closure.κ.T == κh
+end
+
+function run_constant_isotropic_diffusivity_fluxdiv_tests(FT=Float64; ν=FT(0.3), κ=FT(0.7))
+    arch       = CPU()
+    closure    = ScalarDiffusivity(FT, κ=(T=κ, S=κ), ν=ν)
+    grid       = RectilinearGrid(FT, size=(3, 1, 4), extent=(3, 1, 4))
+    velocities = VelocityFields(grid)
+    tracers    = TracerFields((:T, :S), grid)
+    clock      = Clock(time=0.0)
+
+    u, v, w = velocities
+    T, S = tracers
+
+    for k in 1:4
+        interior(u)[:, 1, k] .= [0, -1/2, 0]
+        interior(v)[:, 1, k] .= [0, -2,   0]
+        interior(w)[:, 1, k] .= [0, -3,   0]
+        interior(T)[:, 1, k] .= [0, -1,   0]
+    end
+
+    model_fields = merge(datatuple(velocities), datatuple(tracers))
+    fill_halo_regions!(merge(velocities, tracers), nothing, model_fields)
+
+    K, b = nothing, nothing
+    closure_args = (clock, model_fields, b)
+
+    @test ∇_dot_qᶜ(2, 1, 3, grid, closure, K, Val(1), tracers[1], closure_args...) == - 2κ
+    @test ∂ⱼ_τ₁ⱼ(2, 1, 3, grid, closure, K, closure_args...) == - 2ν
+    @test ∂ⱼ_τ₂ⱼ(2, 1, 3, grid, closure, K, closure_args...) == - 4ν
+    @test ∂ⱼ_τ₃ⱼ(2, 1, 3, grid, closure, K, closure_args...) == - 6ν
+
+    return nothing
+end
+
+function horizontal_diffusivity_fluxdiv(FT=Float64; νh=FT(0.3), κh=FT(0.7), νz=FT(0.1), κz=FT(0.5))
+    arch       = CPU()
+    closureh   = HorizontalScalarDiffusivity(FT, ν=νh, κ=(T=κh, S=κh))
+    closurez   = VerticalScalarDiffusivity(FT, ν=νz, κ=(T=κz, S=κz))
+    grid       = RectilinearGrid(arch, FT, size=(3, 1, 4), extent=(3, 1, 4))
+    eos        = LinearEquationOfState(FT)
+    buoyancy   = SeawaterBuoyancy(FT, gravitational_acceleration=1, equation_of_state=eos)
+    velocities = VelocityFields(grid)
+    tracers    = TracerFields((:T, :S), grid)
+    clock      = Clock(time=0.0)
+
+    u, v, w, T, S = merge(velocities, tracers)
+
+    interior(u)[:, 1, 2] .= [0,  1, 0]
+    interior(u)[:, 1, 3] .= [0, -1, 0]
+    interior(u)[:, 1, 4] .= [0,  1, 0]
+
+    interior(v)[:, 1, 2] .= [0,  1, 0]
+    interior(v)[:, 1, 3] .= [0, -2, 0]
+    interior(v)[:, 1, 4] .= [0,  1, 0]
+
+    interior(w)[:, 1, 2] .= [0,  1, 0]
+    interior(w)[:, 1, 3] .= [0, -3, 0]
+    interior(w)[:, 1, 4] .= [0,  1, 0]
+
+    interior(T)[:, 1, 2] .= [0,  1, 0]
+    interior(T)[:, 1, 3] .= [0, -4, 0]
+    interior(T)[:, 1, 4] .= [0,  1, 0]
+
+    model_fields = merge(datatuple(velocities), datatuple(tracers))
+    fill_halo_regions!(merge(velocities, tracers), nothing, model_fields)
+
+    K, b = nothing, nothing
+    closure_args = (clock, model_fields, b)
+
+    return (∇_dot_qᶜ(2, 1, 3, grid, closureh, K, Val(1), T, closure_args...) == -  8κh &&
+            ∇_dot_qᶜ(2, 1, 3, grid, closurez, K, Val(1), T, closure_args...) == - 10κz &&
+              ∂ⱼ_τ₁ⱼ(2, 1, 3, grid, closureh, K, closure_args...) == - 2νh &&
+              ∂ⱼ_τ₁ⱼ(2, 1, 3, grid, closurez, K, closure_args...) == - 4νz &&
+              ∂ⱼ_τ₂ⱼ(2, 1, 3, grid, closureh, K, closure_args...) == - 4νh &&
+              ∂ⱼ_τ₂ⱼ(2, 1, 3, grid, closurez, K, closure_args...) == - 6νz &&
+              ∂ⱼ_τ₃ⱼ(2, 1, 3, grid, closureh, K, closure_args...) == - 6νh &&
+              ∂ⱼ_τ₃ⱼ(2, 1, 3, grid, closurez, K, closure_args...) == - 8νz)
+end
+
+function time_step_with_variable_isotropic_diffusivity(arch)
+    grid = RectilinearGrid(arch, size=(1, 1, 1), extent=(1, 2, 3))
+    closure = ScalarDiffusivity(ν = (x, y, z, t) -> exp(z) * cos(x) * cos(y) * cos(t),
+                                κ = (x, y, z, t) -> exp(z) * cos(x) * cos(y) * cos(t))
+
+    model = NonhydrostaticModel(grid; closure)
+    time_step!(model, 1)
+    return true
+end
+
+function time_step_with_field_isotropic_diffusivity(arch)
+    grid = RectilinearGrid(arch, size=(1, 1, 1), extent=(1, 2, 3))
+    ν = CenterField(grid)
+    κ = CenterField(grid)
+    closure = ScalarDiffusivity(; ν, κ)
+    model = NonhydrostaticModel(grid; closure)
+    time_step!(model, 1)
+    return true
+end
+
+function time_step_with_variable_anisotropic_diffusivity(arch)
+    clov = VerticalScalarDiffusivity(ν = (x, y, z, t) -> exp(z) * cos(x) * cos(y) * cos(t),
+                                     κ = (x, y, z, t) -> exp(z) * cos(x) * cos(y) * cos(t))
+
+    cloh = HorizontalScalarDiffusivity(ν = (x, y, z, t) -> exp(z) * cos(x) * cos(y) * cos(t),
+                                       κ = (x, y, z, t) -> exp(z) * cos(x) * cos(y) * cos(t))
+    grid = RectilinearGrid(arch, size=(1, 1, 1), extent=(1, 2, 3))
+
+    for clo in (clov, cloh)
+        model = NonhydrostaticModel(grid, closure=clo)
+        time_step!(model, 1)
+    end
+
+    return true
+end
+
+function time_step_with_variable_discrete_diffusivity(arch)
+    @inline νd(i, j, k, grid, clock, fields) = 1 + fields.u[i, j, k] * 5
+    @inline κd(i, j, k, grid, clock, fields) = 1 + fields.v[i, j, k] * 5
+
+    closure_ν = ScalarDiffusivity(ν = νd, discrete_form=true, loc = (Face, Center, Center))
+    closure_κ = ScalarDiffusivity(κ = κd, discrete_form=true, loc = (Center, Face, Center))
+
+    grid = RectilinearGrid(arch, size=(1, 1, 1), extent=(1, 2, 3))
+    model = NonhydrostaticModel(grid, tracers = (:T, :S), closure = (closure_ν, closure_κ))
+
+    time_step!(model, 1)
+    return true
+end
+
+function time_step_with_variable_AMD_coefficient(arch; use_field_coefficient=false)
+    grid = RectilinearGrid(arch, size=(4, 5, 6), extent=(1, 2, 3))
+
+    Cν_func(x, y, z) = exp(z) * cos(x) * cos(y)
+    Cκ_func(x, y, z) = exp(z) * cos(x) * cos(y)
+
+    if use_field_coefficient
+        Cν = CenterField(grid)
+        Cκ = CenterField(grid)
+        set!(Cν, Cν_func)
+        set!(Cκ, Cκ_func)
+    else
+        Cν = Cν_func
+        Cκ = Cκ_func
+    end
+
+    closure = AnisotropicMinimumDissipation(; Cν, Cκ)
+    model = NonhydrostaticModel(grid; closure)
+    time_step!(model, 1)
+    return true
+end
+
+function time_step_with_tupled_closure(FT, arch, additional_closures...)
+    closure_tuple = (AnisotropicMinimumDissipation(FT), ScalarDiffusivity(FT), additional_closures...)
+    grid = RectilinearGrid(arch, FT, size=(2, 2, 2), extent=(1, 2, 3))
+
+    model = NonhydrostaticModel(grid; closure=closure_tuple)
+
+    time_step!(model, 1)
+    return true
+end
+
+# The explicit path additionally exercises the R₃₃ vertical term in diffusive_flux_z,
+# which is omitted from the tendency under the vertically-implicit default.
+function time_step_with_isopycnal_skew_symmetric_diffusivity(arch, FT, time_discretization, skew_flux_formulation)
+    grid = RectilinearGrid(arch, FT; size=(4, 4, 8), extent=(100, 100, 100))
+
+    closure = IsopycnalSkewSymmetricDiffusivity(time_discretization, FT;
+                                                κ_skew = 100,
+                                                κ_symmetric = 100,
+                                                skew_flux_formulation)
+
+    model = HydrostaticFreeSurfaceModel(grid; closure,
+                                        buoyancy = BuoyancyTracer(),
+                                        tracers = :b)
+
+    set!(model, b=(x, y, z) -> 1e-5 * z + 1e-7 * (x + y))
+
+    for n in 1:3
+        time_step!(model, 1)
+    end
+
+    return !any(isnan, interior(model.tracers.b))
+end
+
+function run_catke_tke_substepping_tests(arch, closure)
+    # A large domain to make sure we do not have viscous CFL problems
+    # with the explicit CATKE time-stepping necessary for this test
+    grid = RectilinearGrid(arch, size=(2, 2, 2), extent=(100, 200, 300))
+
+    model = HydrostaticFreeSurfaceModel(grid;
+                                        momentum_advection = nothing,
+                                        tracer_advection = nothing,
+                                        closure,
+                                        buoyancy = BuoyancyTracer(),
+                                        tracers = (:b))
+
+    # set random velocities
+    Random.seed!(1234)
+    set!(model, u = (x, y, z) -> rand(), v = (x, y, z) -> rand())
+
+    # time step the model
+    time_step!(model, 1)
+
+    # Check that eⁿ⁺¹ == Δt * Gⁿ.e with Δt = 1 (euler step)
+    @test model.tracers.e ≈ model.timestepper.G⁻.e
+
+    eⁿ  = deepcopy(model.tracers.e)
+    G⁻⁻ = deepcopy(model.timestepper.G⁻.e)
+
+    # time step the model again
+    time_step!(model, 1)
+    G⁻ = model.timestepper.G⁻.e
+
+    C₁ = 1.5 + model.timestepper.χ
+    C₂ = 0.5 + model.timestepper.χ
+
+    eⁿ⁺¹ = compute!(Field(eⁿ + C₁ * G⁻ - C₂ * G⁻⁻))
+
+    # Check that eⁿ⁺¹ == eⁿ + Δt * (C₁ Gⁿ.e - C₂ G⁻.e)
+    @test model.tracers.e ≈ eⁿ⁺¹
+
+    return model
+end
+
+function run_time_step_with_catke_tests(arch, closure, timestepper)
+    grid = RectilinearGrid(arch, size=(2, 2, 2), extent=(1, 2, 3))
+    buoyancy = BuoyancyTracer()
+
+    @test HydrostaticFreeSurfaceModel(grid; closure, buoyancy, tracers = :b) isa HydrostaticFreeSurfaceModel
+    @test HydrostaticFreeSurfaceModel(grid; closure, buoyancy, tracers = (:b, :E)) isa HydrostaticFreeSurfaceModel
+
+    # CATKE isn't supported with NonhydrostaticModel (we don't diffuse vertical velocity)
+    @test_throws ErrorException NonhydrostaticModel(grid; closure, buoyancy, tracers = (:b, :c, :e))
+
+    # Supplying closure tracers explicitly should error
+    @test_throws ArgumentError HydrostaticFreeSurfaceModel(grid; closure, buoyancy, tracers = (:b, :c, :e))
+
+    model = HydrostaticFreeSurfaceModel(grid; closure, buoyancy, tracers = (:b, :c))
+
+    # Default boundary condition is Flux, Nothing... with CATKE this has to change.
+    @test !(model.tracers.e.boundary_conditions.top.condition isa BoundaryCondition{Flux, Nothing})
+
+    # Can we time-step?
+    time_step!(model, 1)
+    @test true
+
+    # Once more for good measure
+    time_step!(model, 1)
+    @test true
+
+    # Return model if we want to do more tests
+    return model
+end
+
+function run_catke_closure_tuple_surface_tke_flux_tests(arch)
+    grid = RectilinearGrid(arch, size=(2, 2, 4), extent=(1, 2, 3))
+
+    # Wind stress and surface buoyancy loss make both the shear-driven and the
+    # convective contributions to the surface TKE flux nonzero
+    u★ = 1e-2
+    Jᵇ = 1e-8
+    boundary_conditions = (u = FieldBoundaryConditions(top=FluxBoundaryCondition(-u★^2)),
+                           b = FieldBoundaryConditions(top=FluxBoundaryCondition(Jᵇ)))
+
+    catke = CATKEVerticalDiffusivity()
+    Cᵂu★ = catke.turbulent_kinetic_energy_equation.Cᵂu★
+    CᵂwΔ = catke.turbulent_kinetic_energy_equation.CᵂwΔ
+    Δz = grid.Lz / grid.Nz
+    expected_surface_tke_flux = - Cᵂu★ * u★^3 - CᵂwΔ * Jᵇ * Δz
+
+    build_model(closure) = HydrostaticFreeSurfaceModel(grid; closure, boundary_conditions,
+                                                       buoyancy = BuoyancyTracer(), tracers = :b)
+
+    reference_model = build_model(catke)
+    time_step!(reference_model, 1)
+    reference_tke = Array(interior(reference_model.tracers.e))
+
+    # Padding with closures that do nothing must not change the surface TKE flux
+    padding = VerticalScalarDiffusivity(ν=0, κ=0)
+
+    for N in 1:6
+        closure = (catke, ntuple(_ -> padding, N-1)...)
+        model = build_model(closure)
+
+        # Evaluate the boundary condition with the arguments the tendency kernel passes to it
+        surface_tke_flux = getbc(model.tracers.e.boundary_conditions.top, 1, 1, grid,
+                                 model.clock, fields(model), model.closure, model.buoyancy)
+        @test surface_tke_flux ≈ expected_surface_tke_flux
+
+        time_step!(model, 1)
+        @test Array(interior(model.tracers.e)) ≈ reference_tke
+    end
+
+    return nothing
+end
+
+function compute_closure_specific_diffusive_cfl(arch, closure)
+    grid = RectilinearGrid(arch, size=(2, 2, 2), extent=(1, 2, 3))
+
+    model = NonhydrostaticModel(grid;  closure,  buoyancy = BuoyancyTracer(),  tracers = :b)
+    args = (model.closure, model.closure_fields, Val(1), model.tracers.b, model.clock, fields(model), model.buoyancy)
+    dcfl = DiffusiveCFL(0.1)
+    @test dcfl(model) isa Number
+
+    @allowscalar begin
+        @test diffusive_flux_x(1, 1, 1, grid, args...) == 0
+        @test diffusive_flux_y(1, 1, 1, grid, args...) == 0
+        @test diffusive_flux_z(1, 1, 1, grid, args...) == 0
+    end
+
+    tracerless_model = NonhydrostaticModel(grid; closure)
+    args = (model.closure, model.closure_fields, model.clock, fields(model), model.buoyancy)
+    dcfl = DiffusiveCFL(0.2)
+    @test dcfl(tracerless_model) isa Number
+    @allowscalar begin
+        @test viscous_flux_ux(1, 1, 1, grid, args...) == 0
+        @test viscous_flux_uy(1, 1, 1, grid, args...) == 0
+        @test viscous_flux_uz(1, 1, 1, grid, args...) == 0
+    end
+
+    return nothing
+end
+
+function test_function_scalar_diffusivity()
+
+    depth_scale = 120
+    @inline ν(x, y, z, t) = 2000 * exp(z / depth_scale)
+    @inline κ(x, y, z, t) = 2000 * exp(z / depth_scale)
+
+    closure = ScalarDiffusivity(; ν, κ)
+
+    grid = RectilinearGrid(CPU(), size=(2, 2, 2), extent=(1, 2, 3))
+    model = NonhydrostaticModel(grid; closure, tracers = :b, buoyancy = BuoyancyTracer())
+    max_diffusivity = maximum(2000 * exp.(znodes(model.grid, Center()) / depth_scale))
+    Δ = min_Δxyz(model.grid, formulation(model.closure))
+
+    τκ = Δ^2 / max_diffusivity
+    return cell_diffusion_timescale(model) == τκ
+end
+
+function test_discrete_function_scalar_diffusivity()
+
+    @inline function ν(i, j, k, grid, clock, fields, p)
+        z = znode(i, j, k, grid, Center(), Center(), Center())
+        return 2000 * exp(z / p.depth_scale_ν)
+    end
+    @inline function κ(i, j, k, grid, clock, fields, p)
+        z = znode(i, j, k, grid, Center(), Center(), Center())
+        return 2000 * exp(z / p.depth_scale_κ)
+    end
+
+    closure = ScalarDiffusivity(; ν, κ, discrete_form=true,
+                                  loc=(Center, Center, Center),
+                                  parameters = (;depth_scale_ν = 100, depth_scale_κ = 100))
+
+    grid = RectilinearGrid(CPU(), size=(2, 2, 2), extent=(1, 2, 3))
+    model = NonhydrostaticModel(grid; closure, tracers = :b, buoyancy = BuoyancyTracer())
+    max_diffusivity = maximum(2000 * exp.(znodes(model.grid, Center()) / 100))
+    Δ = min_Δxyz(model.grid, formulation(model.closure))
+    τκ = Δ^2 / max_diffusivity
+    return cell_diffusion_timescale(model) == τκ
+end
+
+@testset "Turbulence closures" begin
+    @testset "Closure instantiation" begin
+        for closurename in closures
+            closure = @eval $closurename()
+            @test closure isa TurbulenceClosures.AbstractTurbulenceClosure
+
+            @testset "NonhydrostaticModel with $closurename [$(typeof(arch))]" for arch in archs
+                grid = RectilinearGrid(arch, size=(2, 2, 2), extent=(1, 2, 3))
+                model = NonhydrostaticModel(grid; closure, tracers = :c)
+                c = model.tracers.c
+                u = model.velocities.u
+
+                κ = diffusivity(model.closure, model.closure_fields, Val(:c))
+                @test diffusivity(model, Val(:c)) == diffusivity(model.closure, model.closure_fields, Val(:c))
+                κ_dx_c = κ * ∂x(c)
+
+                ν = viscosity(model.closure, model.closure_fields)
+                @test viscosity(model) == viscosity(model.closure, model.closure_fields)
+                ν_dx_u = ν * ∂x(u)
+                @test ν_dx_u[1, 1, 1] == 0
+                @test κ_dx_c[1, 1, 1] == 0
+            end
+        end
+
+        c = Center()
+        f = Face()
+        ri_based = @test_logs (:warn, r"^RiBasedVerticalDiffusivity is an experimental turbulence closure") RiBasedVerticalDiffusivity()
+        @test viscosity_location(ri_based) == (c, c, f)
+        @test diffusivity_location(ri_based) == (c, c, f)
+
+        catke = CATKEVerticalDiffusivity()
+        @test viscosity_location(catke) == (c, c, f)
+        @test diffusivity_location(catke) == (c, c, f)
+    end
+
+    @testset "ScalarDiffusivity" begin
+        for FT in float_types
+            ν, κ = 0.3, 0.7
+            closure = ScalarDiffusivity(FT; κ=(T=κ, S=κ), ν=ν)
+            @test closure.ν == FT(ν)
+            @test closure.κ.T == FT(κ)
+            run_constant_isotropic_diffusivity_fluxdiv_tests(FT)
+        end
+
+        closure = ScalarDiffusivity(ν=0.3)
+        @test required_halo_size_x(closure) == 1
+        @test required_halo_size_y(closure) == 1
+        @test required_halo_size_z(closure) == 1
+
+        @testset "ScalarDiffusivity architecture conversion preserves halo size" begin
+            time_discretization = VerticallyImplicitTimeDiscretization()
+            diffusivity_formulation = VerticalFormulation()
+            ν = (x, y, z, t) -> 0.3
+            κ = (x, y, z, t) -> 0.7
+            for tracer_diffusivities in (κ, (T=κ, S=κ))
+                closure = ScalarDiffusivity(time_discretization, diffusivity_formulation, Float32;
+                                            ν, κ=tracer_diffusivities, required_halo_size=3)
+                converted_closures = (Adapt.adapt_structure(identity, closure),
+                                      on_architecture(CPU(), closure))
+
+                for converted in converted_closures
+                    @test required_halo_size_x(converted) == 3
+                    @test required_halo_size_y(converted) == 3
+                    @test required_halo_size_z(converted) == 3
+                    @test converted.ν == closure.ν
+                    @test converted.κ == closure.κ
+                    @test typeof(converted).parameters[1:2] == typeof(closure).parameters[1:2]
+                end
+            end
+        end
+
+        closure = ScalarBiharmonicDiffusivity(ν=0.3)
+        @test required_halo_size_x(closure) == 2
+        @test required_halo_size_y(closure) == 2
+        @test required_halo_size_z(closure) == 2
+
+        @inline ν(i, j, k, grid, ℓx, ℓy, ℓz, clock, fields) = ℑxᶠᵃᵃ(i, j, k, grid, ℑxᶜᵃᵃ, fields.u)
+        closure = ScalarDiffusivity(; ν, discrete_form=true, required_halo_size=2)
+
+        @test closure.ν isa DiscreteDiffusionFunction
+        @test required_halo_size_x(closure) == 2
+        @test required_halo_size_y(closure) == 2
+        @test required_halo_size_z(closure) == 2
+
+        @testset "cell_diffusion_timescale for ScalarDiffusivity with FunctionDiffusion" begin
+            @test test_function_scalar_diffusivity()
+            @test test_discrete_function_scalar_diffusivity()
+        end
+    end
+
+    @testset "HorizontalScalarDiffusivity" begin
+        for FT in float_types
+            @test tracer_specific_horizontal_diffusivity(FT)
+            @test horizontal_diffusivity_fluxdiv(FT, νz=zero(FT), νh=zero(FT))
+            @test horizontal_diffusivity_fluxdiv(FT)
+        end
+    end
+
+    @testset "Time-stepping with variable diffusivities" begin
+        for arch in archs
+            @test time_step_with_variable_isotropic_diffusivity(arch)
+            @test time_step_with_field_isotropic_diffusivity(arch)
+            @test time_step_with_variable_anisotropic_diffusivity(arch)
+            @test time_step_with_variable_discrete_diffusivity(arch)
+        end
+    end
+
+    @testset "AnisotropicMinimumDissipation with variable coefficients" begin
+        for arch in archs
+            @test time_step_with_variable_AMD_coefficient(arch, use_field_coefficient=false)
+            @test time_step_with_variable_AMD_coefficient(arch, use_field_coefficient=true)
+        end
+    end
+
+    @testset "Dynamic Smagorinsky closures" begin
+        for arch in archs
+            grid = RectilinearGrid(arch, size=(2, 3, 4), extent=(1, 2, 3))
+
+            closure = Smagorinsky(coefficient=DynamicCoefficient(averaging=1))
+            model = NonhydrostaticModel(grid; closure)
+            @test size(model.closure_fields.𝒥ᴸᴹ) == (1, grid.Ny, grid.Nz)
+            @test size(model.closure_fields.𝒥ᴹᴹ) == (1, grid.Ny, grid.Nz)
+            @test size(model.closure_fields.LM)  == size(grid)
+            @test size(model.closure_fields.MM)  == size(grid)
+            @test size(model.closure_fields.Σ)   == size(grid)
+            @test size(model.closure_fields.Σ̄)   == size(grid)
+
+            closure = DynamicSmagorinsky(averaging=(1, 2))
+            model = NonhydrostaticModel(grid; closure)
+            @test size(model.closure_fields.𝒥ᴸᴹ) == (1, 1, grid.Nz)
+            @test size(model.closure_fields.𝒥ᴹᴹ) == (1, 1, grid.Nz)
+
+            closure = DynamicSmagorinsky(averaging=(2, 3))
+            model = NonhydrostaticModel(grid; closure)
+            @test size(model.closure_fields.𝒥ᴸᴹ) == (grid.Nx, 1, 1)
+            @test size(model.closure_fields.𝒥ᴹᴹ) == (grid.Nx, 1, 1)
+
+            closure = DynamicSmagorinsky(averaging=Colon())
+            model = NonhydrostaticModel(grid; closure)
+            @test size(model.closure_fields.𝒥ᴸᴹ) == (1, 1, 1)
+            @test size(model.closure_fields.𝒥ᴹᴹ) == (1, 1, 1)
+
+            closure = DynamicSmagorinsky(averaging=LagrangianAveraging())
+            model = NonhydrostaticModel(grid; closure)
+            @test size(model.closure_fields.𝒥ᴸᴹ)  == size(grid)
+            @test size(model.closure_fields.𝒥ᴹᴹ)  == size(grid)
+            @test size(model.closure_fields.𝒥ᴸᴹ⁻) == size(grid)
+            @test size(model.closure_fields.𝒥ᴹᴹ⁻) == size(grid)
+            @test size(model.closure_fields.Σ)    == size(grid)
+            @test size(model.closure_fields.Σ̄)    == size(grid)
+        end
+    end
+
+    @testset "Lagrangian averaged Smagorinsky produces non-zero eddy viscosity" begin
+        for arch in archs
+            grid = RectilinearGrid(arch, size=(4, 4, 4), extent=(1, 1, 1))
+            model = NonhydrostaticModel(grid, closure=DynamicSmagorinsky(averaging=LagrangianAveraging()))
+            set!(model, u = (x, y, z) -> randn())
+            νₑ = Array(interior(model.closure_fields.νₑ))
+            @test any(νₑ .> 0)
+        end
+    end
+
+    @testset "Time-stepping with CATKE closure" begin
+        for arch in archs
+            catke = CATKEVerticalDiffusivity()
+            explicit_catke = CATKEVerticalDiffusivity(ExplicitTimeDiscretization())
+
+            @testset "CATKE by itself [$(typeof(arch))]" begin
+                for timestepper in (:QuasiAdamsBashforth2, :SplitRungeKutta3)
+                    run_time_step_with_catke_tests(arch, catke, timestepper)
+                end
+
+                run_catke_tke_substepping_tests(arch, explicit_catke)
+            end
+
+            @testset "CATKE in a 2-tuple with HorizontalScalarDiffusivity [$(typeof(arch))]" begin
+                closure = (catke, HorizontalScalarDiffusivity())
+                model = run_time_step_with_catke_tests(arch, closure, :QuasiAdamsBashforth2)
+                @test first(model.closure) === closure[1]
+                closure = (explicit_catke, HorizontalScalarDiffusivity())
+                run_catke_tke_substepping_tests(arch, closure)
+
+                # Test that closure tuples with CATKE are correctly reordered
+                closure = (HorizontalScalarDiffusivity(), catke)
+                model = run_time_step_with_catke_tests(arch, closure, :QuasiAdamsBashforth2)
+                @test first(model.closure) === closure[2]
+                closure = (HorizontalScalarDiffusivity(), explicit_catke)
+                run_catke_tke_substepping_tests(arch, closure)
+            end
+
+            # These are slow to compile...
+            @testset "CATKE in a 3-tuple [$(typeof(arch))]" begin
+                closure = (HorizontalScalarDiffusivity(), catke, VerticalScalarDiffusivity())
+                model = run_time_step_with_catke_tests(arch, closure, :QuasiAdamsBashforth2)
+                @test first(model.closure) === closure[2]
+                closure = (HorizontalScalarDiffusivity(), explicit_catke, VerticalScalarDiffusivity())
+                run_catke_tke_substepping_tests(arch, closure)
+            end
+
+            @testset "Surface TKE flux with CATKE in closure tuples of length 1 to 6 [$(typeof(arch))]" begin
+                run_catke_closure_tuple_surface_tke_flux_tests(arch)
+            end
+
+            @testset "CATKE with ImmersedBoundaryGrid and active_cells_map [$(typeof(arch))]" begin
+                underlying_grid = RectilinearGrid(arch, size=(4, 4, 4), extent=(1, 2, 3))
+                bottom(x, y) = -2
+                grid_acm = ImmersedBoundaryGrid(underlying_grid, GridFittedBottom(bottom), active_cells_map=true)
+                catke_closure = CATKEVerticalDiffusivity()
+                model_acm = HydrostaticFreeSurfaceModel(grid_acm; closure=catke_closure, buoyancy=BuoyancyTracer(), tracers=:b)
+                time_step!(model_acm, 1)
+                time_step!(model_acm, 1)
+                @test model_acm isa HydrostaticFreeSurfaceModel
+            end
+        end
+    end
+
+    @testset "Vertical diffusive CFL diagnostics" begin
+        grid = RectilinearGrid(CPU(); size=(20, 30, 4), x=(-10, 10), y=(-10, 10), z=(-10, 0), halo=(6, 6, 5))
+
+        implicit_catke = CATKEVerticalDiffusivity()
+        explicit_catke = CATKEVerticalDiffusivity(ExplicitTimeDiscretization())
+
+        model = HydrostaticFreeSurfaceModel(grid;
+                                            free_surface = SplitExplicitFreeSurface(grid; substeps=5),
+                                            closure = implicit_catke)
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) == Inf
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) == 0
+
+        model = HydrostaticFreeSurfaceModel(grid;
+                                            free_surface = SplitExplicitFreeSurface(grid; substeps=5),
+                                            closure = explicit_catke)
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) ≈ 19764.23537605237
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) ≈ 5.0596442562694076e-6
+
+        model = NonhydrostaticModel(grid;
+                                    closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(); ν=1, κ=1),
+                                    tracers = :b,
+                                    buoyancy = BuoyancyTracer())
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) == Inf
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) == 0
+
+        model = NonhydrostaticModel(grid;
+                                    closure = RiBasedVerticalDiffusivity(warning=false),
+                                    tracers = :b,
+                                    buoyancy = BuoyancyTracer())
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) == Inf
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) == 0
+
+        model = HydrostaticFreeSurfaceModel(grid;
+                                            free_surface = SplitExplicitFreeSurface(grid; substeps=5),
+                                            closure = TKEDissipationVerticalDiffusivity())
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) == Inf
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) == 0
+
+        model = NonhydrostaticModel(grid;
+                                    closure = ConvectiveAdjustmentVerticalDiffusivity(ExplicitTimeDiscretization()),
+                                    tracers = :b,
+                                    buoyancy = BuoyancyTracer())
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) isa Number
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) isa Number
+
+        model = NonhydrostaticModel(grid;
+                                    closure = RiBasedVerticalDiffusivity(ExplicitTimeDiscretization(); warning=false),
+                                    tracers = :b,
+                                    buoyancy = BuoyancyTracer())
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) isa Number
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) isa Number
+
+        model = HydrostaticFreeSurfaceModel(grid;
+                                            free_surface = SplitExplicitFreeSurface(grid; substeps=5),
+                                            closure = TKEDissipationVerticalDiffusivity(ExplicitTimeDiscretization()))
+
+        @test Oceananigans.Diagnostics.cell_diffusion_timescale(model) isa Number
+        @test Oceananigans.Diagnostics.DiffusiveCFL(0.1)(model) isa Number
+    end
+
+
+    @testset "Vertically-implicit diffusion operator" begin
+        function implicit_operator_rows(arch, closure_constructor, LX, LZ, Nz, z, Lz, immersed_boundary)
+            underlying_grid = RectilinearGrid(arch, size=(1, 1, Nz), x=(0, 1), y=(0, 1), z=z,
+                                              topology=(Periodic, Periodic, Bounded))
+
+            grid = isnothing(immersed_boundary) ? underlying_grid : ImmersedBoundaryGrid(underlying_grid, immersed_boundary)
+
+            ν(x, y, z, t) = 1 + 0.8 * sinpi(2z / Lz)
+            closure = closure_constructor(VerticallyImplicitTimeDiscretization(); ν)
+            clock = Clock(time=0.0)
+            Δt = 1
+
+            coefficient(marker, k) =
+                get_coefficient(1, 1, k, grid, marker, nothing, ZDirection(),
+                                closure, nothing, nothing, LX(), Center(), LZ(),
+                                Δt, clock, NamedTuple(),
+                                nothing, nothing, nothing, nothing, nothing, nothing)
+
+            # Assembling the rows on the host reads grid metrics one level at a time, which on a
+            # stretched GPU grid are device arrays. `runtests.jl` happens to wrap the whole suite in
+            # `CUDA.allowscalar`, but say so locally rather than lean on that.
+            dl, d, du, Δzᶜ, Δzᶠ = @allowscalar begin
+                ([coefficient(VerticallyImplicitDiffusionLowerDiagonal(), k) for k in 1:Nz],
+                 [coefficient(VerticallyImplicitDiffusionDiagonal(),      k) for k in 1:Nz],
+                 [coefficient(VerticallyImplicitDiffusionUpperDiagonal(), k) for k in 1:Nz],
+                 [Δz(1, 1, k, grid, LX(), Center(), Center()) for k in 1:Nz],  # of cell k, which a partial cell shortens
+                 [Δz(1, 1, k, grid, LX(), Center(), Face())   for k in 2:Nz])  # around face k, indexed k-1
+            end
+
+            L = zeros(Nz, Nz) # the coefficients are linear in Δt, so Δt = 1 gives L = I - A exactly
+            for k in 1:Nz
+                L[k, k] = 1 - d[k]
+                k < Nz && (L[k, k+1] = -du[k]; L[k+1, k] = -dl[k])
+            end
+
+            zᶜ = Array(znodes(grid, Center()))
+            zᶠ = Array(znodes(grid, Face()))
+
+            immersed_cells = compute!(Field(KernelFunctionOperation{Center, Center, Center}(immersed_cell, grid)))
+            immersed = Array(interior(immersed_cells))[1, 1, :] .== 1
+            wet(k) = 1 <= k <= Nz && !immersed[k]
+
+            # The vertical flux of w under a three-dimensional closure is -2ν ∂z w, so the solver's νz for w is 2ν,
+            # while -2ν Σ₁₃ = -ν ∂z u - ν ∂x w leaves only ν ∂z u to the solver
+            νz(x, y, z, t) = (formulation(closure) isa ThreeDimensionalFormulation && LZ === Face ? 2 : 1) * ν(x, y, z, t)
+
+            # An inactive cell, or a face on a domain or immersed boundary where w = 0, gets an identity row (L̂ = 0).
+            # Elsewhere the row carries the flux to each neighbor: for ϕ at centers the flux through face k or k+1 is
+            # absent when that face is a boundary, while ϕ at an interior face exchanges flux through both cells k-1 and k.
+            L̂ = zeros(Nz, Nz)
+            for k in 1:Nz
+                if LZ === Face      # νz and Δzᶜ at centers, row spacing Δzᶠ
+                    wet(k-1) && wet(k) || continue
+                    a = νz(0, 0, zᶜ[k-1], 0) / (Δzᶠ[k-1] * Δzᶜ[k-1])
+                    b = νz(0, 0, zᶜ[k],   0) / (Δzᶠ[k-1] * Δzᶜ[k])
+                else                # νz and Δzᶠ at faces, row spacing Δzᶜ
+                    wet(k) || continue
+                    a = wet(k-1) ? νz(0, 0, zᶠ[k],   0) / (Δzᶜ[k] * Δzᶠ[k-1]) : 0
+                    b = wet(k+1) ? νz(0, 0, zᶠ[k+1], 0) / (Δzᶜ[k] * Δzᶠ[k])   : 0
+                end
+                k > 1  && (L̂[k, k-1] = a)
+                k < Nz && (L̂[k, k+1] = b)
+                L̂[k, k] = -(a + b)
+            end
+
+            return maximum(abs, L .- L̂) / maximum(abs, L̂)
+        end
+
+        Nz, Lz = 32, 1000.0
+        uniform = (0, Lz)
+        stretched = [Lz * (k / Nz)^1.3 for k in 0:Nz]
+
+        immersed_boundaries = (nothing,
+                               GridFittedBottom((x, y) -> 0.3 * Lz),
+                               PartialCellBottom((x, y) -> 0.3 * Lz),
+                               GridFittedBoundary((x, y, z) -> z > 0.7 * Lz))
+
+        for arch in archs,
+            closure_constructor in (VerticalScalarDiffusivity, ScalarDiffusivity),
+            (LX, LZ) in ((Face, Center), (Center, Face)),
+            z in (uniform, stretched),
+            immersed_boundary in immersed_boundaries
+
+            grid_kind = z isa Tuple ? "uniform" : "stretched"
+            boundary_kind = isnothing(immersed_boundary) ? "" : ", $(nameof(typeof(immersed_boundary)))"
+            @testset "[$(typeof(arch)), $(nameof(closure_constructor)), ($(nameof(LX)), Center, $(nameof(LZ))), $grid_kind$boundary_kind]" begin
+                @test implicit_operator_rows(arch, closure_constructor, LX, LZ, Nz, z, Lz, immersed_boundary) < 1e-12
+            end
+        end
+    end
+
+    @testset "Vertically-implicit viscous stress on w" begin
+        # The viscous tendency of w: the explicit −∂ⱼτ₃ⱼ plus the increment of the implicit solve
+        function w_viscous_tendency(grid, closure, u₀, v₀, w₀, Δt)
+            model = NonhydrostaticModel(grid; closure, advection=nothing)
+            set!(model, u=u₀, v=v₀, w=w₀)
+            w = model.velocities.w
+            w⁰ = Array(interior(w))
+
+            ∂ⱼτ₃ⱼ = KernelFunctionOperation{Center, Center, Face}(∂ⱼ_τ₃ⱼ, grid, model.closure, model.closure_fields,
+                                                                 model.clock, fields(model), model.buoyancy)
+
+            explicit_tendency = - Array(interior(compute!(Field(∂ⱼτ₃ⱼ))))
+
+            implicit_step!(w, model.timestepper.implicit_solver, model.closure, model.closure_fields,
+                           nothing, model.clock, fields(model), Δt)
+
+            implicit_tendency = (Array(interior(w)) .- w⁰) ./ Δt
+
+            return explicit_tendency .+ implicit_tendency, w⁰
+        end
+
+        for arch in archs
+            Nx, Ny, Nz = 8, 8, 8
+            Lx, Ly, Lz = 2, 2, 1
+            grid = RectilinearGrid(arch, size=(Nx, Ny, Nz), x=(0, Lx), y=(0, Ly), z=(0, Lz),
+                                   topology=(Periodic, Periodic, Bounded))
+            Δx, Δy, Δz = Lx / Nx, Ly / Ny, Lz / Nz
+
+            # A vortex between free-slip walls whose amplitudes use the discrete wavenumbers, so that it is
+            # exactly divergence-free on the C-grid and an eigenmode of the discrete Laplacian with eigenvalue -(k² + l² + m²)
+            kx, ky, kz = 2π / Lx, 2π / Ly, π / Lz
+            k, l, m = 2sin(kx * Δx / 2) / Δx, 2sin(ky * Δy / 2) / Δy, 2sin(kz * Δz / 2) / Δz
+            u₀(x, y, z) = - m / (2k) * sin(kx * x) * cos(ky * y) * cos(kz * z)
+            v₀(x, y, z) = - m / (2l) * cos(kx * x) * sin(ky * y) * cos(kz * z)
+            w₀(x, y, z) =              cos(kx * x) * cos(ky * y) * sin(kz * z)
+
+            ν = 1
+            Δt = 1e-5 * Δz^2 / ν    # small enough that the implicit increment is the implicit operator to O(Δt)
+            VITD = VerticallyImplicitTimeDiscretization()
+
+            G, w⁰ = w_viscous_tendency(grid, ScalarDiffusivity(; ν), u₀, v₀, w₀, Δt)
+            @test view(G, :, :, 2:Nz) ≈ -ν * (k^2 + l^2 + m^2) .* view(w⁰, :, :, 2:Nz)
+
+            # Face 1 is the boundary, where w vanishes and no tendency is computed
+            faces = 2:Nz
+            @testset "$name [$(typeof(arch))]" for (name, explicit, implicit) in (("ScalarDiffusivity",             ScalarDiffusivity(; ν),          ScalarDiffusivity(VITD; ν)),
+                                               ("SmagorinskyLilly",              SmagorinskyLilly(),              SmagorinskyLilly(VITD)),
+                                               ("AnisotropicMinimumDissipation", AnisotropicMinimumDissipation(), AnisotropicMinimumDissipation(VITD)))
+                Gₑ, _ = w_viscous_tendency(grid, explicit, u₀, v₀, w₀, Δt)
+                Gᵢ, _ = w_viscous_tendency(grid, implicit, u₀, v₀, w₀, Δt)
+                Gₑ, Gᵢ = view(Gₑ, :, :, faces), view(Gᵢ, :, :, faces)
+                @test maximum(abs, Gᵢ .- Gₑ) < 1e-4 * maximum(abs, Gₑ)
+            end
+        end
+    end
+
+    @testset "Vertically-implicit diffusion of a vortex between free-slip walls" begin
+        for arch in archs
+            Nx, Nz = 16, 16
+            Lx, Lz = 2, 1
+            grid = RectilinearGrid(arch, size=(Nx, Nz), x=(0, Lx), z=(0, Lz), topology=(Periodic, Flat, Bounded))
+            Δx, Δz = Lx / Nx, Lz / Nz
+
+            # Built from the discrete wavenumbers, the vortex is an exact eigenmode of the discrete Laplacian with
+            # w = 0 and ∂z u = 0 at the walls, so it stays divergence-free and the pressure correction does nothing
+            kx, kz = 2π / Lx, π / Lz
+            k, m = 2sin(kx * Δx / 2) / Δx, 2sin(kz * Δz / 2) / Δz
+            u₀(x, z) = - m / k * sin(kx * x) * cos(kz * z)
+            w₀(x, z) =           cos(kx * x) * sin(kz * z)
+
+            ν = 1
+            closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(); ν)
+
+            for c in (1, 10)  # νΔt/Δz²
+                Δt = c * Δz^2 / ν
+                model = NonhydrostaticModel(grid; closure, advection=nothing, timestepper=:QuasiAdamsBashforth2)
+                set!(model, u=u₀, w=w₀)
+                u⁰, w⁰ = Array(interior(model.velocities.u)), Array(interior(model.velocities.w))
+                time_step!(model, Δt)
+                u¹, w¹ = Array(interior(model.velocities.u)), Array(interior(model.velocities.w))
+
+                # Nothing is stepped explicitly, so the step is backward Euler on ∂t ϕ = ν ∂z² ϕ: ϕ¹ = ϕ⁰ / (1 + Δt ν m²) everywhere
+                factor = 1 / (1 + Δt * ν * m^2)
+                @test maximum(abs, w¹ .- factor .* w⁰) < 1e-10 * maximum(abs, w⁰)
+                @test maximum(abs, u¹ .- factor .* u⁰) < 1e-10 * maximum(abs, u⁰)
+            end
+        end
+    end
+
+    @testset "Vertically-implicit diffusion beneath an immersed bottom" begin
+        # As a forcing or auxiliary field evaluated beneath the bottom would leave there
+        nan_in_immersed_cells(i, j, k, grid, clock, fields) =
+            ifelse(immersed_cell(i, j, k, grid), convert(eltype(grid), NaN), zero(grid))
+
+        no_forcing(i, j, k, grid, clock, fields) = zero(grid)
+
+        function implicitly_diffused_tracer(grid, forcing)
+            closure = VerticalScalarDiffusivity(VerticallyImplicitTimeDiscretization(), eltype(grid); κ=0.3)
+            model = HydrostaticFreeSurfaceModel(grid; closure, tracers=:c, buoyancy=nothing,
+                                                forcing=(; c=Forcing(forcing, discrete_form=true)))
+            set!(model, c=(x, y, z) -> z)
+            for _ in 1:3
+                time_step!(model, 0.5)
+            end
+            return Array(interior(model.tracers.c))
+        end
+
+        @testset "[$(typeof(arch)), $FT]" for arch in archs, FT in float_types
+            Nx, Ny, Nz = 3, 2, 8
+            underlying_grid = RectilinearGrid(arch, FT, size=(Nx, Ny, Nz), x=(0, Nx), y=(0, Ny), z=(-Nz, 0),
+                                              topology=(Periodic, Periodic, Bounded))
+
+            # Columns without immersed cells, with their lower halves immersed, and entirely immersed
+            bottom(x, y) = ifelse(x < 1, -Nz - 1, ifelse(x < 2, -(Nz ÷ 2), 0))
+            grid = ImmersedBoundaryGrid(underlying_grid, GridFittedBottom(bottom))
+
+            immersed = compute!(Field(KernelFunctionOperation{Center, Center, Center}(immersed_cell, grid)))
+            wet = Array(interior(immersed)) .== 0
+            @test sum(wet) == Ny * (Nz + Nz ÷ 2)
+
+            c_nan = implicitly_diffused_tracer(grid, nan_in_immersed_cells)
+            c_ref = implicitly_diffused_tracer(grid, no_forcing)
+            @test all(isfinite, c_nan[wet])
+            @test c_nan[wet] == c_ref[wet]
+
+            # The half-immersed column sees the same diffusion problem as a grid whose bottom lies at its immersed bottom
+            half_grid = RectilinearGrid(arch, FT, size=(1, 1, Nz ÷ 2), x=(0, 1), y=(0, 1), z=(-(Nz ÷ 2), 0),
+                                        topology=(Periodic, Periodic, Bounded))
+            c_half = implicitly_diffused_tracer(half_grid, no_forcing)
+            @test c_ref[2, 1, Nz÷2+1:Nz] ≈ c_half[1, 1, :]
+        end
+    end
+
+    @testset "Closure tuples" begin
+        for arch in archs, FT in float_types
+            @test time_step_with_tupled_closure(FT, arch)
+            # Test up to 6 closures in a tuple
+            additional_closures = (VerticalScalarDiffusivity(κ=1e-6), VerticalScalarDiffusivity(κ=2e-5), ScalarDiffusivity(ν=1e-5), HorizontalScalarDiffusivity(κ=1e-5))
+            @test time_step_with_tupled_closure(FT, arch, additional_closures...)
+        end
+    end
+
+    @testset "IsopycnalSkewSymmetricDiffusivity" begin
+        time_discretizations = [ExplicitTimeDiscretization(), VerticallyImplicitTimeDiscretization()]
+        skew_flux_formulations = [DiffusiveFormulation(), AdvectiveFormulation()]
+        for arch in archs, FT in float_types
+            @testset "$(nameof(typeof(time_discretization))) and $(nameof(typeof(skew_flux_formulation))) [$(typeof(arch)), $FT]" for time_discretization in time_discretizations,
+                                                                                                                                     skew_flux_formulation in skew_flux_formulations
+                @test time_step_with_isopycnal_skew_symmetric_diffusivity(arch, FT, time_discretization, skew_flux_formulation)
+            end
+        end
+    end
+
+    @testset "Diagnostics" begin
+        for arch in archs
+            @testset "$closurename [$(typeof(arch))]" for closurename in closures
+                closure = @eval $closurename()
+                compute_closure_specific_diffusive_cfl(arch, closure)
+            end
+
+            @testset "Tuple closure [$(typeof(arch))]" begin
+                compute_closure_specific_diffusive_cfl(arch, (ScalarDiffusivity(),
+                                                              ScalarBiharmonicDiffusivity(),
+                                                              SmagorinskyLilly(),
+                                                              AnisotropicMinimumDissipation()))
+            end
+        end
+    end
+end
+
+ succeeded in 145ms:
+using Oceananigans
+using Oceananigans.TurbulenceClosures: CATKEVerticalDiffusivity
+using Oceananigans.TimeSteppers: time_step!
+
+grid = RectilinearGrid(size=64, z=(-256, 0), topology=(Flat, Flat, Bounded))
+coriolis = FPlane(f=1e-4)
+closure = CATKEVerticalDiffusivity()
+
+boundary_conditions = (b = FieldBoundaryConditions(top = FluxBoundaryCondition(1e-8)),
+                       u = FieldBoundaryConditions(top = FluxBoundaryCondition(-2e-4)))
+
+model = HydrostaticFreeSurfaceModel(grid;
+                                    closure,
+                                    coriolis,
+                                    boundary_conditions,
+                                    tracers = (:b,),
+                                    buoyancy = BuoyancyTracer())
+
+bᵢ(z) = 1e-6 * z
+set!(model, b=bᵢ, e=1e-6)
+
+# Compile
+time_step!(model, 600)
+
+@time for n = 1:100
+    time_step!(model, 600)
+end
+
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/src/Models/HydrostaticFreeSurfaceModels/update_hydrostatic_free_surface_model_state.jl' | rg -n -C 4 'compute_closure|function update_state'" in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 137ms:
+8-using Oceananigans.Forcings: compute_forcing!
+9-using Oceananigans.ImmersedBoundaries: mask_immersed_field!
+10-using Oceananigans.Models: update_model_field_time_series!, surface_kernel_parameters, volume_kernel_parameters
+11-using Oceananigans.Models.NonhydrostaticModels: update_hydrostatic_pressure!
+12:using Oceananigans.TurbulenceClosures: compute_closure_fields!
+13-import Oceananigans.TurbulenceClosures: step_closure_prognostics!
+14-using Oceananigans.Utils: KernelParameters, worksize
+15-
+16-compute_auxiliary_fields!(auxiliary_fields) = Tuple(compute!(a) for a in auxiliary_fields)
+--
+40-while for velocities they are filled in the time-stepping function.
+41-"""
+42-update_state!(model::HydrostaticFreeSurfaceModel, callbacks=[]) = update_state!(model, model.grid, callbacks)
+43-
+44:function update_state!(model::HydrostaticFreeSurfaceModel, grid, callbacks)
+45-
+46-    arch = architecture(grid)
+47-
+48-    @apply_regionally begin
+--
+66-        κ_params = diffusivity_kernel_parameters(grid)
+67-        compute_buoyancy_gradients!(model.buoyancy, grid, tracers, parameters=volume_params)
+68-        update_vertical_velocities!(model.velocities, grid, model, parameters=surface_params)
+69-        update_hydrostatic_pressure!(model.pressure.pHY′, arch, grid, model.buoyancy, model.tracers, parameters=surface_params)
+70:        compute_closure_fields!(model.closure_fields, model.closure, model, parameters=κ_params)
+71-    end
+72-
+73-    # Fill only local halos for diagnostic quantities since the parameters used
+74-    # above include regions inside the (horizontal) halos.
+
+exec
+/bin/zsh -lc "curl -fsSL 'https://raw.githubusercontent.com/CliMA/Oceananigans.jl/24de7026893af38df065920fbbf80f05024fd1b9/test/turbulence_closures/closures.jl' | sed -n '310,440p'" in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 0ms:
+    time_step!(reference_model, 1)
+    reference_tke = Array(interior(reference_model.tracers.e))
+
+    # Padding with closures that do nothing must not change the surface TKE flux
+    padding = VerticalScalarDiffusivity(ν=0, κ=0)
+
+    for N in 1:6
+        closure = (catke, ntuple(_ -> padding, N-1)...)
+        model = build_model(closure)
+
+        # Evaluate the boundary condition with the arguments the tendency kernel passes to it
+        surface_tke_flux = getbc(model.tracers.e.boundary_conditions.top, 1, 1, grid,
+                                 model.clock, fields(model), model.closure, model.buoyancy)
+        @test surface_tke_flux ≈ expected_surface_tke_flux
+
+        time_step!(model, 1)
+        @test Array(interior(model.tracers.e)) ≈ reference_tke
+    end
+
+    return nothing
+end
+
+function compute_closure_specific_diffusive_cfl(arch, closure)
+    grid = RectilinearGrid(arch, size=(2, 2, 2), extent=(1, 2, 3))
+
+    model = NonhydrostaticModel(grid;  closure,  buoyancy = BuoyancyTracer(),  tracers = :b)
+    args = (model.closure, model.closure_fields, Val(1), model.tracers.b, model.clock, fields(model), model.buoyancy)
+    dcfl = DiffusiveCFL(0.1)
+    @test dcfl(model) isa Number
+
+    @allowscalar begin
+        @test diffusive_flux_x(1, 1, 1, grid, args...) == 0
+        @test diffusive_flux_y(1, 1, 1, grid, args...) == 0
+        @test diffusive_flux_z(1, 1, 1, grid, args...) == 0
+    end
+
+    tracerless_model = NonhydrostaticModel(grid; closure)
+    args = (model.closure, model.closure_fields, model.clock, fields(model), model.buoyancy)
+    dcfl = DiffusiveCFL(0.2)
+    @test dcfl(tracerless_model) isa Number
+    @allowscalar begin
+        @test viscous_flux_ux(1, 1, 1, grid, args...) == 0
+        @test viscous_flux_uy(1, 1, 1, grid, args...) == 0
+        @test viscous_flux_uz(1, 1, 1, grid, args...) == 0
+    end
+
+    return nothing
+end
+
+function test_function_scalar_diffusivity()
+
+    depth_scale = 120
+    @inline ν(x, y, z, t) = 2000 * exp(z / depth_scale)
+    @inline κ(x, y, z, t) = 2000 * exp(z / depth_scale)
+
+    closure = ScalarDiffusivity(; ν, κ)
+
+    grid = RectilinearGrid(CPU(), size=(2, 2, 2), extent=(1, 2, 3))
+    model = NonhydrostaticModel(grid; closure, tracers = :b, buoyancy = BuoyancyTracer())
+    max_diffusivity = maximum(2000 * exp.(znodes(model.grid, Center()) / depth_scale))
+    Δ = min_Δxyz(model.grid, formulation(model.closure))
+
+    τκ = Δ^2 / max_diffusivity
+    return cell_diffusion_timescale(model) == τκ
+end
+
+function test_discrete_function_scalar_diffusivity()
+
+    @inline function ν(i, j, k, grid, clock, fields, p)
+        z = znode(i, j, k, grid, Center(), Center(), Center())
+        return 2000 * exp(z / p.depth_scale_ν)
+    end
+    @inline function κ(i, j, k, grid, clock, fields, p)
+        z = znode(i, j, k, grid, Center(), Center(), Center())
+        return 2000 * exp(z / p.depth_scale_κ)
+    end
+
+    closure = ScalarDiffusivity(; ν, κ, discrete_form=true,
+                                  loc=(Center, Center, Center),
+                                  parameters = (;depth_scale_ν = 100, depth_scale_κ = 100))
+
+    grid = RectilinearGrid(CPU(), size=(2, 2, 2), extent=(1, 2, 3))
+    model = NonhydrostaticModel(grid; closure, tracers = :b, buoyancy = BuoyancyTracer())
+    max_diffusivity = maximum(2000 * exp.(znodes(model.grid, Center()) / 100))
+    Δ = min_Δxyz(model.grid, formulation(model.closure))
+    τκ = Δ^2 / max_diffusivity
+    return cell_diffusion_timescale(model) == τκ
+end
+
+@testset "Turbulence closures" begin
+    @testset "Closure instantiation" begin
+        for closurename in closures
+            closure = @eval $closurename()
+            @test closure isa TurbulenceClosures.AbstractTurbulenceClosure
+
+            @testset "NonhydrostaticModel with $closurename [$(typeof(arch))]" for arch in archs
+                grid = RectilinearGrid(arch, size=(2, 2, 2), extent=(1, 2, 3))
+                model = NonhydrostaticModel(grid; closure, tracers = :c)
+                c = model.tracers.c
+                u = model.velocities.u
+
+                κ = diffusivity(model.closure, model.closure_fields, Val(:c))
+                @test diffusivity(model, Val(:c)) == diffusivity(model.closure, model.closure_fields, Val(:c))
+                κ_dx_c = κ * ∂x(c)
+
+                ν = viscosity(model.closure, model.closure_fields)
+                @test viscosity(model) == viscosity(model.closure, model.closure_fields)
+                ν_dx_u = ν * ∂x(u)
+                @test ν_dx_u[1, 1, 1] == 0
+                @test κ_dx_c[1, 1, 1] == 0
+            end
+        end
+
+        c = Center()
+        f = Face()
+        ri_based = @test_logs (:warn, r"^RiBasedVerticalDiffusivity is an experimental turbulence closure") RiBasedVerticalDiffusivity()
+        @test viscosity_location(ri_based) == (c, c, f)
+        @test diffusivity_location(ri_based) == (c, c, f)
+
+        catke = CATKEVerticalDiffusivity()
+        @test viscosity_location(catke) == (c, c, f)
+        @test diffusivity_location(catke) == (c, c, f)
+    end
+
+    @testset "ScalarDiffusivity" begin
+        for FT in float_types
+            ν, κ = 0.3, 0.7
+            closure = ScalarDiffusivity(FT; κ=(T=κ, S=κ), ν=ν)
+            @test closure.ν == FT(ν)
+            @test closure.κ.T == FT(κ)
+            run_constant_isotropic_diffusivity_fluxdiv_tests(FT)
+
+codex
+公共 API 路径已核实：`HydrostaticFreeSurfaceModel` 的 `set!` 会更新闭合场，可用 `viscosity`、`diffusivity` 读取结果。现有 CATKE 测试覆盖构造、时间步和表面 TKE 通量，但这份 PR 没有新增底部 κ 标定断言；规范将分别列出 κ 标定、混合长度比例和局地耗散三个检查。
+exec
+/bin/zsh -lc "cat > spec.md <<'EOF'
+## CliMA/Oceananigans.jl#6024 Fix CATKE's bottom mixing length coefficient Cᵇ
+
+- What changed (1–3 sentences, naming files and formulas):
+  "'`src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl` 将默认底边界系数 `Cᵇ` 从 `0.28` 改为 `0.967`，并添加中性相似层关系 κ = C[(Cˡᵒu)³/CˡᵒD]''^(1/4) 的说明；`docs/src/models/turbulence_closures.md` 同步展示值。此次没有改离散算子或增加测试。以下是条件性闭合模型不变量，不是任意海流的普适守恒定律。
+
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+  约定 z 向上，平底 z = −H、静止表面 z = 0，d = z + H > 0；e 是单位质量 TKE（m²/s²），b 是浮力，N² = ∂b/∂z，S = ∂U/∂z > 0。令 a = Cˡᵒu = 0.361、q = Cˡᵒc = 0.369、r = Cˡᵒe = 7.863、D = CˡᵒD = 1.604、B = Cᵇ = 0.967、A = Cˢ = 1.131。ν、Kc、Ke 分别是动量、普通示踪剂及 TKE 的垂向扩散系数；ε ≥ 0 是耗散率，TKE 方程中的贡献为 −ε。
+
+  1. **Primary — 底部中性平衡层的 κ 标定。** 在 N² = 0、无对流、底距离限制主导、e 高于数值下限、无扩散率截断的局地相似层，ℓ = Bd，ν = aℓ√e，ε = D e''^(3/2)/ℓ。若剪切生产 P = νS² 与 ε 平衡，且正的运动学应力大小 u★² = νS，则必须有
+     e = u★²/√(aD)，κ_eff = B(a³/D)''^(1/4)，ν = κ_eff u★d，S = u★/(κ_eff d)。
+     因而 κ_eff⁴D = B⁴a³，且默认参数应满足 |κ_eff − 0.4| ≤ 5×10⁻⁴。最后一个容差允许 B 仅保留三位小数；不能要求 κ_eff 与十进制 0.4 浮点严格相等。对应连续速度差 U(d₂) − U(d₁) = (u★/κ_eff) log(d₂/d₁)，但这里不要求整个有限水柱或最底层网格严格服从对数律。
+
+  2. **Secondary — 中性底部混合的距离律、比例与非负性。** 在均匀正 e、N² = 0、零表面浮力通量、未触发 H 长度上限和扩散率上限时，底部控制区有
+     (ν, Kc, Ke) = Bd√e (a, q, r)，ν ≥ 0，Kc/ν = q/a，Ke/ν = r/a。
+     对任意两个内部面 d₁,d₂，若均处于该分支，ν(d₂)/ν(d₁) = d₂/d₁。在固定 e 的两组配置 B₁、B₂ 中，若两者都受底部控制，ν₂/ν₁ = Kc₂/Kc₁ = Ke₂/Ke₁ = B₂/B₁；特别是新旧默认系数的比为 0.967/0.28。一般中性水柱的参考式是 Kα = √e min[H, cα min(Bd,A(H−d))]，cα ∈ {a,q,r}，并再施加相应最大扩散率上限。该一般式解释为什么 Ke 在较远离底部处可能先饱和，不能在那里强制要求三个系数同比变化。边界面被实现显式置零，不用于内部面比例测试。
+
+  3. **Secondary — 同一底长度必须一致地控制 TKE 耗散。** 在 N² = 0、无剪切、无表面强迫、初始均匀 e₀ > minimum_tke 的水柱内，初始 TKE 扩散为零。对于底部控制且 ℓ/D < H 的内部单元中心：
+     ε(d) = D e₀''^(3/2)/(Bd) > 0，lim(Δt→0⁺)[e(d,Δt)−e₀]/Δt = −ε(d)。
+     固定 e₀、d 时 ε(B₂)/ε(B₁) = B₁/B₂。因此同一个 B 增大既增加给定 TKE 下的涡黏性，又减小给定 TKE 下的局地耗散；不能把“底拖曳增强”理解为所有反馈后的流态均有同一响应。
+
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+  第一项来自上述涡黏闭合、正定耗散、局地 P = ε 及恒定应力假设的代数消元；κ = 0.4 是此 PR 采用的经验刚壁标定目标，不是由守恒律独立推导的常数。PR 输入将关系归于 Wagner et al. (2025), *Formulation and calibration of CATKE, a one-equation parameterization for microscale ocean mixing*, §3.1.3, Eq. (35), DOI 10.1029/2024MS004522；本审计只在允许的 GitHub 资料中核对了这一归属，未独立读取期刊全文，也不以 PR 自述替代证明。第二、三项是同一模型的构成关系及量纲一致性：ℓ 单位 m，ν 单位 m²/s，ε 单位 m²/s³。
+  合并版源码依据：[混合长度与稳定函数](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_mixing_length.jl)、[扩散系数与默认值](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_vertical_diffusivity.jl)、[耗散长度 ℓ/D 与耗散率](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/catke_equation.jl)、[TKE 下限、Ri=0 分支与边界掩膜](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/src/TurbulenceClosures/turbulence_closure_implementations/TKEBasedVerticalDiffusivities/TKEBasedVerticalDiffusivities.jl)。
+
+- Common operating domain (range of each input, with the basis):
+  数学域为 H > 0、0 < d < H、B,a,D > 0、有限 e > minimum_tke，且 Bd < A(H−d)。三种扩散系数一起检查时还需 rBd < H；排除浸没边界、湿干单元、波浪强迫、旋转、平流和其他闭合叠加。N² 精确设为零，表面浮力及动量通量设为零；不能用略为负的 N² 代替零，因为负 Ri 使用不同稳定系数。
+  建议随机样本：H ∈ [10,1000] m；内部采样 d/H ∈ [0.01,0.05]；e₀ ∈ [10⁻⁶,10⁻²] m²/s²；B 测试取旧值 0.28、新值 0.967，或 [0.2,1.2] 内随机值。这些是便于隔离分支和避开默认 e 下限 10⁻⁹ 的审计范围，不是文献宣称的全适用范围。第一项取 u★ ∈ [10⁻³,10⁻¹] m/s，并由平衡式生成 e；U 的参考常数可取零。相似律只用于远离黏性/粗糙子层的湍流区域；本闭合不解析分子黏性子层。均匀网格建议 Nz ≥ 512，排除接触物理边界的差分模板；所有比较使用真实网格坐标。
+
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+  **公共入口与观测量。** 使用 `using Oceananigans`，从 `Oceananigans.TurbulenceClosures` 导入 `CATKEVerticalDiffusivity`, `viscosity`, `diffusivity`。建立 `RectilinearGrid(CPU(), Float64; size=Nz, z=(-H,0), topology=(Flat,Flat,Bounded))`，再建立 `HydrostaticFreeSurfaceModel(grid; closure=CATKEVerticalDiffusivity(Float64), buoyancy=BuoyancyTracer(), tracers=(:b,:c), coriolis=nothing, momentum_advection=nothing, tracer_advection=nothing)`。**不要在 tracers 列表中提供 :e**：合并版自动添加它，显式提供反而报错。用 `set!(model, b=0, c=0, e=e₀, u=..., v=0)` 设置状态；此公共入口会更新闭合场，无需调用私有 kernel。用 `Array(interior(viscosity(model)))`、`Array(interior(diffusivity(model, Val(:c))))`、`Array(interior(diffusivity(model, Val(:e))))` 读取三个面场，用 `znodes(grid, Face())`/`znodes(grid, Center())` 取得相应位置。所有数组索引需与面/中心坐标匹配。
+  已核对入口源码：[set!](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/src/Models/HydrostaticFreeSurfaceModels/set_hydrostatic_free_surface_model.jl)、[状态更新调用闭合计算](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/src/Models/HydrostaticFreeSurfaceModels/update_hydrostatic_free_surface_model_state.jl)。上述方案是待执行规范，本次未运行 Julia。
+
+  **第一项。** 先从公开构造出的 `closure.mixing_length` 与 `closure.turbulent_kinetic_energy_equation` 读取系数，验证 κ_eff⁴D = B⁴a³ 及 |κ_eff−0.4| ≤ 5×10⁻⁴。为避免仅重复参数公式，再用独立目标 κ₀ = 0.4 制造状态：e₀ = u★²/√(aD)，在各中心设置 U(d) = (u★/κ₀)log(d/d_ref)，d_ref 可取 H。在选定内部面比较实际 ν/(u★d) 与 0.4，绝对误差 ≤ 5×10⁻⁴；比较 νS_h/u★² 与 1，容许系数舍入相对误差 1.25×10⁻³ 加空间误差。S_h 用相邻中心速度差除以中心间距。以 Nz、2Nz、4Nz 加密并固定物理采样带，要求对数曲线导数误差约按 O((Δz/d)²) 下降，最终空间误差 < 10⁻⁴；不要把固定前三个单元当作固定物理点。还可在相同内部位置检查 P/ε → 1，其中 P = νS_h²、ε 采用第三项独立检验过的耗散式。此快照检查检验构成关系，不宣称整柱已达到稳态。旧 B = 0.28 应明显不能通过 κ≈0.4 的检查。
+
+  **第二项。** 以均匀 e₀、u=v=0 做快照，比较三个面场与明确的分支参考式及比值。Float64 使用 `rtol=1e-11`，绝对容差取 `1e-13 × 本次参考场最大值`；该测试没有时间积分误差，均匀 e 消除了 √e 插值误差。Float32 可用 `rtol=1e-5`。如需自定义旧系数，使用已公开文档化但未导出的 `Oceananigans.TurbulenceClosures.TKEBasedVerticalDiffusivities.CATKEMixingLength(Cᵇ=...)` 作为 `CATKEVerticalDiffusivity(mixing_length=...)` 的构造参数，其余默认值保持相同。另取表面限制主导的点，对比新旧 B 应相同；取分支转换两侧用一般 min 公式检查连续性，不要求导数连续。
+
+  **第三项。** 使用均匀 e₀、u=v=0 的新模型，从 `Oceananigans.TimeSteppers` 导入 `time_step!`，执行一个很小的 Δt 后读取 `interior(model.tracers.e)`。对每个被测中心计算 R_h = −(e_new−e₀)/Δt，比较 D e₀''^(3/2)/(Bd)。默认垂向隐式路径仍应在 Δt→0 时得到同一个极限；不能把私有 explicit `dissipation` 对隐式方案返回零误认为物理耗散为零。起始 Δt 取所有网格中心最短耗散时间 Bd/(D√e₀) 的 10⁻³ 倍，并限制 Δt·max(Ke)/min(Δz)² ≤ 10⁻³；随后逐次减半，每次从相同初态的新模型开始。要求相对误差降到 10⁻³ 以下且呈收敛趋势；在浮点相减噪声开始增大前停止，必要时用相邻两级线性外推。比较新旧 B 的 R_h 比例及 R_h ≥ 0。此法包含有限 Δt 后产生的 TKE 梯度扩散，但其初始贡献为零，误差在 Δt→0 消失。
+
+- Do the PR'"'s own tests already check this invariant (yes/partial/no, naming test files and assertions):
+  **No，三个目标均没有 PR 新增断言。** 输入 diff 只含源码默认值/说明和文档。合并版 [test/turbulence_closures/closures.jl](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/test/turbulence_closures/closures.jl) 有相邻覆盖："'`run_catke_tke_substepping_tests` 检查 Euler/AB 步进恒等式；`run_time_step_with_catke_tests` 检查构造、自动 e 示踪剂规则、表面边界条件与能否步进；`run_catke_closure_tuple_surface_tke_flux_tests` 检查表面通量与 closure tuple 等价性；另有面场位置及 CFL 数值断言。这些不检验底部 κ=0.4、距离比例或底部耗散的物理参考值。[validation/vertical_mixing_closures/test_single_column_model.jl](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/validation/vertical_mixing_closures/test_single_column_model.jl) 是带稳定分层和表面强迫的步进/计时例子，没有这些不变量的断言。
+
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+  **satisfies（预测，未数值验证）**：在限定分支内，合并源码的 ν = aBd√e 与 ε = D e''^(3/2)/(Bd) 代数上给出含 a³ 的四次根关系，新 B 应在舍入容差内恢复 κ=0.4，且相同 B 同时用于各混合长度。对一般三维、分层、带底拖曳反馈的模拟响应仍属 uncertain；本规范不把局地标定外推成全局拖曳或耗散一定增加的结论。
+
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+  合并 SHA `24de7026893af38df065920fbbf80f05024fd1b9`；Julia，库版本 `0.113.5`，`Project.toml` 的 Julia compatibility 为 `1.10`。未来执行需该提交的 Oceananigans 及项目依赖（包括 KernelAbstractions、Adapt、OffsetArrays、StaticArrays、FFTW、MPI、JLD2 等）；CPU 一维列测试不需要 CUDA、GPU 或绘图库。环境准备难度 **medium**：Julia 包解析及二进制依赖/预编译可能耗时，但计算本身很小。[合并版 Project.toml](https://github.com/CliMA/Oceananigans.jl/blob/24de7026893af38df065920fbbf80f05024fd1b9/Project.toml)。本次仅读取输入与 GitHub 官方仓库公开源码，未读取评论、issues、fork 或其他审计轨道，未安装、编译、运行项目代码。
+
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+  **可以。** 固定一个或有限多个网格点，以 H,d,e,a,D,B,u★,ν,S,ε 为正实数，写出 min 分支假设及构成关系；由 P=ε、νS=u★² 证明 κ⁴D=B⁴a³ 与各比例关系。可用正根变量及多项式等式避免先引入一般实幂，三位小数视为有理数并用区间界证明 κ 接近 0.4。第二项的非负性、分支比例与 min 连续性也适合直接证明。第三项的初始连续模型关系可有限维化为半离散 ODE；若证明实际 Julia 更新，主要障碍是面/中心插值、边界掩膜、隐式线性求解、时间分裂及浮点误差的语义对应。Lean 代数证明不能证明经验目标 0.4 对所有真实海底都成立，也不能从局地平衡假设推出整个水柱必然收敛到该平衡。
+EOF
+wc -l spec.md' in <workdir>/CliMA_Oceananigans.jl_6024
+ succeeded in 0ms:
+      49 spec.md
+
+codex
+已完成并写入 [spec.md](./spec.md)，按模板整理了三个可检查的不变量：
+
+- **主要：** 中性底部平衡层的 κ≈0.4 标定。
+- **次要：** 混合系数随底距离及 `Cᵇ` 的比例关系、非负性。
+- **次要：** 同一底部混合长度对 TKE 耗散的反比例关系。
+
+文件包含适用域、合并版公共 API、数值容差与步长策略、现有测试覆盖、源码链接及 Lean 形式化边界。仅读取了 `./input` 和 GitHub 官方仓库公开源码；未安装、编译或运行项目代码，满足性的判断明确标为未验证预测。
+tokens used
+62,538
+已完成并写入 [spec.md](./spec.md)，按模板整理了三个可检查的不变量：
+
+- **主要：** 中性底部平衡层的 κ≈0.4 标定。
+- **次要：** 混合系数随底距离及 `Cᵇ` 的比例关系、非负性。
+- **次要：** 同一底部混合长度对 TKE 耗散的反比例关系。
+
+文件包含适用域、合并版公共 API、数值容差与步长策略、现有测试覆盖、源码链接及 Lean 形式化边界。仅读取了 `./input` 和 GitHub 官方仓库公开源码；未安装、编译或运行项目代码，满足性的判断明确标为未验证预测。

@@ -1,0 +1,11 @@
+--- a/Modelica/Media/package.mo
++++ b/Modelica/Media/package.mo
+@@ -6592,7 +6592,7 @@
+               p,
+               T,
+               X);
+-      u = h - R*T;
++      u = h - R*(T-T0);
+       R = R_gas;
+       d = p/(R*T);
+       MM = MM_const;

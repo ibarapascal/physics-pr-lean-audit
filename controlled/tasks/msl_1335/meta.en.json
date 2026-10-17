@@ -1,0 +1,277 @@
+{
+  "library": "modelica/ModelicaStandardLibrary",
+  "candidate": "#1335 (Stepsmoother rewrite)",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/modelica/ModelicaStandardLibrary/issues/1335",
+  "request_note": "The body of the issue migrated from Trac (awittkop, 2013-10-25) was taken verbatim from the first formatted copy, with the 'Modified by'/'Reported by' lines and migration footnotes removed. Note: the rewrite code included in the request body itself contains a sign error (historically introduced by the maintainer copying it verbatim), and is preserved 'as is' according to the task construction rule (request text kept verbatim)",
+  "pre_change_sha": "a3041258138620322ff5719d82c53f6b3d3f78d3",
+  "pre_change_note": "Parent commit of b889aaff (around SVN trunk r7104)",
+  "historical_wrong_sha": "b889aaff2094fece7aead53d5ca23bcdbe338f57",
+  "historical_wrong_note": "The last term of result was written as (1-tanh(tan(m*x+b)))/2, reversing the direction",
+  "final_correct_sha": "4dfa0041397571afec0dc8b836578298d7e8dbf4",
+  "final_correct_note": "Changed to (1+tanh(tan(m*x+b)))/2 (#1335 comment, 2013-10-30)",
+  "invariant": "Function contract of Stepsmoother(func,nofunc,x): for all func≠nofunc and all x, result ∈ [0,1]; beyond func on its side, result=1, and beyond nofunc on its side, result=0; result is continuous in x (including no jumps at the two thresholds 0.000001/0.999999) and monotonically nondecreasing from nofunc toward func; its sign is consistent with the declared derivative Stepsmoother_der",
+  "convention_dispute": false,
+  "convention_note": "The contract is specified by the parameter descriptions 'input value for that result = 100%/0%' and the documentation f(func)=π/2, f(nofunc)=-π/2, so this is not a dispute over conventions; however, it is a regularization function contract, not a conservation law",
+  "regression_examples": [
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapLaminar",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapLaminar_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapOverall",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapOverall_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapTurbulent",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Channel.kc_evenGapTurbulent_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.General.kc_approxForcedConvection",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.General.kc_approxForcedConvection_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HeatExchanger.kc_flatTube",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HeatExchanger.kc_flatTube_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HeatExchanger.kc_roundTube",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HeatExchanger.kc_roundTube_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HelicalPipe.kc_laminar",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HelicalPipe.kc_laminar_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HelicalPipe.kc_overall",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HelicalPipe.kc_overall_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HelicalPipe.kc_turbulent",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.HelicalPipe.kc_turbulent_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Plate.kc_laminar",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Plate.kc_laminar_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Plate.kc_overall",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Plate.kc_overall_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Plate.kc_turbulent",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.Plate.kc_turbulent_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_laminar",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_laminar_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_overall",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_overall_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_turbulent",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_turbulent_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.HeatTransfer.StraightPipe.kc_twoPhaseOverall_KC",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.Bend.dp_curvedOverall_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.Bend.dp_edgedOverall_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.Channel.dp_internalFlowOverall_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.General.dp_idealGas_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.General.dp_nominalDensityViscosity_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.General.dp_nominalPressureLossLawDensity_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.General.dp_pressureLossCoefficient_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.General.dp_volumeFlowRate_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.Orifice.dp_suddenChange_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.Orifice.dp_thickEdgedOverall_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.StraightPipe.dp_laminar_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.StraightPipe.dp_overall_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.StraightPipe.dp_turbulent_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.StraightPipe.dp_twoPhaseOverall_DP",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.Verifications.PressureLoss.Valve.dp_severalGeometryOverall_DPMFLOW",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.TestCases.PressureLoss.Bend",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.TestCases.PressureLoss.Orifice",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    },
+    {
+      "model": "ModelicaTest.Fluid.Dissipation.TestCases.PressureLoss.SeveralTestCases",
+      "path": "ModelicaTest/Fluid/Dissipation.mo"
+    }
+  ],
+  "regression_pr_added_tests": [],
+  "regression_note": "All 49 models under ModelicaTest.Fluid.Dissipation (46 Verifications + 3 TestCases); Stepsmoother is called at 81 locations in Dissipation.mo via import SMOOTH. The historical change added no tests",
+  "sampling_domain": {
+    "note": "The source is a3041258; the x interval is generalized according to the proportions in the documentation example (extending by half the width on each side of the interval), which is our choice",
+    "variables": {
+      "(func,nofunc)": {
+        "set": [
+          [
+            0.75,
+            0.25
+          ],
+          [
+            0.25,
+            0.75
+          ],
+          [
+            2200,
+            10000
+          ],
+          [
+            10000,
+            2200
+          ],
+          [
+            0.05,
+            0.0
+          ],
+          [
+            0.0,
+            0.05
+          ],
+          [
+            40000,
+            300000
+          ],
+          [
+            300000,
+            40000
+          ]
+        ],
+        "source": [
+          "Modelica/Fluid/Dissipation.mo:10948-10952 documentation example func=0.75 nofunc=0.25, x 0→1",
+          "Modelica/Fluid/Dissipation.mo:490-491 laminar=2200 turbulent=1e4 (kc_evenGap calls in both directions :573-580)",
+          "Modelica/Fluid/Dissipation.mo:5781-5786 valve opening (0.05,0)/(0,0.05)",
+          "Modelica/Fluid/Dissipation.mo:2899-2903 Re_turb_min=4e4 Re_turb_max=3e5 (:2949-2955 calls in both directions)"
+        ]
+      },
+      "x": {
+        "rule": "x ~ U[min(func,nofunc) - 0.5w, max(func,nofunc) + 0.5w], w=|func-nofunc|, and x ≥ 0",
+        "source": [
+          "Modelica/Fluid/Dissipation.mo:10948 (in the example, x∈[0,1] when w=0.5)"
+        ]
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Modelica/Fluid",
+    "ModelicaTest/Fluid/Dissipation.mo"
+  ],
+  "snapshot_excluded": "Modelica/Resources, other packages",
+  "training_cutoff_side": "Before the cutoff (2013)",
+  "snapshot_bytes": 1887527,
+  "regression_count": 49
+}

@@ -1,0 +1,72 @@
+{
+  "library": "modelica/ModelicaStandardLibrary",
+  "candidate": "#1530 (same component as candidate #600; #600 does not meet inclusion condition 1, i.e. no original request text, so #1530 replaces it)",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/modelica/ModelicaStandardLibrary/issues/1530",
+  "request_note": "Trac-migrated issue body (otter, 2014-06-27) preserved verbatim, with the 'Reported by' line and migration footnote removed and backslash escaping undone",
+  "pre_change_sha": "7c8ccafa0ba615ab06bc4432a3a80b2aed0ecbfa",
+  "pre_change_note": "Parent commit of 7ed004ce",
+  "historical_wrong_sha": "7ed004ce62b9c700e95b0bcba7c512ee7e94c4ec",
+  "historical_wrong_note": "Changed u = h - R*T in BaseProperties to u = h - R*(T-T0), making the two locations consistent but violating h - u = p/d; hnaderan pointed this out in 2014-12, and otter ruled in 2015-01 that the fix should follow h=u+pv",
+  "final_correct_sha": "8e5c1bf91e8a0222b1b73b02062f0cc4ea8b9564",
+  "final_correct_note": "Final trunk state: cc794bac/6c57d814 changed specificInternalEnergy to cp_const*(state.T-T0) - R_gas*state.T, and 8e5c1bf9 restored BaseProperties to u = h - R*T; 3.2.1 maintenance branch 84000601",
+  "invariant": "PartialSimpleIdealGasMedium (and its instance SimpleAir): for all (p,T), h - u = p/d = R_gas*T (enthalpy definition h=u+pv), while BaseProperties.u equals specificInternalEnergy(state); the reference temperature T0 can only shift the common zero point of h and u and cannot change their difference",
+  "convention_dispute": false,
+  "convention_note": "The historical discussion included a dispute over the \"reference-state convention\" (hubertus), but otter settled it on the grounds that h=u+pv holds for any reference state; the invariant is independent of the choice of reference state. Classified as not a convention dispute (under a stricter reading it could be marked as a boundary case)",
+  "regression_examples": [
+    {
+      "model": "ModelicaTest.Media.TestAllProperties.SimpleAir",
+      "path": "ModelicaTest/Media.mo:265",
+      "note": "Referred to by the request; its assertions only check consistency between BaseProperties.u and specificInternalEnergy, so the historical incorrect change can pass"
+    },
+    {
+      "model": "ModelicaTest.Media.TestsWithFluid.MediaTestModels.Air.SimpleAir",
+      "path": "ModelicaTest/Media.mo:1539"
+    },
+    {
+      "model": "Modelica.Media.Examples.Tests.MediaTestModels.Air.SimpleAir",
+      "path": "Modelica/Media/package.mo:3633"
+    },
+    {
+      "model": "ModelicaTest.Fluid.TestComponents.Vessels.TestInitialization",
+      "path": "ModelicaTest/Fluid/TestComponents/Vessels/TestInitialization.mo",
+      "note": "Medium=SimpleAir"
+    }
+  ],
+  "regression_pr_added_tests": [],
+  "regression_note": "The historical changes added no new tests; PartialSimpleIdealGasMedium is instantiated only by SimpleAir within the library (7c8ccafa grep)",
+  "sampling_domain": {
+    "note": "Source: 7c8ccafa; for an ideal gas, h-u is independent of p, and the p interval is included only for completeness",
+    "variables": {
+      "T_K": {
+        "range": [
+          273.15,
+          373.15
+        ],
+        "source": [
+          "Modelica/Media/Air/SimpleAir.mo:11-12 T_min=0°C T_max=100°C"
+        ]
+      },
+      "p_Pa": {
+        "range": [
+          90000.0,
+          110000.0
+        ],
+        "source": [
+          "Modelica/Media/package.mo:3563 p_start=1.0e5",
+          "Modelica/Media/package.mo:3543 dp_nominal=0.1e5",
+          "Modelica/Media/package.mo:1177 p_default=101325"
+        ]
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Modelica/Media (excluding Resources)",
+    "ModelicaTest/Media.mo",
+    "ModelicaTest/Fluid/TestComponents/Vessels/TestInitialization.mo"
+  ],
+  "snapshot_excluded": "Modelica/Resources, all other packages",
+  "training_cutoff_side": "Before the cutoff (2014)",
+  "snapshot_bytes": 2714089,
+  "regression_count": 4
+}

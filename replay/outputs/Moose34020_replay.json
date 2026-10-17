@@ -1,0 +1,60 @@
+{
+  "module": "Moose34020",
+  "merge_commit": "f90f508580f7611f7d75ee458cd177affc7288d1",
+  "native_replay": "SKIP: no MOOSE build available; float64 transcription of the C++ loops is compared with the Lean formulas instead",
+  "cases": 2000,
+  "cases_axisymmetric": 590,
+  "diff_cpp_float_vs_lean_exact": {
+    "nodes_checked": 2142,
+    "max_rel_diff": 9.032082006098897e-16
+  },
+  "thm_nodalSlipRate_const_field": {
+    "exact_rational_equal_count": 2142,
+    "exact_rational_checked": 2142,
+    "float_max_rel_err_vs_minus_a": 9.032082006098897e-16,
+    "holds": true
+  },
+  "thm_nodalSlipRate_mesh_independent": {
+    "note": "every random discretization (4-16 elements, 1-4 mortar segments per element, 2-4 Gauss points, standard/dual basis, planar/axisymmetric) gives -a",
+    "float_max_rel_err": 9.032082006098897e-16
+  },
+  "thm_nodalSlipRate_dual_exact": {
+    "dual_basis_linear_field_max_rel_err": 7.342058239825457e-16,
+    "standard_basis_linear_field_max_rel_err": 0.24222889524055952
+  },
+  "thm_frictionValue_uniform_3d": {
+    "cases": 500,
+    "max_rel_err": 1.6256450204479484e-15
+  },
+  "thm_frictionValue_uniform_2d_close": {
+    "law": "0.2+0.1*tanh(y/0.1), L=1",
+    "max_abs_diff_vs_constant_mu": 5.551115123125783e-17,
+    "bound_L_times_1e-12": 1e-12
+  },
+  "thm_frictionValue_uniform_2d_ne_const": {
+    "real_number_statement": "sqrt(a^2+1e-24) > |a| strictly, so a strictly monotone law never equals g(|a|) exactly",
+    "float64_smallest_|a|_where_regularization_is_absorbed": 6.165950018614822e-05,
+    "example_a_1e-6": {
+      "sqrt": 1.0000000000005e-06,
+      "abs": 1e-06
+    }
+  },
+  "thm_frictionValue_no_history": {
+    "slip_magnitude_used": 1e-12
+  },
+  "thm_old_vs_new_interior_node": {
+    "V": 0.5,
+    "new": -0.5,
+    "old": -1.0,
+    "old_over_new": 2.0,
+    "random_cases_old_over_new_range": [
+      -5.733085143796755,
+      33.211734787167345
+    ],
+    "test_input_law_example": {
+      "law": "0.3 + 0.5*2.17^(-p/100) - 10*y, p=0",
+      "mu_with_new_slip_V0.05": 0.30000000000000004,
+      "mu_with_old_slip_4_segments_V0.05": -1.2
+    }
+  }
+}

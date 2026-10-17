@@ -1,0 +1,72 @@
+{
+  "library": "modelica/ModelicaStandardLibrary",
+  "candidate": "#1530 (same component as candidate #600; #600 does not meet inclusion condition 1, i.e. no original request text, so #1530 replaces it)",
+  "reconstructed_request": false,
+  "request_source_url": "https://github.com/modelica/ModelicaStandardLibrary/issues/1530",
+  "request_note": "Trac 迁移 issue 正文（otter, 2014-06-27）原样，删去 'Reported by' 行与迁移脚注，反斜杠转义还原",
+  "pre_change_sha": "7c8ccafa0ba615ab06bc4432a3a80b2aed0ecbfa",
+  "pre_change_note": "7ed004ce 的父提交",
+  "historical_wrong_sha": "7ed004ce62b9c700e95b0bcba7c512ee7e94c4ec",
+  "historical_wrong_note": "把 BaseProperties 的 u = h - R*T 改成 u = h - R*(T-T0)，使两处一致但违反 h - u = p/d；hnaderan 2014-12 指出，otter 2015-01 裁定按 h=u+pv 修",
+  "final_correct_sha": "8e5c1bf91e8a0222b1b73b02062f0cc4ea8b9564",
+  "final_correct_note": "trunk 最终状态：cc794bac/6c57d814 把 specificInternalEnergy 改为 cp_const*(state.T-T0) - R_gas*state.T，8e5c1bf9 把 BaseProperties 恢复为 u = h - R*T；3.2.1 维护线 84000601",
+  "invariant": "PartialSimpleIdealGasMedium（及其实例 SimpleAir）：对一切 (p,T)，h - u = p/d = R_gas*T（焓定义 h=u+pv），同时 BaseProperties.u 与 specificInternalEnergy(state) 相等；参考温度 T0 只能平移 h 与 u 的共同零点，不能改变二者之差",
+  "convention_dispute": false,
+  "convention_note": "历史讨论里有过『参考态约定』之争（hubertus），但被 otter 以 h=u+pv 对任何参考态成立裁定；不变量与参考态选择无关。判为非约定之争 (under a stricter reading it could be marked as a boundary case)",
+  "regression_examples": [
+    {
+      "model": "ModelicaTest.Media.TestAllProperties.SimpleAir",
+      "path": "ModelicaTest/Media.mo:265",
+      "note": "请求所指；其断言只查 BaseProperties.u 与 specificInternalEnergy 一致，历史错误改动可通过"
+    },
+    {
+      "model": "ModelicaTest.Media.TestsWithFluid.MediaTestModels.Air.SimpleAir",
+      "path": "ModelicaTest/Media.mo:1539"
+    },
+    {
+      "model": "Modelica.Media.Examples.Tests.MediaTestModels.Air.SimpleAir",
+      "path": "Modelica/Media/package.mo:3633"
+    },
+    {
+      "model": "ModelicaTest.Fluid.TestComponents.Vessels.TestInitialization",
+      "path": "ModelicaTest/Fluid/TestComponents/Vessels/TestInitialization.mo",
+      "note": "Medium=SimpleAir"
+    }
+  ],
+  "regression_pr_added_tests": [],
+  "regression_note": "历史改动未新增测试；PartialSimpleIdealGasMedium 在库内只被 SimpleAir 实例化（7c8ccafa grep）",
+  "sampling_domain": {
+    "note": "出处为 7c8ccafa；理想气体下 h-u 与 p 无关，p 区间只为完整",
+    "variables": {
+      "T_K": {
+        "range": [
+          273.15,
+          373.15
+        ],
+        "source": [
+          "Modelica/Media/Air/SimpleAir.mo:11-12 T_min=0°C T_max=100°C"
+        ]
+      },
+      "p_Pa": {
+        "range": [
+          90000.0,
+          110000.0
+        ],
+        "source": [
+          "Modelica/Media/package.mo:3563 p_start=1.0e5",
+          "Modelica/Media/package.mo:3543 dp_nominal=0.1e5",
+          "Modelica/Media/package.mo:1177 p_default=101325"
+        ]
+      }
+    }
+  },
+  "snapshot_dirs": [
+    "Modelica/Media（不含 Resources）",
+    "ModelicaTest/Media.mo",
+    "ModelicaTest/Fluid/TestComponents/Vessels/TestInitialization.mo"
+  ],
+  "snapshot_excluded": "Modelica/Resources、其余包",
+  "training_cutoff_side": "截止前（2014）",
+  "snapshot_bytes": 2714089,
+  "regression_count": 4
+}

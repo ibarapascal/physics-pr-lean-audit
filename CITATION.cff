@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this dataset, please cite it as below."
+type: dataset
+title: "AI-attributed physics-equation changes in open-source physics libraries: inventory, invariant specifications, Lean transcriptions, and native replays"
+authors:
+  - family-names: Jing
+    given-names: Jiawei
+    orcid: "https://orcid.org/0009-0000-8365-367X"
+    affiliation: "Makuhari Development Corporation"
+repository-code: "https://github.com/ibarapascal/physics-pr-lean-audit"
+# Data and documentation: CC BY 4.0 (LICENSE-DATA). Code: MIT (LICENSE); exceptions in THIRD_PARTY.md.
+license: CC-BY-4.0
+keywords:
+  - AI coding agents
+  - scientific software
+  - physics libraries
+  - invariants
+  - Lean 4
+  - formal verification
+  - differential testing
+  - Modelica
+abstract: >-
+  Inventory, specifications, Lean 4 transcriptions and native replays for merged pull requests in open-source
+  physics and engineering libraries that carry an AI-agent attribution. The inventory lists 1517 candidate pull
+  requests (merged 2025-01-01 to 2026-10-16) found through the GitHub search API by agent account, PR-body
+  signature and commit trailer, with two independent classifications of whether each change edits a physics
+  equation. For a stratified sample of 12 code-level physics-equation changes (Cantera, ClimaAtmos.jl,
+  Oceananigans.jl, CoolProp, pandapower, MOOSE, PyBaMM), the dataset provides three specification tracks of
+  library-level invariants from two model families, a Lean 4 project (Mathlib v4.34.1) that transcribes the changed
+  code and proves or refutes the invariants, native replay scripts and outputs that compare the installed
+  libraries with the transcriptions, per-PR judgments, and 10^4-point native spot checks of each track's initial
+  check plan on pandapower#3016. A controlled comparison re-poses five historical
+  physics-equation changes in the Modelica Buildings Library and the Modelica Standard Library as change requests
+  on pre-change library snapshots, with 10 generated patches per task and their regression and 10^4-point
+  invariant spot-check results in OpenModelica.

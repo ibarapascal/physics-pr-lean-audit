@@ -1,0 +1,96 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 3de285109c..61f1500075 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -14,6 +14,7 @@
+ - Fixed the particle concentration of the `"quartic profile"` particle model in models that resolve the electrode (e.g. DFN), which was missing a factor of the particle radius on the concentration gradient term and diverged to unphysical values. ([#5893](https://github.com/pybamm-team/PyBaMM/pull/5893))
+ - `EffectiveResistance` and `AlternativeEffectiveResistance2D` `post_process` no longer return NaN for the voltage and positive current collector potential at times after the current collector problem was solved. ([#5858](https://github.com/pybamm-team/PyBaMM/pull/5858))
+ - `"Maximum/Minimum {domain} particle stoichiometry"` and the matching concentration variables now include the particle surface value. Before, they only used cell-centre values, so the maximum could be lower than the maximum surface stoichiometry during charge. ([#5842](https://github.com/pybamm-team/PyBaMM/pull/5842))
++- `Ai2020`'s electrolyte diffusivity now converts the Valoen and Reimers (2005) fit from cm2/s to m2/s. It was 1e4 times too large, so DFN simulations with Ai2020 had almost no electrolyte concentration gradient. ([#5887](https://github.com/pybamm-team/PyBaMM/issues/5887), [#5888](https://github.com/pybamm-team/PyBaMM/pull/5888))
+ 
+ # [v26.10.0.0](https://github.com/pybamm-team/PyBaMM/tree/pybamm-v26.10.0.0) - 2026-10-09
+ 
+diff --git a/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py b/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py
+index 89071f39dc..9887a29639 100644
+--- a/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py
++++ b/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py
+@@ -433,6 +433,9 @@ def electrolyte_diffusivity_Ai2020(c_e, T):
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+     in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+     167(1), 013512. DOI: 10.1149/2.0122001JES.
++    .. [2] Valoen, L. O., & Reimers, J. N. (2005). Transport properties of
++    LiPF6-based Li-ion battery electrolytes. Journal of The Electrochemical
++    Society, 152(5), A882 (eqn 14). DOI: 10.1149/1.1872737.
+ 
+     Parameters
+     ----------
+@@ -445,10 +448,10 @@ def electrolyte_diffusivity_Ai2020(c_e, T):
+     Returns
+     -------
+     :class:`pybamm.Symbol`
+-        Solid diffusivity
++        Dimensional electrolyte diffusivity [m2.s-1]
+     """
+-
+-    D_c_e = 10 ** (-4.43 - 54 / (T - 229 - 5e-3 * c_e) - 0.22e-3 * c_e)
++    # The Valoen and Reimers (2005) fit gives cm2/s; convert to m2/s
++    D_c_e = 1e-4 * 10 ** (-4.43 - 54 / (T - 229 - 5e-3 * c_e) - 0.22e-3 * c_e)
+ 
+     return D_c_e
+ 
+@@ -471,14 +474,14 @@ def electrolyte_conductivity_Ai2020(c_e, T):
+     Parameters
+     ----------
+     c_e: :class:`pybamm.Symbol`
+-        Dimensional electrolyte concentration
++        Dimensional electrolyte concentration, mol/m^3
+     T: :class:`pybamm.Symbol`
+-        Dimensional temperature
++        Dimensional temperature, K
+ 
+     Returns
+     -------
+     :class:`pybamm.Symbol`
+-        Solid diffusivity
++        Dimensional electrolyte conductivity [S.m-1]
+     """
+ 
+     sigma_e = (
+diff --git a/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py b/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py
+index 3591572382..c0d4472bfe 100644
+--- a/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py
++++ b/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py
+@@ -1,6 +1,7 @@
+ #
+ # Tests for Ai (2020) Enertech parameter set loads
+ #
++import numpy as np
+ import pytest
+ 
+ import pybamm
+@@ -39,9 +40,24 @@ def test_functions(self):
+                 -1.1033e-4,
+             ),
+             "Negative electrode volume change": ([sto], 5.1921e-2),
++            "Electrolyte diffusivity [m2.s-1]": ([1e3, T], 3.2227e-10),
++            "Electrolyte conductivity [S.m-1]": ([1e3, T], 1.1943),
+         }
+ 
+         for name, value in fun_test.items():
+             assert param.evaluate(param[name](*value[0])) == pytest.approx(
+-                value[1], abs=0.0001
++                value[1], rel=1e-3, abs=0
++            )
++
++    def test_electrolyte_diffusivity(self):
++        # Same Valoen and Reimers (2005) fit as Xu2019, which already converts to m2/s
++        ai2020 = pybamm.ParameterValues("Ai2020")
++        xu2019 = pybamm.ParameterValues("Xu2019")
++        name = "Electrolyte diffusivity [m2.s-1]"
++        for c_e, T in [(1000, 298.15), (500, 318.15), (1500, 278.15)]:
++            inputs = [pybamm.Scalar(c_e), pybamm.Scalar(T)]
++            np.testing.assert_allclose(
++                ai2020.evaluate(ai2020[name](*inputs)),
++                xu2019.evaluate(xu2019[name](*inputs)),
++                rtol=1e-12,
+             )

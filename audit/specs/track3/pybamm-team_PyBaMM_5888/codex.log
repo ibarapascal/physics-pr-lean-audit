@@ -1,0 +1,1918 @@
+Reading additional input from stdin...
+OpenAI Codex v0.162.0
+--------
+workdir: <workdir>/pybamm-team_PyBaMM_5888
+model: gpt-6-astra
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network access enabled)
+reasoning effort: medium
+reasoning summaries: detailed
+session id: <removed>
+--------
+user
+You are an "invariant writer" for an audit of physics software (one of two independent tracks; the other track cannot see you, and you may not look at it). For one GitHub PR that has been merged into a physics/engineering simulation library, write down the library-level invariants this change **should satisfy** physically, and how to check them numerically through the merged public API. The purpose is to test later, by random spot checks and formal proofs, whether these changes are physically right.
+
+## Input and output
+- Input: ./input/pr.json (repo, number, url, title, body, commits, files, merge commit) and ./input/pr.diff.
+- Output: ./spec.md in the current directory, one section following the template below.
+- **Independence rule**: read only ./input and GitHub (the PR page, the diff, the source at the merge commit, PR/issue discussion, the cited literature), e.g. https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>. Do not read any file on this computer outside the current working directory.
+
+## Template
+```
+## <repo>#<number> <title>
+- What changed (1–3 sentences, naming files and formulas):
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+- Common operating domain (range of each input, with the basis):
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
+- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
+- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
+- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
+```
+- The invariants should target **the physics this change touches**; prefer narrow and checkable over a generic "energy is conserved". If a PR has several relevant invariants, list the most important 1–3 and mark which are primary and which secondary.
+- If you think no numerically checkable invariant can be written for this change, say why; do not force one.
+
+## Rules
+- Read GitHub public information only: no comments, issues, forks, or any write operation.
+- Do not clone the whole repository, and do not install, compile, or run any code.
+- When done, stop.
+codex
+我会只读取 `./input` 和该 PR 对应的 GitHub 公开源码，围绕改动涉及的物理关系写出可通过合并版本公共 API 检验的不变量，并保存到 `./spec.md`。不会安装或运行项目代码。
+exec
+/bin/zsh -lc 'cat input/pr.json; cat input/pr.diff' in <workdir>/pybamm-team_PyBaMM_5888
+ succeeded in 0ms:
+{"author":{"id":"U_kgDOE6kgeQ","is_bot":false,"login":"shaurya20335","name":"Shaurya Shukla"},"baseRefOid":"9d8df9d039e6b8ec78f94db6a916d7f5c003fbd7","body":"# Description\n\nFixes #5887.\n\n`electrolyte_diffusivity_Ai2020` uses the Valoen and Reimers (2005) correlation, `D = 10^(-4.43 - 54 / (T - 229 - 5e-3 c) - 0.22e-3 c)`, which gives cm2/s. It returned that value as m2/s, so the electrolyte diffusivity was 1e4 times too large: 3.2e-6 m2/s at 1000 mol/m3 and 298.15 K, against about 3e-10 m2/s for a typical LiPF6 carbonate electrolyte. `Xu2019.electrolyte_diffusivity_Valoen2005` implements the same fit and multiplies by 1e-4. The exponent here was -8.43, which includes that factor, until #3635 changed it to -4.43 without a stated reason.\n\nThe function now multiplies by 1e-4, as Xu2019 does, and its docstring says it returns the electrolyte diffusivity in m2/s (it said \"Solid diffusivity\").\n\nEffect on a 1C DFN discharge with Ai2020 (3600 s):\n\n| | final voltage | c_e range at the end |\n|---|---|---|\n| main | 3.3950 V | 1000.0 to 1000.1 mol/m3 |\n| this PR | 3.3416 V | 668.4 to 1683.4 mol/m3 |\n\nThanks @EthanJamesLew for the report.\n\n## Type of change\n\nBug fix, with an entry under `## Bug fixes` in CHANGELOG.md.\n\n# Important checks:\n\n- [x] No style issues: ruff 0.16.10 format and check, and comment-slop, pass on the changed files\n- [x] Tests added that prove fix is effective: `TestAi2020.test_electrolyte_diffusivity` compares Ai2020 with Xu2019 (same fit) at three concentrations and temperatures with `rtol=1e-12`, and checks the value at 1000 mol/m3 and 298.15 K with a relative tolerance. It fails on main and passes with the fix. The existing `test_functions` uses `abs=1e-4`, which cannot see an error in a value of order 1e-10, so I added a separate test.\n- [ ] All tests pass: every test file that uses Ai2020 passes locally (395 passed, 7 skipped), as do the particle cracking, swelling and loss of active material integration tests that use it (39 passed). I have not run the full `nox -s tests`, so I am relying on CI for the rest.\n- [ ] The documentation builds: not run locally, no docs changes\n- [x] Code is commented for hard-to-understand areas\n","commits":[{"authoredDate":"2026-10-10T22:56:00Z","authors":[{"email":"<email>","id":"U_kgDOE6kgeQ","login":"shaurya20335","name":"Shaurya Shukla"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Opus 5.5"}],"committedDate":"2026-10-13T15:14:37Z","messageBody":"electrolyte_diffusivity_Ai2020 uses the Valoen and Reimers (2005) fit, which\ngives cm2/s, but returned it as m2/s, so the electrolyte diffusivity was 1e4\ntimes too large (3.2e-6 m2/s at 1000 mol/m3 and 298 K) and a DFN discharge had\nalmost no electrolyte concentration gradient. Multiply by 1e-4, as\nXu2019.electrolyte_diffusivity_Valoen2005 does for the same fit, and test\nthe result against Xu2019 with a relative tolerance.\n\nFixes #5887\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>","messageHeadline":"fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s","oid":"6e24cbdedd9c7ce81dd36fd83a91e1e05b2d07d6"},{"authoredDate":"2026-10-10T23:04:27Z","authors":[{"email":"<email>","id":"U_kgDOE6kgeQ","login":"shaurya20335","name":"Shaurya Shukla"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Opus 5.5"}],"committedDate":"2026-10-13T15:14:43Z","messageBody":"Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>","messageHeadline":"add changelog entry for #5888","oid":"b973b4b9e0b99aedf4247783e4800635114f899e"},{"authoredDate":"2026-10-12T06:52:52Z","authors":[{"email":"<email>","id":"U_kgDOE6kgeQ","login":"shaurya20335","name":"Shaurya Shukla"},{"email":"noreply@anthropic.com","id":"MDQ6VXNlcjgxODQ3","login":"claude","name":"Claude Opus 5.5"}],"committedDate":"2026-10-13T15:14:51Z","messageBody":"- Check every Ai2020 function value with rel=1e-3 (abs=0), and add the\n  electrolyte diffusivity and conductivity to the table, so values of order\n  1e-20 to 1e-10 are actually checked. Drop the fixed-value check that this\n  now covers.\n- Cite Valoen and Reimers (2005) eqn 14 for the electrolyte diffusivity, and\n  give electrolyte_conductivity_Ai2020 parameter units and the right Returns\n  description.\n- Link the issue as well as the PR in the CHANGELOG entry.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>","messageHeadline":"address review: relative tolerances in the Ai2020 tests and docstrings","oid":"130e2da2ae1ce20e8d20654594a5833d989714c3"}],"files":[{"path":"CHANGELOG.md","additions":1,"deletions":0},{"path":"packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py","additions":9,"deletions":6},{"path":"packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py","additions":17,"deletions":1}],"headRefOid":"130e2da2ae1ce20e8d20654594a5833d989714c3","mergeCommit":{"oid":"343ece2062dbb39789dbfa977e0f2daf96e9e370"},"mergedAt":"2026-10-13T16:01:04Z","number":5888,"title":"fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s","url":"https://github.com/pybamm-team/PyBaMM/pull/5888"}
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 3de285109c..61f1500075 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -14,6 +14,7 @@
+ - Fixed the particle concentration of the `"quartic profile"` particle model in models that resolve the electrode (e.g. DFN), which was missing a factor of the particle radius on the concentration gradient term and diverged to unphysical values. ([#5893](https://github.com/pybamm-team/PyBaMM/pull/5893))
+ - `EffectiveResistance` and `AlternativeEffectiveResistance2D` `post_process` no longer return NaN for the voltage and positive current collector potential at times after the current collector problem was solved. ([#5858](https://github.com/pybamm-team/PyBaMM/pull/5858))
+ - `"Maximum/Minimum {domain} particle stoichiometry"` and the matching concentration variables now include the particle surface value. Before, they only used cell-centre values, so the maximum could be lower than the maximum surface stoichiometry during charge. ([#5842](https://github.com/pybamm-team/PyBaMM/pull/5842))
++- `Ai2020`'s electrolyte diffusivity now converts the Valoen and Reimers (2005) fit from cm2/s to m2/s. It was 1e4 times too large, so DFN simulations with Ai2020 had almost no electrolyte concentration gradient. ([#5887](https://github.com/pybamm-team/PyBaMM/issues/5887), [#5888](https://github.com/pybamm-team/PyBaMM/pull/5888))
+ 
+ # [v26.10.0.0](https://github.com/pybamm-team/PyBaMM/tree/pybamm-v26.10.0.0) - 2026-10-09
+ 
+diff --git a/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py b/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py
+index 89071f39dc..9887a29639 100644
+--- a/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py
++++ b/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py
+@@ -433,6 +433,9 @@ def electrolyte_diffusivity_Ai2020(c_e, T):
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+     in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+     167(1), 013512. DOI: 10.1149/2.0122001JES.
++    .. [2] Valoen, L. O., & Reimers, J. N. (2005). Transport properties of
++    LiPF6-based Li-ion battery electrolytes. Journal of The Electrochemical
++    Society, 152(5), A882 (eqn 14). DOI: 10.1149/1.1872737.
+ 
+     Parameters
+     ----------
+@@ -445,10 +448,10 @@ def electrolyte_diffusivity_Ai2020(c_e, T):
+     Returns
+     -------
+     :class:`pybamm.Symbol`
+-        Solid diffusivity
++        Dimensional electrolyte diffusivity [m2.s-1]
+     """
+-
+-    D_c_e = 10 ** (-4.43 - 54 / (T - 229 - 5e-3 * c_e) - 0.22e-3 * c_e)
++    # The Valoen and Reimers (2005) fit gives cm2/s; convert to m2/s
++    D_c_e = 1e-4 * 10 ** (-4.43 - 54 / (T - 229 - 5e-3 * c_e) - 0.22e-3 * c_e)
+ 
+     return D_c_e
+ 
+@@ -471,14 +474,14 @@ def electrolyte_conductivity_Ai2020(c_e, T):
+     Parameters
+     ----------
+     c_e: :class:`pybamm.Symbol`
+-        Dimensional electrolyte concentration
++        Dimensional electrolyte concentration, mol/m^3
+     T: :class:`pybamm.Symbol`
+-        Dimensional temperature
++        Dimensional temperature, K
+ 
+     Returns
+     -------
+     :class:`pybamm.Symbol`
+-        Solid diffusivity
++        Dimensional electrolyte conductivity [S.m-1]
+     """
+ 
+     sigma_e = (
+diff --git a/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py b/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py
+index 3591572382..c0d4472bfe 100644
+--- a/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py
++++ b/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py
+@@ -1,6 +1,7 @@
+ #
+ # Tests for Ai (2020) Enertech parameter set loads
+ #
++import numpy as np
+ import pytest
+ 
+ import pybamm
+@@ -39,9 +40,24 @@ def test_functions(self):
+                 -1.1033e-4,
+             ),
+             "Negative electrode volume change": ([sto], 5.1921e-2),
++            "Electrolyte diffusivity [m2.s-1]": ([1e3, T], 3.2227e-10),
++            "Electrolyte conductivity [S.m-1]": ([1e3, T], 1.1943),
+         }
+ 
+         for name, value in fun_test.items():
+             assert param.evaluate(param[name](*value[0])) == pytest.approx(
+-                value[1], abs=0.0001
++                value[1], rel=1e-3, abs=0
++            )
++
++    def test_electrolyte_diffusivity(self):
++        # Same Valoen and Reimers (2005) fit as Xu2019, which already converts to m2/s
++        ai2020 = pybamm.ParameterValues("Ai2020")
++        xu2019 = pybamm.ParameterValues("Xu2019")
++        name = "Electrolyte diffusivity [m2.s-1]"
++        for c_e, T in [(1000, 298.15), (500, 318.15), (1500, 278.15)]:
++            inputs = [pybamm.Scalar(c_e), pybamm.Scalar(T)]
++            np.testing.assert_allclose(
++                ai2020.evaluate(ai2020[name](*inputs)),
++                xu2019.evaluate(xu2019[name](*inputs)),
++                rtol=1e-12,
+             )
+
+web search: 
+web search: https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py
+exec
+/bin/zsh -lc "curl --fail --silent --show-error 'https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py'
+curl --fail --silent --show-error 'https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py'
+curl --fail --silent --show-error 'https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml'
+curl --fail --silent --show-error 'https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py'" in <workdir>/pybamm-team_PyBaMM_5888
+ succeeded in 851ms:
+import numpy as np
+
+import pybamm
+
+
+def li_metal_electrolyte_exchange_current_density_Xu2019(c_e, c_Li, T):
+    """
+    Exchange-current density for Butler-Volmer reactions between li metal and LiPF6 in
+    EC:DMC.
+
+    References
+    ----------
+    .. [1] Xu, Shanshan, Chen, Kuan-Hung, Dasgupta, Neil P., Siegel, Jason B. and
+    Stefanopoulou, Anna G. "Evolution of Dead Lithium Growth in Lithium Metal Batteries:
+    Experimentally Validated Model of the Apparent Capacity Loss." Journal of The
+    Electrochemical Society 166.14 (2019): A3456-A3463.
+
+    Parameters
+    ----------
+    c_e : :class:`pybamm.Symbol`
+        Electrolyte concentration [mol.m-3]
+    c_Li : :class:`pybamm.Symbol`
+        Pure metal lithium concentration [mol.m-3]
+    T : :class:`pybamm.Symbol`
+        Temperature [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Exchange-current density [A.m-2]
+    """
+    m_ref = 3.5e-8 * pybamm.constants.F  # (A/m2)(mol/m3) - includes ref concentrations
+
+    return m_ref * c_Li**0.7 * c_e**0.3
+
+
+def nmc_ocp_Xu2019(sto):
+    """
+    Nickel Managanese Cobalt Oxide (NMC) Open-circuit Potential (OCP) as a
+    function of the stoichiometry, from [1].
+
+    References
+    ----------
+    .. [1] Xu, Shanshan, Chen, Kuan-Hung, Dasgupta, Neil P., Siegel, Jason B. and
+    Stefanopoulou, Anna G. "Evolution of Dead Lithium Growth in Lithium Metal Batteries:
+    Experimentally Validated Model of the Apparent Capacity Loss." Journal of The
+    Electrochemical Society 166.14 (2019): A3456-A3463.
+
+    Parameters
+    ----------
+    sto : :class:`pybamm.Symbol`
+       stoichiometry of material (li-fraction)
+
+    """
+
+    # Values from Mohtat2020, might be more accurate
+    u_eq = (
+        4.3452
+        - 1.6518 * sto
+        + 1.6225 * (sto**2)
+        - 2.0843 * (sto**3)
+        + 3.5146 * (sto**4)
+        - 2.2166 * (sto**5)
+        - 0.5623e-4 * np.exp(109.451 * sto - 100.006)
+    )
+
+    # # only valid in range ~(0.25,0.95)
+    # u_eq = (
+    #     5744.862289 * sto ** 9
+    #     - 35520.41099 * sto ** 8
+    #     + 95714.29862 * sto ** 7
+    #     - 147364.5514 * sto ** 6
+    #     + 142718.3782 * sto ** 5
+    #     - 90095.81521 * sto ** 4
+    #     + 37061.41195 * sto ** 3
+    #     - 9578.599274 * sto ** 2
+    #     + 1409.309503 * sto
+    #     - 85.31153081
+    #     - 0.0003 * np.exp(7.657 * sto ** 115)
+    # )
+
+    return u_eq
+
+
+def nmc_electrolyte_exchange_current_density_Xu2019(c_e, c_s_surf, c_s_max, T):
+    """
+    Exchange-current density for Butler-Volmer reactions between NMC and LiPF6 in
+    EC:DMC.
+
+    References
+    ----------
+    .. [1] Xu, Shanshan, Chen, Kuan-Hung, Dasgupta, Neil P., Siegel, Jason B. and
+    Stefanopoulou, Anna G. "Evolution of Dead Lithium Growth in Lithium Metal Batteries:
+    Experimentally Validated Model of the Apparent Capacity Loss." Journal of The
+    Electrochemical Society 166.14 (2019): A3456-A3463.
+
+    Parameters
+    ----------
+    c_e : :class:`pybamm.Symbol`
+        Electrolyte concentration [mol.m-3]
+    c_s_surf : :class:`pybamm.Symbol`
+        Particle concentration [mol.m-3]
+    c_s_max : :class:`pybamm.Symbol`
+        Maximum particle concentration [mol.m-3]
+    T : :class:`pybamm.Symbol`
+        Temperature [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Exchange-current density [A.m-2]
+    """
+    # assuming implicit correction of incorrect units from the paper
+    m_ref = (
+        5.76e-11 * pybamm.constants.F
+    )  # (A/m2)(m3/mol)**1.5 - includes ref concentrations
+
+    return m_ref * c_e**0.5 * c_s_surf**0.5 * (c_s_max - c_s_surf) ** 0.5
+
+
+def electrolyte_diffusivity_Valoen2005(c_e, T):
+    """
+    Diffusivity of LiPF6 in EC:DMC as a function of ion concentration, from [1] (eqn 14)
+
+    References
+    ----------
+    .. [1] Valøen, Lars Ole, and Jan N. Reimers. "Transport properties of LiPF6-based
+    Li-ion battery electrolytes." Journal of The Electrochemical Society 152.5 (2005):
+    A882-A891.
+
+    Parameters
+    ----------
+    c_e : :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration [mol.m-3]
+    T : :class:`pybamm.Symbol`
+        Dimensional temperature [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Dimensional electrolyte diffusivity [m2.s-1]
+    """
+    # mol/m3 to molar
+    c_e = c_e / 1000
+
+    T_g = 229 + 5 * c_e
+    D_0 = -4.43 - 54 / (T - T_g)
+    D_1 = -0.22
+
+    # cm2/s to m2/s
+    # note, in the Valoen paper, ln means log10, so its inverse is 10^x
+    return (10 ** (D_0 + D_1 * c_e)) * 1e-4
+
+
+def electrolyte_conductivity_Valoen2005(c_e, T):
+    """
+    Conductivity of LiPF6 in EC:DMC as a function of ion concentration, from [1]
+    (eqn 17)
+
+    References
+    ----------
+    .. [1] Valøen, Lars Ole, and Jan N. Reimers. "Transport properties of LiPF6-based
+    Li-ion battery electrolytes." Journal of The Electrochemical Society 152.5 (2005):
+    A882-A891.
+
+    Parameters
+    ----------
+    c_e : :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration [mol.m-3]
+    T : :class:`pybamm.Symbol`
+        Dimensional temperature [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Dimensional electrolyte conductivity [S.m-1]
+    """
+    # mol/m3 to molar
+    c_e = c_e / 1000
+    # mS/cm to S/m
+    return (1e-3 / 1e-2) * (
+        c_e
+        * (
+            (-10.5 + 0.0740 * T - 6.96e-5 * T**2)
+            + c_e * (0.668 - 0.0178 * T + 2.80e-5 * T**2)
+            + c_e**2 * (0.494 - 8.86e-4 * T)
+        )
+        ** 2
+    )
+
+
+# Call dict via a function to avoid errors when editing in place
+def get_parameter_values():
+    """
+    Parameters for a Kokam SLPB78205130H half-cell, from the paper :footcite:t:`Xu2019`
+    and references therein. Anode is graphite MCMB 2528. Separator is Celgard 2325.
+    Cathode is lithium Cobalt Oxide. Electrolyte is LiPF6.
+
+    Parameters for a LiPF6 electrolyte are from the paper :footcite:t:`Valoen2005`
+
+    1C discharge from full
+    ^^^^^^^^^^^^^^^^^^^^^^
+
+    SEI parameters are example parameters for SEI growth from the papers
+    :footcite:t:`Ramadass2004`, :footcite:t:`Ploehn2004`,
+    :footcite:t:`Single2018`, :footcite:t:`Safari2008`, and
+    :footcite:t:`Yang2017`.
+
+    .. note::
+        This parameter set does not claim to be representative of the true parameter
+        values. Instead these are parameter values that were used to fit SEI models to
+        observed experimental data in the referenced papers.
+    """
+
+    return {
+        "chemistry": "lithium_ion",
+        # sei
+        "Ratio of lithium moles to SEI moles": 2.0,
+        "SEI partial molar volume [m3.mol-1]": 9.585e-05,
+        "SEI reaction exchange current density [A.m-2]": 1.5e-07,
+        "SEI resistivity [Ohm.m]": 200000.0,
+        "SEI solvent diffusivity [m2.s-1]": 2.5e-22,
+        "Bulk solvent concentration [mol.m-3]": 2636.0,
+        "SEI open-circuit potential [V]": 0.4,
+        "SEI electron conductivity [S.m-1]": 8.95e-14,
+        "SEI lithium interstitial diffusivity [m2.s-1]": 1e-20,
+        "Lithium interstitial reference concentration [mol.m-3]": 15.0,
+        "Initial SEI thickness [m]": 5e-09,
+        "EC initial concentration in electrolyte [mol.m-3]": 4541.0,
+        "EC diffusivity [m2.s-1]": 2e-18,
+        "SEI kinetic rate constant [m.s-1]": 1e-12,
+        "SEI growth activation energy [J.mol-1]": 0.0,
+        "Negative electrode reaction-driven LAM factor [m3.mol-1]": 0.0,
+        "Positive electrode reaction-driven LAM factor [m3.mol-1]": 0.0,
+        # cell
+        "Negative electrode thickness [m]": 0.0007,
+        "Separator thickness [m]": 2.5e-05,
+        "Positive electrode thickness [m]": 4.2e-05,
+        "Electrode height [m]": 0.01,
+        "Electrode width [m]": 0.0154,
+        "Nominal cell capacity [A.h]": 0.0024,
+        "Current function [A]": 0.0024,
+        "Contact resistance [Ohm]": 0,
+        # negative electrode
+        "Negative electrode OCP [V]": 0.0,
+        "Negative electrode conductivity [S.m-1]": 10776000.0,
+        "Negative electrode OCP entropic change [V.K-1]": 0.0,
+        "Lithium metal partial molar volume [m3.mol-1]": 1.3e-05,
+        "Exchange-current density for lithium metal electrode [A.m-2]"
+        "": li_metal_electrolyte_exchange_current_density_Xu2019,
+        "Negative electrode charge transfer coefficient": 0.5,
+        "Negative electrode double-layer capacity [F.m-2]": 0.2,
+        # positive electrode
+        "Positive electrode conductivity [S.m-1]": 100.0,
+        "Maximum concentration in positive electrode [mol.m-3]": 48230.0,
+        "Positive particle diffusivity [m2.s-1]": 1e-14,
+        "Positive electrode OCP [V]": nmc_ocp_Xu2019,
+        "Positive electrode porosity": 0.331,
+        "Positive electrode active material volume fraction": 0.518,
+        "Positive particle radius [m]": 5.3e-06,
+        "Positive electrode Bruggeman coefficient (electrolyte)": 1.5,
+        "Positive electrode Bruggeman coefficient (electrode)": 1.5,
+        "Positive electrode OCP entropic change [V.K-1]": 0.0,
+        "Positive electrode charge transfer coefficient": 0.5,
+        "Positive electrode exchange-current density [A.m-2]"
+        "": nmc_electrolyte_exchange_current_density_Xu2019,
+        "Positive electrode double-layer capacity [F.m-2]": 0.2,
+        # separator
+        "Separator porosity": 0.39,
+        "Separator Bruggeman coefficient (electrolyte)": 1.5,
+        "Separator Bruggeman coefficient (electrode)": 1.5,
+        # electrolyte
+        "Initial concentration in electrolyte [mol.m-3]": 1000.0,
+        "Cation transference number": 0.38,
+        "Electrolyte diffusivity [m2.s-1]": electrolyte_diffusivity_Valoen2005,
+        "Electrolyte conductivity [S.m-1]": electrolyte_conductivity_Valoen2005,
+        "Thermodynamic factor": 1.0,
+        # experiment
+        "Ambient temperature [K]": 298.15,
+        "Reference temperature [K]": 298.15,
+        "Heat transfer coefficient [W.m-2.K-1]": 10.0,
+        "Number of electrodes connected in parallel to make a cell": 1.0,
+        "Number of cells connected in series to make a battery": 1.0,
+        "Lower voltage cut-off [V]": 3.5,
+        "Upper voltage cut-off [V]": 4.2,
+        "Open-circuit voltage at 0% SOC [V]": 3.5,
+        "Open-circuit voltage at 100% SOC [V]": 4.2,
+        "Initial concentration in positive electrode [mol.m-3]": 4631.0,
+        "Initial temperature [K]": 298.15,
+        # citations
+        "citations": ["Xu2019", "Valoen2005"],
+    }
+import os
+
+import numpy as np
+
+import pybamm
+
+
+def graphite_diffusivity_Dualfoil1998(sto, T):
+    """
+    Graphite diffusivity as a function of stoichiometry [1, 2, 3].
+
+    References
+    ----------
+     .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity in
+     Lithium-Ion Pouch Cells. Journal of The Electrochemical Society, 167(1), 013512
+      DOI: 10.1149/2.0122001JES.
+     .. [2] Rieger, B., Erhard, S. V., Rumpf, K., & Jossen, A. (2016).
+     A new method to model the thickness change of a commercial pouch cell
+     during discharge. Journal of The Electrochemical Society, 163(8), A1566-A1575.
+
+    Parameters
+    ----------
+    sto: :class:`pybamm.Symbol`
+        Electrode stoichiometry
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Solid diffusivity [m2.s-1]
+    """
+    D_ref = 3.9 * 10 ** (-14)
+    E_D_s = 5000
+    T_ref = 298.15
+    arrhenius = np.exp(E_D_s / pybamm.constants.R * (1 / T_ref - 1 / T))
+    return D_ref * arrhenius
+
+
+def graphite_electrolyte_exchange_current_density_Dualfoil1998(
+    c_e, c_s_surf, c_s_max, T
+):
+    """
+    Exchange-current density for Butler-Volmer reactions between graphite and LiPF6 in
+    EC:DMC.
+
+    References
+    ----------
+    .. [2] John Newman, Dualfoil
+
+    Parameters
+    ----------
+    c_e : :class:`pybamm.Symbol`
+        Electrolyte concentration [mol.m-3]
+    c_s_surf : :class:`pybamm.Symbol`
+        Particle concentration [mol.m-3]
+    c_s_max : :class:`pybamm.Symbol`
+        Maximum particle concentration [mol.m-3]
+    T : :class:`pybamm.Symbol`
+        Temperature [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Exchange-current density [A.m-2]
+    """
+    m_ref = (
+        1 * 10 ** (-11) * pybamm.constants.F
+    )  # (A/m2)(m3/mol)**1.5 - includes ref concentrations
+    E_r = 5000  # activation energy for Temperature Dependent Reaction Constant [J/mol]
+    arrhenius = np.exp(E_r / pybamm.constants.R * (1 / 298.15 - 1 / T))
+
+    return m_ref * arrhenius * c_e**0.5 * c_s_surf**0.5 * (c_s_max - c_s_surf) ** 0.5
+
+
+def graphite_entropy_Enertech_Ai2020_function(sto):
+    """
+    Lithium Cobalt Oxide (LiCO2) entropic change in open-circuit potential (OCP) at
+    a temperature of 298.15K as a function of the stoichiometry. The fit is taken
+    from Ref [1], which is only accurate
+    for 0.43 < sto < 0.9936.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity in
+    Lithium-Ion Pouch Cells.
+    Journal of The Electrochemical Society, 167(1), 013512. DOI: 10.1149/2.0122001JES
+
+    Parameters
+    ----------
+    sto: double
+       stoichiometry of material (li-fraction)
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Entropic change [V.K-1]
+    """
+
+    du_dT = (
+        0.001
+        * (
+            0.005269056
+            + 3.299265709 * sto
+            - 91.79325798 * sto**2
+            + 1004.911008 * sto**3
+            - 5812.278127 * sto**4
+            + 19329.7549 * sto**5
+            - 37147.8947 * sto**6
+            + 38379.18127 * sto**7
+            - 16515.05308 * sto**8
+        )
+        / (
+            1
+            - 48.09287227 * sto
+            + 1017.234804 * sto**2
+            - 10481.80419 * sto**3
+            + 59431.3 * sto**4
+            - 195881.6488 * sto**5
+            + 374577.3152 * sto**6
+            - 385821.1607 * sto**7
+            + 165705.8597 * sto**8
+        )
+    )
+
+    return du_dT
+
+
+def graphite_volume_change_Ai2020(sto):
+    """
+    Graphite particle volume change as a function of stoichiometry [1, 2].
+
+    References
+    ----------
+     .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity in
+     Lithium-Ion Pouch Cells. Journal of The Electrochemical Society, 167(1), 013512
+      DOI: 10.1149/2.0122001JES.
+     .. [2] Rieger, B., Erhard, S. V., Rumpf, K., & Jossen, A. (2016).
+     A new method to model the thickness change of a commercial pouch cell
+     during discharge. Journal of The Electrochemical Society, 163(8), A1566-A1575.
+
+    Parameters
+    ----------
+    sto: :class:`pybamm.Symbol`
+        Electrode stoichiometry, dimensionless
+        should be R-averaged particle concentration
+    c_s_max : :class:`pybamm.Symbol`
+        Maximum particle concentration [mol.m-3]
+
+    Returns
+    -------
+    t_change:class:`pybamm.Symbol`
+        volume change, dimensionless, normalised by particle volume
+    """
+    p1 = 145.907
+    p2 = -681.229
+    p3 = 1334.442
+    p4 = -1415.710
+    p5 = 873.906
+    p6 = -312.528
+    p7 = 60.641
+    p8 = -5.706
+    p9 = 0.386
+    p10 = -4.966e-05
+    t_change = (
+        p1 * sto**9
+        + p2 * sto**8
+        + p3 * sto**7
+        + p4 * sto**6
+        + p5 * sto**5
+        + p6 * sto**4
+        + p7 * sto**3
+        + p8 * sto**2
+        + p9 * sto
+        + p10
+    )
+    return t_change
+
+
+def graphite_cracking_rate_Ai2020(T_dim):
+    """
+    graphite particle cracking rate as a function of temperature [1, 2].
+
+    References
+    ----------
+     .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity in
+     Lithium-Ion Pouch Cells. Journal of The Electrochemical Society, 167(1), 013512
+      DOI: 10.1149/2.0122001JES.
+     .. [2] Deshpande, R., Verbrugge, M., Cheng, Y. T., Wang, J., & Liu, P. (2012).
+     Battery cycle life prediction with coupled chemical degradation and fatigue
+     mechanics. Journal of the Electrochemical Society, 159(10), A1730.
+
+    Parameters
+    ----------
+    T_dim: :class:`pybamm.Symbol`
+        temperature, [K]
+
+    Returns
+    -------
+    k_cr: :class:`pybamm.Symbol`
+        cracking rate, [m/(Pa.m0.5)^m_cr]
+        where m_cr is another Paris' law constant
+    """
+    k_cr = 3.9e-20
+    T_ref = 298.15
+    Eac_cr = pybamm.Parameter(
+        "Negative electrode activation energy for cracking rate [J.mol-1]"
+    )
+    arrhenius = np.exp(Eac_cr / pybamm.constants.R * (1 / T_dim - 1 / T_ref))
+    return k_cr * arrhenius
+
+
+def lico2_diffusivity_Dualfoil1998(sto, T):
+    """
+    LiCo2 diffusivity as a function of stoichiometry, in this case the
+    diffusivity is taken to be a constant. The value is taken from Dualfoil [1].
+
+    References
+    ----------
+    .. [1] John Newman, Dualfoil
+
+    Parameters
+    ----------
+    sto: :class:`pybamm.Symbol`
+        Electrode stoichiometry
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Solid diffusivity [m2.s-1]
+    """
+    D_ref = 5.387 * 10 ** (-15)
+    E_D_s = 5000
+    T_ref = 298.15
+    arrhenius = np.exp(E_D_s / pybamm.constants.R * (1 / T_ref - 1 / T))
+    return D_ref * arrhenius
+
+
+def lico2_electrolyte_exchange_current_density_Dualfoil1998(c_e, c_s_surf, c_s_max, T):
+    """
+    Exchange-current density for Butler-Volmer reactions between lico2 and LiPF6 in
+    EC:DMC.
+
+    References
+    ----------
+    .. [2] John Newman, Dualfoil
+
+    Parameters
+    ----------
+    c_e : :class:`pybamm.Symbol`
+        Electrolyte concentration [mol.m-3]
+    c_s_surf : :class:`pybamm.Symbol`
+        Particle concentration [mol.m-3]
+    c_s_max : :class:`pybamm.Symbol`
+        Maximum particle concentration [mol.m-3]
+    T : :class:`pybamm.Symbol`
+        Temperature [K]
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Exchange-current density [A.m-2]
+    """
+    m_ref = 1 * 10 ** (-11) * pybamm.constants.F  # need to match the unit from m/s
+    # (A/m2)(m3/mol)**1.5 - includes ref concentrations
+    E_r = 5000
+    arrhenius = np.exp(E_r / pybamm.constants.R * (1 / 298.15 - 1 / T))
+
+    return m_ref * arrhenius * c_e**0.5 * c_s_surf**0.5 * (c_s_max - c_s_surf) ** 0.5
+
+
+def lico2_entropic_change_Ai2020_function(sto):
+    """
+    Lithium Cobalt Oxide (LiCO2) entropic change in open-circuit potential (OCP) at
+    a temperature of 298.15K as a function of the stoichiometry. The fit is taken
+    from Ref [1], which is only accurate
+    for 0.43 < sto < 0.9936.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+    in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+        167(1), 013512. DOI: 10.1149/2.0122001JES
+
+    Parameters
+    ----------
+    sto: double
+       stoichiometry of material (li-fraction)
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Entropic change [V.K-1]
+    """
+
+    # Since the equation for LiCo2 from this ref. has the stretch factor,
+    # should this too? If not, the "bumps" in the OCV don't line up.
+    p1 = -3.20392657
+    p2 = 14.5719049
+    p3 = -27.9047599
+    p4 = 29.1744564
+    p5 = -17.992018
+    p6 = 6.54799331
+    p7 = -1.30382445
+    p8 = 0.109667298
+
+    du_dT = (
+        p1 * sto**7
+        + p2 * sto**6
+        + p3 * sto**5
+        + p4 * sto**4
+        + p5 * sto**3
+        + p6 * sto**2
+        + p7 * sto
+        + p8
+    )
+
+    return du_dT
+
+
+def lico2_volume_change_Ai2020(sto):
+    """
+    lico2 particle volume change as a function of stoichiometry [1, 2].
+
+    References
+    ----------
+     .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity in
+     Lithium-Ion Pouch Cells. Journal of The Electrochemical Society, 167(1), 013512
+      DOI: 10.1149/2.0122001JES.
+     .. [2] Rieger, B., Erhard, S. V., Rumpf, K., & Jossen, A. (2016).
+     A new method to model the thickness change of a commercial pouch cell
+     during discharge. Journal of The Electrochemical Society, 163(8), A1566-A1575.
+
+    Parameters
+    ----------
+    sto: :class:`pybamm.Symbol`
+        Electrode stoichiometry, dimensionless
+        should be R-averaged particle concentration
+
+    Returns
+    -------
+    t_change:class:`pybamm.Symbol`
+        volume change, dimensionless, normalised by particle volume
+    """
+    omega = pybamm.Parameter("Positive electrode partial molar volume [m3.mol-1]")
+    c_s_max = pybamm.Parameter("Maximum concentration in positive electrode [mol.m-3]")
+    t_change = omega * c_s_max * sto
+    return t_change
+
+
+def lico2_cracking_rate_Ai2020(T_dim):
+    """
+    lico2 particle cracking rate as a function of temperature [1, 2].
+
+    References
+    ----------
+     .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+     Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity in
+     Lithium-Ion Pouch Cells. Journal of The Electrochemical Society, 167(1), 013512
+      DOI: 10.1149/2.0122001JES.
+     .. [2] Deshpande, R., Verbrugge, M., Cheng, Y. T., Wang, J., & Liu, P. (2012).
+     Battery cycle life prediction with coupled chemical degradation and fatigue
+     mechanics. Journal of the Electrochemical Society, 159(10), A1730.
+
+    Parameters
+    ----------
+    T: :class:`pybamm.Symbol`
+        temperature, [K]
+
+    Returns
+    -------
+    k_cr: :class:`pybamm.Symbol`
+        cracking rate, [m/(Pa.m0.5)^m_cr]
+        where m_cr is another Paris' law constant
+    """
+    k_cr = 3.9e-20
+    T_ref = 298.15
+    Eac_cr = pybamm.Parameter(
+        "Positive electrode activation energy for cracking rate [J.mol-1]"
+    )
+    arrhenius = np.exp(Eac_cr / pybamm.constants.R * (1 / T_dim - 1 / T_ref))
+    return k_cr * arrhenius
+
+
+def dlnf_dlnc_Ai2020(c_e, T, T_ref=298.3, t_plus=0.38):
+    """
+    Activity dependence of LiPF6 in EC:DMC as a function of ion concentration.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+    in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+    167(1), 013512. DOI: 10.1149/2.0122001JES.
+
+    Parameters
+    ----------
+    c_e: :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration, mol/m^3
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, K
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Thermodynamic factor
+    """
+    T_ref = 298.15
+    t_plus = pybamm.Parameter("Cation transference number")
+    dlnf_dlnc = (
+        0.601
+        - 0.24 * (c_e / 1000) ** 0.5
+        + 0.982 * (1 - 0.0052 * (T - T_ref)) * (c_e / 1000) ** 1.5
+    ) / (1 - t_plus)
+    return dlnf_dlnc
+
+
+def electrolyte_diffusivity_Ai2020(c_e, T):
+    """
+    Diffusivity of LiPF6 in EC:DMC as a function of ion concentration.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+    in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+    167(1), 013512. DOI: 10.1149/2.0122001JES.
+    .. [2] Valoen, L. O., & Reimers, J. N. (2005). Transport properties of
+    LiPF6-based Li-ion battery electrolytes. Journal of The Electrochemical
+    Society, 152(5), A882 (eqn 14). DOI: 10.1149/1.1872737.
+
+    Parameters
+    ----------
+    c_e: :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration, mol/m^3
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, K
+
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Dimensional electrolyte diffusivity [m2.s-1]
+    """
+    # The Valoen and Reimers (2005) fit gives cm2/s; convert to m2/s
+    D_c_e = 1e-4 * 10 ** (-4.43 - 54 / (T - 229 - 5e-3 * c_e) - 0.22e-3 * c_e)
+
+    return D_c_e
+
+
+def electrolyte_conductivity_Ai2020(c_e, T):
+    """
+    Conductivity of LiPF6 in EC:DMC as a function of ion concentration.
+    Concentration should be in dm3 in the function.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+    in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+    167(1), 013512. DOI: 10.1149/2.0122001JES.
+    .. [2] Torchio, Marcello, et al. "Lionsimba: a matlab framework based
+    on a finite volume model suitable for li-ion battery design, simulation,
+    and control." Journal of The Electrochemical Society 163.7 (2016): A1192.
+
+    Parameters
+    ----------
+    c_e: :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration, mol/m^3
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, K
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Dimensional electrolyte conductivity [S.m-1]
+    """
+
+    sigma_e = (
+        1e-4
+        * c_e
+        * (
+            (-10.5 + 0.668 * 1e-3 * c_e + 0.494 * 1e-6 * c_e**2)
+            + (0.074 - 1.78 * 1e-5 * c_e - 8.86 * 1e-10 * c_e**2) * T
+            + (-6.96 * 1e-5 + 2.8 * 1e-8 * c_e) * T**2
+        )
+        ** 2
+    )
+
+    return sigma_e
+
+
+# Load data in the appropriate format
+path, _ = os.path.split(os.path.abspath(__file__))
+graphite_ocp_Enertech_Ai2020_data = pybamm.parameters.process_1D_data(
+    "graphite_ocp_Enertech_Ai2020.csv", path=path
+)
+lico2_ocp_Ai2020_data = pybamm.parameters.process_1D_data(
+    "lico2_ocp_Ai2020.csv", path=path
+)
+
+
+def graphite_ocp_Enertech_Ai2020(sto):
+    name, (x, y) = graphite_ocp_Enertech_Ai2020_data
+    return pybamm.Interpolant(x, y, sto, name=name, interpolator="cubic")
+
+
+def lico2_ocp_Ai2020(sto):
+    name, (x, y) = lico2_ocp_Ai2020_data
+    return pybamm.Interpolant(x, y, sto, name=name, interpolator="cubic")
+
+
+# Call dict via a function to avoid errors when editing in place
+def get_parameter_values():
+    """
+    Parameters for the Enertech cell (Ai2020), from the papers :footcite:t:`Ai2019`,
+    :footcite:t:`Rieger2016` and references therein.
+
+    SEI parameters are example parameters for SEI growth from the papers
+    :footcite:t:`Ramadass2004`, :footcite:t:`Ploehn2004`,
+    :footcite:t:`Single2018`, :footcite:t:`Safari2008`, and
+    :footcite:t:`Yang2017`
+
+    .. note::
+        This parameter set does not claim to be representative of the true parameter
+        values. Instead these are parameter values that were used to fit SEI models to
+        observed experimental data in the referenced papers.
+    """
+
+    return {
+        "chemistry": "lithium_ion",
+        # sei
+        "Ratio of lithium moles to SEI moles": 2.0,
+        "SEI partial molar volume [m3.mol-1]": 9.585e-05,
+        "SEI reaction exchange current density [A.m-2]": 1.5e-07,
+        "SEI resistivity [Ohm.m]": 200000.0,
+        "SEI solvent diffusivity [m2.s-1]": 2.5e-22,
+        "Bulk solvent concentration [mol.m-3]": 2636.0,
+        "SEI open-circuit potential [V]": 0.4,
+        "SEI electron conductivity [S.m-1]": 8.95e-14,
+        "SEI lithium interstitial diffusivity [m2.s-1]": 1e-20,
+        "Lithium interstitial reference concentration [mol.m-3]": 15.0,
+        "Initial SEI thickness [m]": 5e-09,
+        "Initial SEI on cracks thickness [m]": 5e-13,  # practically zero
+        "EC initial concentration in electrolyte [mol.m-3]": 4541.0,
+        "EC diffusivity [m2.s-1]": 2e-18,
+        "SEI kinetic rate constant [m.s-1]": 1e-12,
+        "SEI growth activation energy [J.mol-1]": 0.0,
+        "Negative electrode reaction-driven LAM factor [m3.mol-1]": 0.0,
+        "Positive electrode reaction-driven LAM factor [m3.mol-1]": 0.0,
+        # cell
+        "Negative current collector thickness [m]": 1e-05,
+        "Negative electrode thickness [m]": 7.65e-05,
+        "Separator thickness [m]": 2.5e-05,
+        "Positive electrode thickness [m]": 6.8e-05,
+        "Positive current collector thickness [m]": 1.5e-05,
+        "Electrode height [m]": 0.051,
+        "Electrode width [m]": 0.047,
+        "Cell cooling surface area [m2]": 0.0060484,
+        "Cell volume [m3]": 1.5341e-05,
+        "Cell emissivity": 0.95,
+        "Cell thermal expansion coefficient [m.K-1]": 1.1e-06,
+        "Negative current collector conductivity [S.m-1]": 58411000.0,
+        "Positive current collector conductivity [S.m-1]": 36914000.0,
+        "Negative current collector density [kg.m-3]": 8960.0,
+        "Positive current collector density [kg.m-3]": 2700.0,
+        "Negative current collector specific heat capacity [J.kg-1.K-1]": 385.0,
+        "Positive current collector specific heat capacity [J.kg-1.K-1]": 897.0,
+        "Negative current collector thermal conductivity [W.m-1.K-1]": 401.0,
+        "Positive current collector thermal conductivity [W.m-1.K-1]": 237.0,
+        "Nominal cell capacity [A.h]": 2.28,
+        "Current function [A]": 2.28,
+        "Contact resistance [Ohm]": 0,
+        # negative electrode
+        "Negative electrode conductivity [S.m-1]": 100.0,
+        "Maximum concentration in negative electrode [mol.m-3]": 28700.0,
+        "Negative particle diffusivity [m2.s-1]": graphite_diffusivity_Dualfoil1998,
+        "Negative electrode OCP [V]": graphite_ocp_Enertech_Ai2020,
+        "Negative electrode porosity": 0.33,
+        "Negative electrode active material volume fraction": 0.61,
+        "Negative particle radius [m]": 5e-06,
+        "Negative electrode Bruggeman coefficient (electrolyte)": 2.914,
+        "Negative electrode Bruggeman coefficient (electrode)": 0.0,
+        "Negative electrode charge transfer coefficient": 0.5,
+        "Negative electrode double-layer capacity [F.m-2]": 0.2,
+        "Negative electrode exchange-current density [A.m-2]"
+        "": graphite_electrolyte_exchange_current_density_Dualfoil1998,
+        "Negative electrode density [kg.m-3]": 2470.0,
+        "Negative electrode specific heat capacity [J.kg-1.K-1]": 1080.2,
+        "Negative electrode thermal conductivity [W.m-1.K-1]": 1.04,
+        "Negative electrode OCP entropic change [V.K-1]"
+        "": graphite_entropy_Enertech_Ai2020_function,
+        "Negative electrode Poisson's ratio": 0.3,
+        "Negative electrode Young's modulus [Pa]": 15000000000.0,
+        "Negative electrode reference concentration for free of deformation [mol.m-3]"
+        "": 0.0,
+        "Negative electrode partial molar volume [m3.mol-1]": 3.1e-06,
+        "Negative electrode volume change": graphite_volume_change_Ai2020,
+        "Negative electrode initial crack length [m]": 2e-08,
+        "Negative electrode initial crack width [m]": 1.5e-08,
+        "Negative electrode number of cracks per unit area [m-2]": 3180000000000000.0,
+        "Negative electrode Paris' law constant b": 1.12,
+        "Negative electrode Paris' law constant m": 2.2,
+        "Negative electrode cracking rate": graphite_cracking_rate_Ai2020,
+        "Negative electrode activation energy for cracking rate [J.mol-1]": 0.0,
+        "Negative electrode LAM constant proportional term [s-1]": 0.0,
+        "Negative electrode LAM constant exponential term": 2.0,
+        "Negative electrode critical stress [Pa]": 60000000.0,
+        # positive electrode
+        "Positive electrode conductivity [S.m-1]": 10.0,
+        "Maximum concentration in positive electrode [mol.m-3]": 49943.0,
+        "Positive particle diffusivity [m2.s-1]": lico2_diffusivity_Dualfoil1998,
+        "Positive electrode OCP [V]": lico2_ocp_Ai2020,
+        "Positive electrode porosity": 0.32,
+        "Positive electrode active material volume fraction": 0.62,
+        "Positive particle radius [m]": 3e-06,
+        "Positive electrode surface area to volume ratio [m-1]": 620000.0,
+        "Positive electrode Bruggeman coefficient (electrolyte)": 1.83,
+        "Positive electrode Bruggeman coefficient (electrode)": 0.0,
+        "Positive electrode charge transfer coefficient": 0.5,
+        "Positive electrode double-layer capacity [F.m-2]": 0.2,
+        "Positive electrode exchange-current density [A.m-2]"
+        "": lico2_electrolyte_exchange_current_density_Dualfoil1998,
+        "Positive electrode density [kg.m-3]": 2470.0,
+        "Positive electrode specific heat capacity [J.kg-1.K-1]": 1080.2,
+        "Positive electrode thermal conductivity [W.m-1.K-1]": 1.58,
+        "Positive electrode OCP entropic change [V.K-1]"
+        "": lico2_entropic_change_Ai2020_function,
+        "Positive electrode Poisson's ratio": 0.2,
+        "Positive electrode Young's modulus [Pa]": 375000000000.0,
+        "Positive electrode reference concentration for free of deformation [mol.m-3]"
+        "": 0.0,
+        "Positive electrode partial molar volume [m3.mol-1]": -7.28e-07,
+        "Positive electrode volume change": lico2_volume_change_Ai2020,
+        "Positive electrode initial crack length [m]": 2e-08,
+        "Positive electrode initial crack width [m]": 1.5e-08,
+        "Positive electrode number of cracks per unit area [m-2]": 3180000000000000.0,
+        "Positive electrode Paris' law constant b": 1.12,
+        "Positive electrode Paris' law constant m": 2.2,
+        "Positive electrode cracking rate": lico2_cracking_rate_Ai2020,
+        "Positive electrode activation energy for cracking rate [J.mol-1]": 0.0,
+        "Positive electrode LAM constant proportional term [s-1]": 2.78e-13,
+        "Positive electrode LAM constant exponential term": 2.0,
+        "Positive electrode critical stress [Pa]": 375000000.0,
+        # separator
+        "Separator porosity": 0.5,
+        "Separator Bruggeman coefficient (electrolyte)": 1.5,
+        "Separator density [kg.m-3]": 2470.0,
+        "Separator specific heat capacity [J.kg-1.K-1]": 1080.2,
+        "Separator thermal conductivity [W.m-1.K-1]": 0.334,
+        # electrolyte
+        "Initial concentration in electrolyte [mol.m-3]": 1000.0,
+        "Cation transference number": 0.38,
+        "Thermodynamic factor": dlnf_dlnc_Ai2020,
+        "Electrolyte diffusivity [m2.s-1]": electrolyte_diffusivity_Ai2020,
+        "Electrolyte conductivity [S.m-1]": electrolyte_conductivity_Ai2020,
+        # experiment
+        "Reference temperature [K]": 298.15,
+        "Total heat transfer coefficient [W.m-2.K-1]": 35.0,
+        "Ambient temperature [K]": 298.15,
+        "Number of electrodes connected in parallel to make a cell": 34.0,
+        "Number of cells connected in series to make a battery": 1.0,
+        "Lower voltage cut-off [V]": 3.0,
+        "Upper voltage cut-off [V]": 4.2,
+        "Open-circuit voltage at 0% SOC [V]": 3.0,
+        "Open-circuit voltage at 100% SOC [V]": 4.2,
+        "Initial concentration in negative electrode [mol.m-3]": 24108.0,
+        "Initial concentration in positive electrode [mol.m-3]": 21725.0,
+        "Initial temperature [K]": 298.15,
+        # citations
+        "citations": ["Ai2019"],
+    }
+[build-system]
+requires = ["hatchling>=1.32.0", "hatch-vcs>=0.5.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pybamm"
+dynamic = ["version"]
+license = { file = "LICENSE.txt" }
+description = "Python Battery Mathematical Modelling"
+authors = [{ name = "The PyBaMM Team", email = "<email>" }]
+maintainers = [{ name = "The PyBaMM Team", email = "<email>" }]
+requires-python = ">=3.10, <3.16"
+readme = { file = "README.md", content-type = "text/markdown" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "pybammsolvers>=0.11.0,<0.12.0",
+    "black",
+    "numpy>=2.0.0",
+    "scipy>=1.11.4,!=1.18.0", # 1.18.0 breaks pickling/deepcopy of interpolators, fixed in 1.18.1 (scipy#25489)
+    "xarray>=2022.6.0",
+    "anytree>=2.8.0",
+    "sympy>=1.12",
+    "typing-extensions>=4.16.0",
+    "pandas>=1.5.0",
+    "pooch>=1.8.1",
+    "posthog",
+    "pyyaml",
+    "platformdirs",
+]
+
+[project.urls]
+Homepage = "https://pybamm.org"
+Documentation = "https://docs.pybamm.org"
+Repository = "https://github.com/pybamm-team/PyBaMM"
+Releases = "https://github.com/pybamm-team/PyBaMM/releases"
+Changelog = "https://github.com/pybamm-team/PyBaMM/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+# For example notebooks
+examples = ["jupyter"]
+plot = [
+    # Note: matplotlib is loaded for debug plots, but to ensure PyBaMM runs
+    # on systems without an attached display, it should never be imported
+    # outside of plot() methods.
+    "matplotlib>=3.6.0",
+]
+cite = ["pybtex>=0.25.0"]
+# For diffsl export integration tests
+pydiffsol = ["pydiffsol>=0.6.2"]
+# Battery Parameter eXchange format
+bpx = ["bpx>=1.1.1,<1.2.0"]
+# Low-overhead progress bars
+tqdm = ["tqdm"]
+jax = ["jax>=0.7.0, <0.12.0; python_version >= '3.11' and (sys_platform != 'darwin' or platform_machine != 'x86_64')"]
+# Unstructured-mesh visualization (pillow writes GIFs). 9.3.1 is the first VTK whose
+# numpy_support works with NumPy 2; no VTK has cp315 wheels yet, so 3.15 skips it
+vtk = ["vtk>=9.3.1; python_version < '3.15'", "pillow"]
+# Finite-element meshes: scikit-fem builds 2D and 3D meshes, meshio reads mesh files
+fem = ["scikit-fem>=12.0.2", "meshio>=5.3.0"]
+# Contains all optional dependencies, except for jax, and dev dependencies
+all = ["pybamm[examples,plot,cite,bpx,tqdm,vtk,fem]"]
+
+[dependency-groups]
+docs = [
+    "sphinx>=6",
+    "sphinx_rtd_theme>=0.5",
+    "pydata-sphinx-theme",
+    "sphinx_design",
+    "sphinx-copybutton",
+    "myst-parser",
+    "sphinx-inline-tabs",
+    "sphinxcontrib-bibtex",
+    "sphinx-autobuild",
+    "sphinx-last-updated-by-git",
+    "nbsphinx",
+    "ipykernel",
+    "ipywidgets",
+    "sphinx-gallery",
+    "sphinx-docsearch",
+]
+# Benchmark-only dependencies, kept out of dev so the Bencher image stays small
+bench = [
+    "pytest>=9.0",
+    "pytest-xdist",
+    "pytest-mock",
+    "hypothesis",
+    "pytest-benchmark>=5.3.0",
+    # For memory benchmarking (Linux/macOS only)
+    "pytest-memray>=1.7.0; sys_platform != 'win32'",
+]
+dev = [
+    # For working with pre-commit hooks
+    "pre-commit",
+    # For code style checks: linting and auto-formatting
+    "ruff",
+    # For running testing sessions
+    "nox",
+    # For coverage
+    "pytest-cov",
+    # For doctest
+    "pytest-doctestplus",
+    "pytest-snapshot",
+    # For testing Jupyter notebooks
+    "nbmake",
+    # To access the metadata for python packages
+    "importlib-metadata; python_version < '3.10'",
+    { include-group = "bench" },
+]
+
+[project.entry-points."pybamm_parameter_sets"]
+Sulzer2019 = "pybamm.input.parameters.lead_acid.Sulzer2019:get_parameter_values"
+Ai2020 = "pybamm.input.parameters.lithium_ion.Ai2020:get_parameter_values"
+Chen2020 = "pybamm.input.parameters.lithium_ion.Chen2020:get_parameter_values"
+Chen2020_composite = "pybamm.input.parameters.lithium_ion.Chen2020_composite:get_parameter_values"
+Bonkile2024 = "pybamm.input.parameters.lithium_ion.Bonkile2024:get_parameter_values"
+Ecker2015 = "pybamm.input.parameters.lithium_ion.Ecker2015:get_parameter_values"
+Ecker2015_graphite_halfcell = "pybamm.input.parameters.lithium_ion.Ecker2015_graphite_halfcell:get_parameter_values"
+Marquis2019 = "pybamm.input.parameters.lithium_ion.Marquis2019:get_parameter_values"
+Mohtat2020 = "pybamm.input.parameters.lithium_ion.Mohtat2020:get_parameter_values"
+NCA_Kim2011 = "pybamm.input.parameters.lithium_ion.NCA_Kim2011:get_parameter_values"
+OKane2022 = "pybamm.input.parameters.lithium_ion.OKane2022:get_parameter_values"
+OKane2022_graphite_SiOx_halfcell = "pybamm.input.parameters.lithium_ion.OKane2022_graphite_SiOx_halfcell:get_parameter_values"
+ORegan2022 = "pybamm.input.parameters.lithium_ion.ORegan2022:get_parameter_values"
+Prada2013 = "pybamm.input.parameters.lithium_ion.Prada2013:get_parameter_values"
+Ramadass2004 = "pybamm.input.parameters.lithium_ion.Ramadass2004:get_parameter_values"
+Xu2019 = "pybamm.input.parameters.lithium_ion.Xu2019:get_parameter_values"
+ECM_Example = "pybamm.input.parameters.ecm.example_set:get_parameter_values"
+MSMR_Example = "pybamm.input.parameters.lithium_ion.MSMR_example_set:get_parameter_values"
+Chayambuka2022 = "pybamm.input.parameters.sodium_ion.Chayambuka2022:get_parameter_values"
+
+[project.entry-points."pybamm_models"]
+SPM = "pybamm.models.full_battery_models.lithium_ion.spm:SPM"
+DFN = "pybamm.models.full_battery_models.lithium_ion.dfn:DFN"
+SPMe = "pybamm.models.full_battery_models.lithium_ion.spme:SPMe"
+MPM = "pybamm.models.full_battery_models.lithium_ion.mpm:MPM"
+MSMR = "pybamm.models.full_battery_models.lithium_ion.msmr:MSMR"
+NewmanTobias = "pybamm.models.full_battery_models.lithium_ion.newman_tobian:NewmanTobias"
+Yang2017 = "pybamm.models.full_battery_models.lithium_ion.Yang2017:Yang2017"
+
+[tool.hatch]
+version.source = "vcs"
+version.fallback-version = "0.0.0"
+build.targets.sdist.include = ["src/pybamm", "CITATION.cff"]
+build.hooks.vcs.version-file = "src/pybamm/_version.py"
+
+# Monorepo tag scoping: PyBaMM releases are tagged `pybamm-v<CalVer>` (e.g.
+# pybamm-v27.1.0.0). Scope git-describe to that namespace so pybammsolvers tags
+# (`pybammsolvers-v*`) and legacy bare solver tags (`v0.x`) never drive PyBaMM's
+# version. See docs/superpowers/specs/2026-06-11-pybamm-monorepo-design.md.
+[tool.hatch.version.raw-options]
+# The git root is the monorepo root, two levels up from this package's
+# pyproject. Without this, setuptools_scm looks for .git in packages/pybamm/,
+# fails, and falls back to 0.0.0.
+root = "../.."
+git_describe_command = ["git", "describe", "--dirty", "--tags", "--long", "--match", "pybamm-v*"]
+tag_regex = '^pybamm-v(?P<version>[0-9].*)$'
+
+[tool.repo-review]
+ignore = [
+    "MY",     # ignore all MyPy setting checks (MY101, MY103, MY104, MY105, MY106)
+    "PP004",  # ignore the check that prevents an upper cap on Python requires
+    "PP308",  # ignore the explicit pytest summary flag (-ra) check
+    "PC140",  # ignore missing type checker in pre-commit
+    "PC160",  # ignore missing spell checker in pre-commit
+    "PC180",  # ignore missing markdown formatter in pre-commit
+    "RF102",  # ignore the missing isort selection in Ruff configuration
+    "PP006",  # ignore dev dependency group should be defined
+    "NOX201", # ignore set a script block with dependencies in your noxfile
+    "NOX202", # ignore noxfile has a shebang line
+]
+
+# NOTE: The shared [tool.ruff] config was hoisted to the repo-root pyproject.toml
+# so it governs the whole monorepo (including root-level docs/ and examples/).
+# See the workspace root pyproject.toml.
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+required_plugins = ["pytest-xdist", "pytest-mock"]
+addopts = ["-nauto", "-vra", "--strict-config", "--strict-markers", "--benchmark-disable"]
+testpaths = ["tests"]
+norecursedirs = ["benchmarks"]
+console_output_style = "progress"
+xfail_strict = true
+filterwarnings = [
+    "error",
+    # ignore internal nbmake warnings
+    'ignore:unclosed \<socket.socket:ResourceWarning',
+    'ignore:unclosed event loop \<:ResourceWarning',
+    # ignore warnings generated while running tests
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+    "ignore::RuntimeWarning",
+]
+
+# Logging configuration
+log_cli = true
+log_level = "INFO"
+log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+log_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.coverage.run]
+source = ["src/pybamm"]
+concurrency = ["multiprocessing"]
+# Parse warnings have existed for a while, but became failures in pytest 8.4.0
+disable_warnings = ["couldnt-parse", "module-not-measured"]
+
+
+[tool.mypy]
+ignore_missing_imports = true
+allow_redefinition = true
+disable_error_code = ["call-overload", "operator"]
+
+[[tool.mypy.overrides]]
+module = [
+    "pybamm.models.base_model.*",
+    "pybamm.models.full_battery_models.base_battery_model.*",
+]
+disable_error_code = "attr-defined"
+#
+# Tests for Ai (2020) Enertech parameter set loads
+#
+import numpy as np
+import pytest
+
+import pybamm
+
+
+class TestAi2020:
+    def test_functions(self):
+        param = pybamm.ParameterValues("Ai2020")
+        sto = pybamm.Scalar(0.5)
+        T = pybamm.Scalar(298.15)
+
+        c_p_max = param["Maximum concentration in positive electrode [mol.m-3]"]
+        c_n_max = param["Maximum concentration in negative electrode [mol.m-3]"]
+        fun_test = {
+            # Positive electrode
+            "Positive electrode cracking rate": ([T], 3.9e-20),
+            "Positive particle diffusivity [m2.s-1]": ([sto, T], 5.387e-15),
+            "Positive electrode exchange-current density [A.m-2]": (
+                [1e3, 1e4, c_p_max, T],
+                0.6098,
+            ),
+            "Positive electrode OCP entropic change [V.K-1]": (
+                [sto],
+                -2.1373e-4,
+            ),
+            "Positive electrode volume change": ([sto], -1.8179e-2),
+            # Negative electrode
+            "Negative electrode cracking rate": ([T], 3.9e-20),
+            "Negative particle diffusivity [m2.s-1]": ([sto, T], 3.9e-14),
+            "Negative electrode exchange-current density [A.m-2]": (
+                [1e3, 1e4, c_n_max, T],
+                0.4172,
+            ),
+            "Negative electrode OCP entropic change [V.K-1]": (
+                [sto],
+                -1.1033e-4,
+            ),
+            "Negative electrode volume change": ([sto], 5.1921e-2),
+            "Electrolyte diffusivity [m2.s-1]": ([1e3, T], 3.2227e-10),
+            "Electrolyte conductivity [S.m-1]": ([1e3, T], 1.1943),
+        }
+
+        for name, value in fun_test.items():
+            assert param.evaluate(param[name](*value[0])) == pytest.approx(
+                value[1], rel=1e-3, abs=0
+            )
+
+    def test_electrolyte_diffusivity(self):
+        # Same Valoen and Reimers (2005) fit as Xu2019, which already converts to m2/s
+        ai2020 = pybamm.ParameterValues("Ai2020")
+        xu2019 = pybamm.ParameterValues("Xu2019")
+        name = "Electrolyte diffusivity [m2.s-1]"
+        for c_e, T in [(1000, 298.15), (500, 318.15), (1500, 278.15)]:
+            inputs = [pybamm.Scalar(c_e), pybamm.Scalar(T)]
+            np.testing.assert_allclose(
+                ai2020.evaluate(ai2020[name](*inputs)),
+                xu2019.evaluate(xu2019[name](*inputs)),
+                rtol=1e-12,
+            )
+
+**我正在提取缺失的 Ai 数据**
+codex
+已核实合并版本的 Ai2020、Xu2019 参数实现及测试。核心检验是扩散系数的单位换算；另一个值得明确记录的点是：新增交叉比较测试虽设了 `rtol=1e-12`，却未设 `atol=0`，默认绝对容差对约 `1e-10` 的数值过于宽松。我会区分它与真正约束数值量级的单点测试，并把建议抽检范围与尚未核实的实验适用范围分开。
+exec
+/bin/zsh -lc "curl --fail --silent --show-error 'https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py' | sed -n '423,505p'" in <workdir>/pybamm-team_PyBaMM_5888
+ succeeded in 0ms:
+    return dlnf_dlnc
+
+
+def electrolyte_diffusivity_Ai2020(c_e, T):
+    """
+    Diffusivity of LiPF6 in EC:DMC as a function of ion concentration.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+    in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+    167(1), 013512. DOI: 10.1149/2.0122001JES.
+    .. [2] Valoen, L. O., & Reimers, J. N. (2005). Transport properties of
+    LiPF6-based Li-ion battery electrolytes. Journal of The Electrochemical
+    Society, 152(5), A882 (eqn 14). DOI: 10.1149/1.1872737.
+
+    Parameters
+    ----------
+    c_e: :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration, mol/m^3
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, K
+
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Dimensional electrolyte diffusivity [m2.s-1]
+    """
+    # The Valoen and Reimers (2005) fit gives cm2/s; convert to m2/s
+    D_c_e = 1e-4 * 10 ** (-4.43 - 54 / (T - 229 - 5e-3 * c_e) - 0.22e-3 * c_e)
+
+    return D_c_e
+
+
+def electrolyte_conductivity_Ai2020(c_e, T):
+    """
+    Conductivity of LiPF6 in EC:DMC as a function of ion concentration.
+    Concentration should be in dm3 in the function.
+
+    References
+    ----------
+    .. [1] Ai, W., Kraft, L., Sturm, J., Jossen, A., & Wu, B. (2020).
+    Electrochemical Thermal-Mechanical Modelling of Stress Inhomogeneity
+    in Lithium-Ion Pouch Cells. Journal of The Electrochemical Society,
+    167(1), 013512. DOI: 10.1149/2.0122001JES.
+    .. [2] Torchio, Marcello, et al. "Lionsimba: a matlab framework based
+    on a finite volume model suitable for li-ion battery design, simulation,
+    and control." Journal of The Electrochemical Society 163.7 (2016): A1192.
+
+    Parameters
+    ----------
+    c_e: :class:`pybamm.Symbol`
+        Dimensional electrolyte concentration, mol/m^3
+    T: :class:`pybamm.Symbol`
+        Dimensional temperature, K
+
+    Returns
+    -------
+    :class:`pybamm.Symbol`
+        Dimensional electrolyte conductivity [S.m-1]
+    """
+
+    sigma_e = (
+        1e-4
+        * c_e
+        * (
+            (-10.5 + 0.668 * 1e-3 * c_e + 0.494 * 1e-6 * c_e**2)
+            + (0.074 - 1.78 * 1e-5 * c_e - 8.86 * 1e-10 * c_e**2) * T
+            + (-6.96 * 1e-5 + 2.8 * 1e-8 * c_e) * T**2
+        )
+        ** 2
+    )
+
+    return sigma_e
+
+
+# Load data in the appropriate format
+path, _ = os.path.split(os.path.abspath(__file__))
+graphite_ocp_Enertech_Ai2020_data = pybamm.parameters.process_1D_data(
+    "graphite_ocp_Enertech_Ai2020.csv", path=path
+)
+
+apply patch
+patch: completed
+<workdir>/pybamm-team_PyBaMM_5888/spec.md
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..205d539aa31a1673d7c9c188e2528edc0563e5a0
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,50 @@
++## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
++
++- What changed (1–3 sentences, naming files and formulas):
++  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++  这里的 (c\) 是以 mol/m³ 表示的电解液盐浓度数值，(T\) 是以 K 表示的绝对温度数值；(D_A\)、(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 (C=c/1000\) 为以 mol/L 表示的浓度数值，(q=T-229-0.005c\)。以下取 (c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
++
++  1. **Primary — SI 单位及本构式的绝对标度。**
++     \[
++     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
++     \]
++     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
++
++  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
++     \[
++     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
++     \qquad
++     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
++     \]
++     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
++
++  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
++
++- Common operating domain (range of each input, with the basis):
++  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
++
++  在矩形四角、默认点、PR 三个点及固定种子的至少 100 个均匀随机点求值。对 primary，用独立的 `exp(log(10)*...)` 形式和 mol/L 输入转换计算基准，不调用被测函数作为 oracle；先断言有限、严格为正，再比较相对误差 \(\lvert D_A/D_{\rm ref}-1\rvert\leq10^{-12}\)。用相同相对容差、显式 `atol=0` 比较 Xu2019；小且平滑的双精度表达式在该区间没有病态分母，`1e-12` 足以容纳运算顺序舍入，同时能严格检查 SI 标度。舍入检查点 `3.2227e-10` 只用 `rtol=1e-3, atol=0`，不要赋予它完整公式的精度。
++
++  对第二条，令 \(L(c,T)=\ln[D_A(c,T)/(1\,\mathrm{m^2/s})]\)，以中心差分分别计算 \([L(c,T+h_T)-L(c,T-h_T)]/(2h_T)\) 和浓度对应式。初始取 \(h_T=0.01\,\mathrm K\)、\(h_c=0.1\,\mathrm{mol/m^3}\)，再减半；两个步长结果均与解析导数比较，建议 `rtol=1e-5, atol=0`，并核对正负号。该区间最小分母为 41.65 K，温度中心差分的主截断相对误差约为 \((h_T/q)^2<6\times10^{-8}\)，故该容差有充足余量。仅在扰动点仍在矩形内时做中心差分；边界改用向内点或只做函数值比较，若步长缩小时误差不稳定，应记录并检查消减误差，不能放宽标度测试。符号断言也可用相隔至少 1 K 或 10 mol/m³ 的点对直接检查单调性。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++  **Primary: partial。** [合并后的 `test_Ai2020.py`](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py) 中 `TestAi2020.test_functions` 对 `(1000,298.15)` 的扩散率断言 `pytest.approx(3.2227e-10, rel=1e-3, abs=0)`，确实约束物理量级，能识别旧的 `1e4` 倍错误，但未覆盖区域内函数形状。它也新增电导率 `1.1943` 的单点断言；电导率实现没有行为改动，故不额外列为本审计的不变量。
++
++  **正性、响应导数与区域界限: no。** 新增测试没有显式检查这些性质。**跨参数集一致性: partial。** `TestAi2020.test_electrolyte_diffusivity` 在 `(1000,298.15)`、`(500,318.15)`、`(1500,278.15)` 调用 `np.testing.assert_allclose(..., rtol=1e-12)`，但没有设置 `atol`。NumPy 的默认 `atol=1e-8` 大于被测扩散率，因而不能把这项断言解读成真实的 `1e-12` 相对一致性检验；例如零值也可通过该项比较。旧的约 `1e-6` 数值仍会失败，且上述独立单点测试确实防止默认点退化为零。这里只评价所读 PR 测试，未声称审查了整个测试套件。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++  **satisfies（推测，尚未经数值执行验证）。** 修改后的公式包含正确的 cm²/s 到 m²/s 因子，与 Xu2019 的 mol/L 写法可代数化为同一表达式，且在指定区域内直接推出上述正性和响应方向；对真实电解液及区域外的经验准确性仍未验证，PR 描述中的最终电压或浓度范围不能当成普遍物理不变量。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++  合并提交：`343ece2062dbb39789dbfa977e0f2daf96e9e370`。Python；[合并提交的包配置](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml) 要求 Python `>=3.10,<3.16`、NumPy `>=2.0.0`、SciPy `>=1.11.4,!=1.18.0`、`pybammsolvers>=0.11.0,<0.12.0`，并声明 xarray、anytree、sympy、typing-extensions、pandas、pooch、posthog、pyyaml、platformdirs、black 等运行依赖；构建元数据使用 hatchling/hatch-vcs。只需完整安装的 PyBaMM 参数入口及随包数据即可作标量检查，pytest 仅在采用其断言或原测试时需要。预计设置难度 **medium**：应固定该提交且保留参数集注册元数据、CSV 数据及兼容的原生 solver 依赖；实际检查不调用求解器，计算量很低。本次只读取输入与 GitHub 源码并编写规范，没有克隆、安装、编译或执行测试。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++  **可以。** 把 \((c,T)\in\mathbb R^2\)、精确十进制常数作为有理数、\(10^x\) 写成 `Real.exp (Real.log 10 * x)`，并假设 \(q>0\)，即可形式化 SI 因子、两种浓度表达的相等、正性、偏导符号及矩形端点界限。主要证明工作是非零分母、指数/对数与微分规则、严格不等式；数值舍入检查点需要区间界而非等式。物理单位需要显式量纲封装或单位转换定义；经验拟合的实验正确性无法由实数代数证明，且实数公式证明不自动覆盖 PyBaMM 符号求值路径或 IEEE-754 舍入，后者需要另做实现关联与误差证明。
+
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..205d539aa31a1673d7c9c188e2528edc0563e5a0
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,50 @@
++## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
++
++- What changed (1–3 sentences, naming files and formulas):
++  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++  这里的 (c\) 是以 mol/m³ 表示的电解液盐浓度数值，(T\) 是以 K 表示的绝对温度数值；(D_A\)、(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 (C=c/1000\) 为以 mol/L 表示的浓度数值，(q=T-229-0.005c\)。以下取 (c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
++
++  1. **Primary — SI 单位及本构式的绝对标度。**
++     \[
++     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
++     \]
++     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
++
++  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
++     \[
++     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
++     \qquad
++     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
++     \]
++     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
++
++  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
++
++- Common operating domain (range of each input, with the basis):
++  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
++
++  在矩形四角、默认点、PR 三个点及固定种子的至少 100 个均匀随机点求值。对 primary，用独立的 `exp(log(10)*...)` 形式和 mol/L 输入转换计算基准，不调用被测函数作为 oracle；先断言有限、严格为正，再比较相对误差 \(\lvert D_A/D_{\rm ref}-1\rvert\leq10^{-12}\)。用相同相对容差、显式 `atol=0` 比较 Xu2019；小且平滑的双精度表达式在该区间没有病态分母，`1e-12` 足以容纳运算顺序舍入，同时能严格检查 SI 标度。舍入检查点 `3.2227e-10` 只用 `rtol=1e-3, atol=0`，不要赋予它完整公式的精度。
++
++  对第二条，令 \(L(c,T)=\ln[D_A(c,T)/(1\,\mathrm{m^2/s})]\)，以中心差分分别计算 \([L(c,T+h_T)-L(c,T-h_T)]/(2h_T)\) 和浓度对应式。初始取 \(h_T=0.01\,\mathrm K\)、\(h_c=0.1\,\mathrm{mol/m^3}\)，再减半；两个步长结果均与解析导数比较，建议 `rtol=1e-5, atol=0`，并核对正负号。该区间最小分母为 41.65 K，温度中心差分的主截断相对误差约为 \((h_T/q)^2<6\times10^{-8}\)，故该容差有充足余量。仅在扰动点仍在矩形内时做中心差分；边界改用向内点或只做函数值比较，若步长缩小时误差不稳定，应记录并检查消减误差，不能放宽标度测试。符号断言也可用相隔至少 1 K 或 10 mol/m³ 的点对直接检查单调性。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++  **Primary: partial。** [合并后的 `test_Ai2020.py`](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py) 中 `TestAi2020.test_functions` 对 `(1000,298.15)` 的扩散率断言 `pytest.approx(3.2227e-10, rel=1e-3, abs=0)`，确实约束物理量级，能识别旧的 `1e4` 倍错误，但未覆盖区域内函数形状。它也新增电导率 `1.1943` 的单点断言；电导率实现没有行为改动，故不额外列为本审计的不变量。
++
++  **正性、响应导数与区域界限: no。** 新增测试没有显式检查这些性质。**跨参数集一致性: partial。** `TestAi2020.test_electrolyte_diffusivity` 在 `(1000,298.15)`、`(500,318.15)`、`(1500,278.15)` 调用 `np.testing.assert_allclose(..., rtol=1e-12)`，但没有设置 `atol`。NumPy 的默认 `atol=1e-8` 大于被测扩散率，因而不能把这项断言解读成真实的 `1e-12` 相对一致性检验；例如零值也可通过该项比较。旧的约 `1e-6` 数值仍会失败，且上述独立单点测试确实防止默认点退化为零。这里只评价所读 PR 测试，未声称审查了整个测试套件。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++  **satisfies（推测，尚未经数值执行验证）。** 修改后的公式包含正确的 cm²/s 到 m²/s 因子，与 Xu2019 的 mol/L 写法可代数化为同一表达式，且在指定区域内直接推出上述正性和响应方向；对真实电解液及区域外的经验准确性仍未验证，PR 描述中的最终电压或浓度范围不能当成普遍物理不变量。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++  合并提交：`343ece2062dbb39789dbfa977e0f2daf96e9e370`。Python；[合并提交的包配置](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml) 要求 Python `>=3.10,<3.16`、NumPy `>=2.0.0`、SciPy `>=1.11.4,!=1.18.0`、`pybammsolvers>=0.11.0,<0.12.0`，并声明 xarray、anytree、sympy、typing-extensions、pandas、pooch、posthog、pyyaml、platformdirs、black 等运行依赖；构建元数据使用 hatchling/hatch-vcs。只需完整安装的 PyBaMM 参数入口及随包数据即可作标量检查，pytest 仅在采用其断言或原测试时需要。预计设置难度 **medium**：应固定该提交且保留参数集注册元数据、CSV 数据及兼容的原生 solver 依赖；实际检查不调用求解器，计算量很低。本次只读取输入与 GitHub 源码并编写规范，没有克隆、安装、编译或执行测试。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++  **可以。** 把 \((c,T)\in\mathbb R^2\)、精确十进制常数作为有理数、\(10^x\) 写成 `Real.exp (Real.log 10 * x)`，并假设 \(q>0\)，即可形式化 SI 因子、两种浓度表达的相等、正性、偏导符号及矩形端点界限。主要证明工作是非零分母、指数/对数与微分规则、严格不等式；数值舍入检查点需要区间界而非等式。物理单位需要显式量纲封装或单位转换定义；经验拟合的实验正确性无法由实数代数证明，且实数公式证明不自动覆盖 PyBaMM 符号求值路径或 IEEE-754 舍入，后者需要另做实现关联与误差证明。
+
+**Verifying file syntax**
+exec
+/bin/zsh -lc "sed -n '1,32p' spec.md
+wc -l spec.md" in <workdir>/pybamm-team_PyBaMM_5888
+ succeeded in 0ms:
+## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
+
+- What changed (1–3 sentences, naming files and formulas):
+  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
+
+- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
+  这里的 (c\) 是以 mol/m³ 表示的电解液盐浓度数值，(T\) 是以 K 表示的绝对温度数值；(D_A\)、(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 (C=c/1000\) 为以 mol/L 表示的浓度数值，(q=T-229-0.005c\)。以下取 (c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
+
+  1. **Primary — SI 单位及本构式的绝对标度。**
+     \[
+     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
+     \]
+     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
+
+  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
+     \[
+     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
+     \qquad
+     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
+     \]
+     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
+
+  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
+
+- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
+  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
+
+- Common operating domain (range of each input, with the basis):
+  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
+
+- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
+  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
+      50 spec.md
+
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..205d539aa31a1673d7c9c188e2528edc0563e5a0
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,50 @@
++## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
++
++- What changed (1–3 sentences, naming files and formulas):
++  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++  这里的 (c\) 是以 mol/m³ 表示的电解液盐浓度数值，(T\) 是以 K 表示的绝对温度数值；(D_A\)、(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 (C=c/1000\) 为以 mol/L 表示的浓度数值，(q=T-229-0.005c\)。以下取 (c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
++
++  1. **Primary — SI 单位及本构式的绝对标度。**
++     \[
++     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
++     \]
++     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
++
++  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
++     \[
++     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
++     \qquad
++     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
++     \]
++     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
++
++  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
++
++- Common operating domain (range of each input, with the basis):
++  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
++
++  在矩形四角、默认点、PR 三个点及固定种子的至少 100 个均匀随机点求值。对 primary，用独立的 `exp(log(10)*...)` 形式和 mol/L 输入转换计算基准，不调用被测函数作为 oracle；先断言有限、严格为正，再比较相对误差 \(\lvert D_A/D_{\rm ref}-1\rvert\leq10^{-12}\)。用相同相对容差、显式 `atol=0` 比较 Xu2019；小且平滑的双精度表达式在该区间没有病态分母，`1e-12` 足以容纳运算顺序舍入，同时能严格检查 SI 标度。舍入检查点 `3.2227e-10` 只用 `rtol=1e-3, atol=0`，不要赋予它完整公式的精度。
++
++  对第二条，令 \(L(c,T)=\ln[D_A(c,T)/(1\,\mathrm{m^2/s})]\)，以中心差分分别计算 \([L(c,T+h_T)-L(c,T-h_T)]/(2h_T)\) 和浓度对应式。初始取 \(h_T=0.01\,\mathrm K\)、\(h_c=0.1\,\mathrm{mol/m^3}\)，再减半；两个步长结果均与解析导数比较，建议 `rtol=1e-5, atol=0`，并核对正负号。该区间最小分母为 41.65 K，温度中心差分的主截断相对误差约为 \((h_T/q)^2<6\times10^{-8}\)，故该容差有充足余量。仅在扰动点仍在矩形内时做中心差分；边界改用向内点或只做函数值比较，若步长缩小时误差不稳定，应记录并检查消减误差，不能放宽标度测试。符号断言也可用相隔至少 1 K 或 10 mol/m³ 的点对直接检查单调性。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++  **Primary: partial。** [合并后的 `test_Ai2020.py`](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py) 中 `TestAi2020.test_functions` 对 `(1000,298.15)` 的扩散率断言 `pytest.approx(3.2227e-10, rel=1e-3, abs=0)`，确实约束物理量级，能识别旧的 `1e4` 倍错误，但未覆盖区域内函数形状。它也新增电导率 `1.1943` 的单点断言；电导率实现没有行为改动，故不额外列为本审计的不变量。
++
++  **正性、响应导数与区域界限: no。** 新增测试没有显式检查这些性质。**跨参数集一致性: partial。** `TestAi2020.test_electrolyte_diffusivity` 在 `(1000,298.15)`、`(500,318.15)`、`(1500,278.15)` 调用 `np.testing.assert_allclose(..., rtol=1e-12)`，但没有设置 `atol`。NumPy 的默认 `atol=1e-8` 大于被测扩散率，因而不能把这项断言解读成真实的 `1e-12` 相对一致性检验；例如零值也可通过该项比较。旧的约 `1e-6` 数值仍会失败，且上述独立单点测试确实防止默认点退化为零。这里只评价所读 PR 测试，未声称审查了整个测试套件。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++  **satisfies（推测，尚未经数值执行验证）。** 修改后的公式包含正确的 cm²/s 到 m²/s 因子，与 Xu2019 的 mol/L 写法可代数化为同一表达式，且在指定区域内直接推出上述正性和响应方向；对真实电解液及区域外的经验准确性仍未验证，PR 描述中的最终电压或浓度范围不能当成普遍物理不变量。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++  合并提交：`343ece2062dbb39789dbfa977e0f2daf96e9e370`。Python；[合并提交的包配置](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml) 要求 Python `>=3.10,<3.16`、NumPy `>=2.0.0`、SciPy `>=1.11.4,!=1.18.0`、`pybammsolvers>=0.11.0,<0.12.0`，并声明 xarray、anytree、sympy、typing-extensions、pandas、pooch、posthog、pyyaml、platformdirs、black 等运行依赖；构建元数据使用 hatchling/hatch-vcs。只需完整安装的 PyBaMM 参数入口及随包数据即可作标量检查，pytest 仅在采用其断言或原测试时需要。预计设置难度 **medium**：应固定该提交且保留参数集注册元数据、CSV 数据及兼容的原生 solver 依赖；实际检查不调用求解器，计算量很低。本次只读取输入与 GitHub 源码并编写规范，没有克隆、安装、编译或执行测试。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++  **可以。** 把 \((c,T)\in\mathbb R^2\)、精确十进制常数作为有理数、\(10^x\) 写成 `Real.exp (Real.log 10 * x)`，并假设 \(q>0\)，即可形式化 SI 因子、两种浓度表达的相等、正性、偏导符号及矩形端点界限。主要证明工作是非零分母、指数/对数与微分规则、严格不等式；数值舍入检查点需要区间界而非等式。物理单位需要显式量纲封装或单位转换定义；经验拟合的实验正确性无法由实数代数证明，且实数公式证明不自动覆盖 PyBaMM 符号求值路径或 IEEE-754 舍入，后者需要另做实现关联与误差证明。
+
+apply patch
+patch: completed
+<workdir>/pybamm-team_PyBaMM_5888/spec.md
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..895026b4b6f130f624c1981947276273f263ba1e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,50 @@
++## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
++
++- What changed (1–3 sentences, naming files and formulas):
++  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++  这里的 \(c\) 是以 mol/m³ 表示的电解液盐浓度数值，\(T\) 是以 K 表示的绝对温度数值；\(D_A\)、\(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 \(C=c/1000\) 为以 mol/L 表示的浓度数值，\(q=T-229-0.005c\)。以下取 \(c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
++
++  1. **Primary — SI 单位及本构式的绝对标度。**
++     \[
++     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
++     \]
++     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
++
++  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
++     \[
++     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
++     \qquad
++     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
++     \]
++     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
++
++  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
++
++- Common operating domain (range of each input, with the basis):
++  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
++
++  在矩形四角、默认点、PR 三个点及固定种子的至少 100 个均匀随机点求值。对 primary，用独立的 `exp(log(10)*...)` 形式和 mol/L 输入转换计算基准，不调用被测函数作为 oracle；先断言有限、严格为正，再比较相对误差 \(\lvert D_A/D_{\rm ref}-1\rvert\leq10^{-12}\)。用相同相对容差、显式 `atol=0` 比较 Xu2019；小且平滑的双精度表达式在该区间没有病态分母，`1e-12` 足以容纳运算顺序舍入，同时能严格检查 SI 标度。舍入检查点 `3.2227e-10` 只用 `rtol=1e-3, atol=0`，不要赋予它完整公式的精度。
++
++  对第二条，令 \(L(c,T)=\ln[D_A(c,T)/(1\,\mathrm{m^2/s})]\)，以中心差分分别计算 \([L(c,T+h_T)-L(c,T-h_T)]/(2h_T)\) 和浓度对应式。初始取 \(h_T=0.01\,\mathrm K\)、\(h_c=0.1\,\mathrm{mol/m^3}\)，再减半；两个步长结果均与解析导数比较，建议 `rtol=1e-5, atol=0`，并核对正负号。该区间最小分母为 41.65 K，温度中心差分的主截断相对误差约为 \((h_T/q)^2<6\times10^{-8}\)，故该容差有充足余量。仅在扰动点仍在矩形内时做中心差分；边界改用向内点或只做函数值比较，若步长缩小时误差不稳定，应记录并检查消减误差，不能放宽标度测试。符号断言也可用相隔至少 1 K 或 10 mol/m³ 的点对直接检查单调性。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++  **Primary: partial。** [合并后的 `test_Ai2020.py`](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py) 中 `TestAi2020.test_functions` 对 `(1000,298.15)` 的扩散率断言 `pytest.approx(3.2227e-10, rel=1e-3, abs=0)`，确实约束物理量级，能识别旧的 `1e4` 倍错误，但未覆盖区域内函数形状。它也新增电导率 `1.1943` 的单点断言；电导率实现没有行为改动，故不额外列为本审计的不变量。
++
++  **正性、响应导数与区域界限: no。** 新增测试没有显式检查这些性质。**跨参数集一致性: partial。** `TestAi2020.test_electrolyte_diffusivity` 在 `(1000,298.15)`、`(500,318.15)`、`(1500,278.15)` 调用 `np.testing.assert_allclose(..., rtol=1e-12)`，但没有设置 `atol`。NumPy 的默认 `atol=1e-8` 大于被测扩散率，因而不能把这项断言解读成真实的 `1e-12` 相对一致性检验；例如零值也可通过该项比较。旧的约 `1e-6` 数值仍会失败，且上述独立单点测试确实防止默认点退化为零。这里只评价所读 PR 测试，未声称审查了整个测试套件。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++  **satisfies（推测，尚未经数值执行验证）。** 修改后的公式包含正确的 cm²/s 到 m²/s 因子，与 Xu2019 的 mol/L 写法可代数化为同一表达式，且在指定区域内直接推出上述正性和响应方向；对真实电解液及区域外的经验准确性仍未验证，PR 描述中的最终电压或浓度范围不能当成普遍物理不变量。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++  合并提交：`343ece2062dbb39789dbfa977e0f2daf96e9e370`。Python；[合并提交的包配置](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml) 要求 Python `>=3.10,<3.16`、NumPy `>=2.0.0`、SciPy `>=1.11.4,!=1.18.0`、`pybammsolvers>=0.11.0,<0.12.0`，并声明 xarray、anytree、sympy、typing-extensions、pandas、pooch、posthog、pyyaml、platformdirs、black 等运行依赖；构建元数据使用 hatchling/hatch-vcs。只需完整安装的 PyBaMM 参数入口及随包数据即可作标量检查，pytest 仅在采用其断言或原测试时需要。预计设置难度 **medium**：应固定该提交且保留参数集注册元数据、CSV 数据及兼容的原生 solver 依赖；实际检查不调用求解器，计算量很低。本次只读取输入与 GitHub 源码并编写规范，没有克隆、安装、编译或执行测试。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++  **可以。** 把 \((c,T)\in\mathbb R^2\)、精确十进制常数作为有理数、\(10^x\) 写成 `Real.exp (Real.log 10 * x)`，并假设 \(q>0\)，即可形式化 SI 因子、两种浓度表达的相等、正性、偏导符号及矩形端点界限。主要证明工作是非零分母、指数/对数与微分规则、严格不等式；数值舍入检查点需要区间界而非等式。物理单位需要显式量纲封装或单位转换定义；经验拟合的实验正确性无法由实数代数证明，且实数公式证明不自动覆盖 PyBaMM 符号求值路径或 IEEE-754 舍入，后者需要另做实现关联与误差证明。
+
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..895026b4b6f130f624c1981947276273f263ba1e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,50 @@
++## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
++
++- What changed (1–3 sentences, naming files and formulas):
++  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++  这里的 \(c\) 是以 mol/m³ 表示的电解液盐浓度数值，\(T\) 是以 K 表示的绝对温度数值；\(D_A\)、\(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 \(C=c/1000\) 为以 mol/L 表示的浓度数值，\(q=T-229-0.005c\)。以下取 \(c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
++
++  1. **Primary — SI 单位及本构式的绝对标度。**
++     \[
++     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
++     \]
++     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
++
++  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
++     \[
++     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
++     \qquad
++     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
++     \]
++     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
++
++  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
++
++- Common operating domain (range of each input, with the basis):
++  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
++
++  在矩形四角、默认点、PR 三个点及固定种子的至少 100 个均匀随机点求值。对 primary，用独立的 `exp(log(10)*...)` 形式和 mol/L 输入转换计算基准，不调用被测函数作为 oracle；先断言有限、严格为正，再比较相对误差 \(\lvert D_A/D_{\rm ref}-1\rvert\leq10^{-12}\)。用相同相对容差、显式 `atol=0` 比较 Xu2019；小且平滑的双精度表达式在该区间没有病态分母，`1e-12` 足以容纳运算顺序舍入，同时能严格检查 SI 标度。舍入检查点 `3.2227e-10` 只用 `rtol=1e-3, atol=0`，不要赋予它完整公式的精度。
++
++  对第二条，令 \(L(c,T)=\ln[D_A(c,T)/(1\,\mathrm{m^2/s})]\)，以中心差分分别计算 \([L(c,T+h_T)-L(c,T-h_T)]/(2h_T)\) 和浓度对应式。初始取 \(h_T=0.01\,\mathrm K\)、\(h_c=0.1\,\mathrm{mol/m^3}\)，再减半；两个步长结果均与解析导数比较，建议 `rtol=1e-5, atol=0`，并核对正负号。该区间最小分母为 41.65 K，温度中心差分的主截断相对误差约为 \((h_T/q)^2<6\times10^{-8}\)，故该容差有充足余量。仅在扰动点仍在矩形内时做中心差分；边界改用向内点或只做函数值比较，若步长缩小时误差不稳定，应记录并检查消减误差，不能放宽标度测试。符号断言也可用相隔至少 1 K 或 10 mol/m³ 的点对直接检查单调性。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++  **Primary: partial。** [合并后的 `test_Ai2020.py`](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py) 中 `TestAi2020.test_functions` 对 `(1000,298.15)` 的扩散率断言 `pytest.approx(3.2227e-10, rel=1e-3, abs=0)`，确实约束物理量级，能识别旧的 `1e4` 倍错误，但未覆盖区域内函数形状。它也新增电导率 `1.1943` 的单点断言；电导率实现没有行为改动，故不额外列为本审计的不变量。
++
++  **正性、响应导数与区域界限: no。** 新增测试没有显式检查这些性质。**跨参数集一致性: partial。** `TestAi2020.test_electrolyte_diffusivity` 在 `(1000,298.15)`、`(500,318.15)`、`(1500,278.15)` 调用 `np.testing.assert_allclose(..., rtol=1e-12)`，但没有设置 `atol`。NumPy 的默认 `atol=1e-8` 大于被测扩散率，因而不能把这项断言解读成真实的 `1e-12` 相对一致性检验；例如零值也可通过该项比较。旧的约 `1e-6` 数值仍会失败，且上述独立单点测试确实防止默认点退化为零。这里只评价所读 PR 测试，未声称审查了整个测试套件。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++  **satisfies（推测，尚未经数值执行验证）。** 修改后的公式包含正确的 cm²/s 到 m²/s 因子，与 Xu2019 的 mol/L 写法可代数化为同一表达式，且在指定区域内直接推出上述正性和响应方向；对真实电解液及区域外的经验准确性仍未验证，PR 描述中的最终电压或浓度范围不能当成普遍物理不变量。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++  合并提交：`343ece2062dbb39789dbfa977e0f2daf96e9e370`。Python；[合并提交的包配置](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml) 要求 Python `>=3.10,<3.16`、NumPy `>=2.0.0`、SciPy `>=1.11.4,!=1.18.0`、`pybammsolvers>=0.11.0,<0.12.0`，并声明 xarray、anytree、sympy、typing-extensions、pandas、pooch、posthog、pyyaml、platformdirs、black 等运行依赖；构建元数据使用 hatchling/hatch-vcs。只需完整安装的 PyBaMM 参数入口及随包数据即可作标量检查，pytest 仅在采用其断言或原测试时需要。预计设置难度 **medium**：应固定该提交且保留参数集注册元数据、CSV 数据及兼容的原生 solver 依赖；实际检查不调用求解器，计算量很低。本次只读取输入与 GitHub 源码并编写规范，没有克隆、安装、编译或执行测试。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++  **可以。** 把 \((c,T)\in\mathbb R^2\)、精确十进制常数作为有理数、\(10^x\) 写成 `Real.exp (Real.log 10 * x)`，并假设 \(q>0\)，即可形式化 SI 因子、两种浓度表达的相等、正性、偏导符号及矩形端点界限。主要证明工作是非零分母、指数/对数与微分规则、严格不等式；数值舍入检查点需要区间界而非等式。物理单位需要显式量纲封装或单位转换定义；经验拟合的实验正确性无法由实数代数证明，且实数公式证明不自动覆盖 PyBaMM 符号求值路径或 IEEE-754 舍入，后者需要另做实现关联与误差证明。
+
+codex
+已完成 [spec.md](./spec.md)，按模板记录了一个主要不变量和两个次要不变量：
+
+- 扩散率从 cm²/s 转为 m²/s 后的绝对标度及完整本构公式。
+- 指定范围内的正扩散率，以及温度、浓度响应。
+- Ai2020 与 Xu2019 对同一扩散率拟合的一致性。
+
+文档包含合并版本公共 API 的检查方法、抽检范围、容差与差分步长、现有测试覆盖情况及 Lean 形式化可行性；同时指出交叉比较测试未显式设置 `atol=0` 的精度缺口，并注明文献实验适用范围尚未独立核实。
+
+本次只读取了 `./input` 和 GitHub 合并源码，没有安装、编译或运行项目代码。
+diff --git a/spec.md b/spec.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..895026b4b6f130f624c1981947276273f263ba1e
+--- /dev/null
++++ b/spec.md
+@@ -0,0 +1,50 @@
++## pybamm-team/PyBaMM#5888 fix: convert Ai2020 electrolyte diffusivity from cm2/s to m2/s
++
++- What changed (1–3 sentences, naming files and formulas):
++  `packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py` 的 `electrolyte_diffusivity_Ai2020(c_e,T)` 将原来的 `10**(-4.43-54/(T-229-0.005*c_e)-0.00022*c_e)` 乘以 `1e-4`，把 cm²/s 转成 m²/s；同时修正扩散率和电导率的文档单位，电导率公式未改变。`packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py` 新增扩散率、电导率数值及与 Xu2019 的比较，并收紧原有参数测试的相对容差；`CHANGELOG.md` 记录修复。
++
++- Invariants (mathematical statements; write them as checkable equalities/inequalities, give variables, sign conventions, domain of validity):
++  这里的 \(c\) 是以 mol/m³ 表示的电解液盐浓度数值，\(T\) 是以 K 表示的绝对温度数值；\(D_A\)、\(D_X\) 分别是 Ai2020、Xu2019 公共参数接口返回的扩散系数，单位 m²/s。令 \(C=c/1000\) 为以 mol/L 表示的浓度数值，\(q=T-229-0.005c\)。以下取 \(c\geq0,q>0\)，数值检验进一步限制在下述矩形区域；这是经验本构式的不变量，不是对所有电解液的普遍定律。
++
++  1. **Primary — SI 单位及本构式的绝对标度。**
++     \[
++     D_A(c,T)=10^{-4}\exp\!\left[\ln(10)\left(-4.43-\frac{54}{T-229-5C}-0.22C\right)\right]\quad\mathrm{m^2/s}.
++     \]
++     等价地，\(\log_{10}[D_A/(1\,\mathrm{m^2/s})]=-8.43-54/q-0.00022c\)。物理单位恒等式是 \(1\,\mathrm{cm^2/s}=10^{-4}\,\mathrm{m^2/s}\)，浓度单位转换是 \(1000\,\mathrm{mol/m^3}=1\,\mathrm{mol/L}\)。特别地，\(D_A(1000,298.15)\approx3.2227\times10^{-10}\,\mathrm{m^2/s}\)；这个近似值是舍入的检查点，完整等式才是基准。
++
++  2. **Secondary — 正扩散率及此拟合的温度、浓度响应。** 对上述区域，\(0<D_A<\infty\)，且
++     \[
++     \partial_T\ln[D_A/(1\,\mathrm{m^2/s})]=\ln(10)\frac{54}{q^2}>0,
++     \qquad
++     \partial_c\ln[D_A/(1\,\mathrm{m^2/s})]=-\ln(10)\left(\frac{0.27}{q^2}+0.00022\right)<0.
++     \]
++     因此固定浓度升温时扩散率严格增加，固定温度增加盐浓度时严格减小。正号与 Fick 扩散通量 \(\mathbf N_{\rm diff}=-D_A\nabla c\) 一致，\(\mathbf N_{\rm diff}\cdot\nabla c=-D_A\lVert\nabla c\rVert^2\leq0\)；此处仅指扩散通量分量，不对包含迁移、对流的总通量作此断言。单独检验这些符号不能识别本 PR 修正的常数倍错误，必须同时检验 primary。
++
++  3. **Secondary — 相同输运拟合在参数集之间一致。** 对相同的 SI 输入，\(D_A(c,T)=D_X(c,T)\)。仅比较两者使用的同一个 Valøen–Reimers 扩散率拟合，不要求两个完整电池参数集或放电轨迹相同。
++
++- Sources of the invariants (first principles / literature formula / consistency with other implementations in the library / dimensions):
++  Primary 的单位因子来自长度单位平方；经验公式来源是合并源码引用的 Valøen and Reimers (2005), *Transport properties of LiPF6-based Li-ion battery electrolytes*, JES 152, A882–A891, Eq. 14，DOI `10.1149/1.1872737`。本次没有读取论文全文，原始实验标定范围和论文符号未独立核实；公式归属以 [Ai2020 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Ai2020.py) 为依据。温度与浓度导数是上述公式的直接数学推论；正扩散率与 Fick 定律的降梯度方向一致。[Xu2019 合并源码](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/src/pybamm/input/parameters/lithium_ion/Xu2019.py) 先把浓度除以 1000，再计算同一拟合并乘以 `1e-4`，还明确说明采用以 10 为底的指数。它提供库内一致性证据，但两份实现相同不能独立证明经验拟合符合真实电解液。
++
++- Common operating domain (range of each input, with the basis):
++  建议共同抽检区域：\(c\in[500,1500]\,\mathrm{mol/m^3}\)（0.5–1.5 mol/L），\(T\in[278.15,318.15]\,\mathrm K\)（5–45 °C）。依据是本 PR 的三个测试点覆盖的浓度、温度端点，以及 Ai2020 的默认初始浓度 1000 mol/m³、初始温度 298.15 K；矩形内的其他组合属于本审计建议补充的抽检，不是 PR 已测组合，也不是已经核实的文献适用区间。此区间 \(q\in[41.65,86.65]\,\mathrm K\)，远离分母奇点。排除负浓度、摄氏度直接输入、\(q\leq0\) 和趋近奇点的外推；不要求接口对这些非法物理输入一定抛异常。由单调性还可检验 \(D_A(1500,278.15)\leq D_A(c,T)\leq D_A(500,318.15)\)，两个端点应由 primary 的独立公式计算。
++
++- Numerical check method (which public API of the merged commit, what to compute, what to compare against, suggested tolerance and why; if finite differences are needed, the step-size strategy):
++  以下是供后续执行的方案，本次未运行任何代码。使用合并版本的 `p = pybamm.ParameterValues("Ai2020")`，通过 `p.evaluate(p["Electrolyte diffusivity [m2.s-1]"](pybamm.Scalar(c), pybamm.Scalar(T)))` 得到标量值；以 `ParameterValues("Xu2019")` 同样求值。该调用方式由合并后的测试直接确认，不需要建立 DFN 或运行放电求解器。
++
++  在矩形四角、默认点、PR 三个点及固定种子的至少 100 个均匀随机点求值。对 primary，用独立的 `exp(log(10)*...)` 形式和 mol/L 输入转换计算基准，不调用被测函数作为 oracle；先断言有限、严格为正，再比较相对误差 \(\lvert D_A/D_{\rm ref}-1\rvert\leq10^{-12}\)。用相同相对容差、显式 `atol=0` 比较 Xu2019；小且平滑的双精度表达式在该区间没有病态分母，`1e-12` 足以容纳运算顺序舍入，同时能严格检查 SI 标度。舍入检查点 `3.2227e-10` 只用 `rtol=1e-3, atol=0`，不要赋予它完整公式的精度。
++
++  对第二条，令 \(L(c,T)=\ln[D_A(c,T)/(1\,\mathrm{m^2/s})]\)，以中心差分分别计算 \([L(c,T+h_T)-L(c,T-h_T)]/(2h_T)\) 和浓度对应式。初始取 \(h_T=0.01\,\mathrm K\)、\(h_c=0.1\,\mathrm{mol/m^3}\)，再减半；两个步长结果均与解析导数比较，建议 `rtol=1e-5, atol=0`，并核对正负号。该区间最小分母为 41.65 K，温度中心差分的主截断相对误差约为 \((h_T/q)^2<6\times10^{-8}\)，故该容差有充足余量。仅在扰动点仍在矩形内时做中心差分；边界改用向内点或只做函数值比较，若步长缩小时误差不稳定，应记录并检查消减误差，不能放宽标度测试。符号断言也可用相隔至少 1 K 或 10 mol/m³ 的点对直接检查单调性。
++
++- Do the PR's own tests already check this invariant (yes/partial/no, naming test files and assertions):
++  **Primary: partial。** [合并后的 `test_Ai2020.py`](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/tests/unit/test_parameters/test_parameter_sets/test_Ai2020.py) 中 `TestAi2020.test_functions` 对 `(1000,298.15)` 的扩散率断言 `pytest.approx(3.2227e-10, rel=1e-3, abs=0)`，确实约束物理量级，能识别旧的 `1e4` 倍错误，但未覆盖区域内函数形状。它也新增电导率 `1.1943` 的单点断言；电导率实现没有行为改动，故不额外列为本审计的不变量。
++
++  **正性、响应导数与区域界限: no。** 新增测试没有显式检查这些性质。**跨参数集一致性: partial。** `TestAi2020.test_electrolyte_diffusivity` 在 `(1000,298.15)`、`(500,318.15)`、`(1500,278.15)` 调用 `np.testing.assert_allclose(..., rtol=1e-12)`，但没有设置 `atol`。NumPy 的默认 `atol=1e-8` 大于被测扩散率，因而不能把这项断言解读成真实的 `1e-12` 相对一致性检验；例如零值也可通过该项比较。旧的约 `1e-6` 数值仍会失败，且上述独立单点测试确实防止默认点退化为零。这里只评价所读 PR 测试，未声称审查了整个测试套件。
++
++- Do you expect the change to satisfy it (satisfies / may not satisfy / uncertain), with one or two sentences of reasoning (speculation, not a conclusion):
++  **satisfies（推测，尚未经数值执行验证）。** 修改后的公式包含正确的 cm²/s 到 m²/s 因子，与 Xu2019 的 mol/L 写法可代数化为同一表达式，且在指定区域内直接推出上述正性和响应方向；对真实电解液及区域外的经验准确性仍未验证，PR 描述中的最终电压或浓度范围不能当成普遍物理不变量。
++
++- Environment: merge commit SHA, language and dependencies needed, estimated setup difficulty (low/medium/high):
++  合并提交：`343ece2062dbb39789dbfa977e0f2daf96e9e370`。Python；[合并提交的包配置](https://raw.githubusercontent.com/pybamm-team/PyBaMM/343ece2062dbb39789dbfa977e0f2daf96e9e370/packages/pybamm/pyproject.toml) 要求 Python `>=3.10,<3.16`、NumPy `>=2.0.0`、SciPy `>=1.11.4,!=1.18.0`、`pybammsolvers>=0.11.0,<0.12.0`，并声明 xarray、anytree、sympy、typing-extensions、pandas、pooch、posthog、pyyaml、platformdirs、black 等运行依赖；构建元数据使用 hatchling/hatch-vcs。只需完整安装的 PyBaMM 参数入口及随包数据即可作标量检查，pytest 仅在采用其断言或原测试时需要。预计设置难度 **medium**：应固定该提交且保留参数集注册元数据、CSV 数据及兼容的原生 solver 依赖；实际检查不调用求解器，计算量很低。本次只读取输入与 GitHub 源码并编写规范，没有克隆、安装、编译或执行测试。
++
++- Formalization (Lean) feasibility: can the invariant be written as a proposition over finite-dimensional reals, and what are the main obstacles:
++  **可以。** 把 \((c,T)\in\mathbb R^2\)、精确十进制常数作为有理数、\(10^x\) 写成 `Real.exp (Real.log 10 * x)`，并假设 \(q>0\)，即可形式化 SI 因子、两种浓度表达的相等、正性、偏导符号及矩形端点界限。主要证明工作是非零分母、指数/对数与微分规则、严格不等式；数值舍入检查点需要区间界而非等式。物理单位需要显式量纲封装或单位转换定义；经验拟合的实验正确性无法由实数代数证明，且实数公式证明不自动覆盖 PyBaMM 符号求值路径或 IEEE-754 舍入，后者需要另做实现关联与误差证明。
+
+tokens used
+53,701
+已完成 [spec.md](./spec.md)，按模板记录了一个主要不变量和两个次要不变量：
+
+- 扩散率从 cm²/s 转为 m²/s 后的绝对标度及完整本构公式。
+- 指定范围内的正扩散率，以及温度、浓度响应。
+- Ai2020 与 Xu2019 对同一扩散率拟合的一致性。
+
+文档包含合并版本公共 API 的检查方法、抽检范围、容差与差分步长、现有测试覆盖情况及 Lean 形式化可行性；同时指出交叉比较测试未显式设置 `atol=0` 的精度缺口，并注明文献实验适用范围尚未独立核实。
+
+本次只读取了 `./input` 和 GitHub 合并源码，没有安装、编译或运行项目代码。

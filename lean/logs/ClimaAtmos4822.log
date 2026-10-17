@@ -1,0 +1,5 @@
+⚠ [8924/8924] Built PhysAudit.ClimaAtmos4822 (7.3s)
+warning: PhysAudit/ClimaAtmos4822.lean:508:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4822.lean:529:28: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: PhysAudit/ClimaAtmos4822.lean:858:6: `if_pos` has been deprecated: Use `ite_eq_left` instead
+Build completed successfully (8924 jobs).
